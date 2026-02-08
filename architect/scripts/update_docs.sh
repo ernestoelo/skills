@@ -1,5 +1,11 @@
 #!/bin/bash
+# scripts/update_docs.sh
+
+# Rutas relativas
 KB_DIR="../knowledge/specs"
+# AQUI ESTA EL CAMBIO: Apuntamos a la skill vecina
+EXTRACTOR="../../web-scraper/scripts/extract.py" 
+
 mkdir -p "$KB_DIR"
 
 download_clean() {
@@ -7,11 +13,8 @@ download_clean() {
     filename=$2
     echo "💎 Destilando: $filename..."
     
-    # 1. Python extrae SOLO etiquetas semánticas (h1, p, pre...) y texto.
-    # 2. Pandoc convierte ese HTML simplificado a Markdown.
-    # 3. 'cat -s' elimina los múltiples saltos de línea que dejan los divs borrados.
-    
-    python3 extract_clean.py "$url" | \
+    # Llamamos al extractor usando la variable
+    python3 "$EXTRACTOR" "$url" | \
     pandoc -f html -t gfm --wrap=none --strip-comments | \
     cat -s > "$KB_DIR/$filename.md"
 }

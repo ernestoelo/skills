@@ -131,3 +131,12 @@ if __name__ == "__main__":
             else: print(html) # Fallback
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
+
+# Funcion de prueba para CodeRabbit
+def prueba():
+    print("Hola mundo")
+    var = 10
+    if var == 10:
+        return True
+    else:
+        return False
