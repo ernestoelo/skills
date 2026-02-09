@@ -226,7 +226,7 @@ All repository tooling is centralized in the `scripts/` directory at the root:
 | `scripts/init_skill.py` | Scaffolds a new skill from template |
 | `scripts/package_skill.py` | Packages a skill into a distributable `.skill` file |
 | `scripts/sync-skills.sh` | Syncs skills to AI platform directories (OpenCode, Claude, Cursor) |
-| `scripts/validate_skill_on_change.sh` | Git pre-commit hook for automatic validation |
+| `scripts/validate-skill-on-change.sh` | Git pre-commit hook for automatic validation |
 | `scripts/post-clone-setup.sh` | Post-clone setup (installs git hooks) |
 
 ### Validation
@@ -253,11 +253,11 @@ GitHub Actions automatically validates all skills and runs tests on push/PR to `
 │   └── validate-skills.yml           # CI: validate + test on push/PR
 │
 ├── scripts/                          # Centralized repository tooling
-│   ├── quick_validate.py
 │   ├── init_skill.py
 │   ├── package_skill.py
+│   ├── quick_validate.py
 │   ├── sync-skills.sh
-│   ├── validate_skill_on_change.sh
+│   ├── validate-skill-on-change.sh
 │   └── post-clone-setup.sh
 │
 ├── tests/                            # Test suite
@@ -270,31 +270,30 @@ GitHub Actions automatically validates all skills and runs tests on push/PR to `
 │   ├── SKILL.md
 │   ├── references/
 │   └── scripts/
-│       └── update_docs.sh
+│       └── update-docs.sh
 │
-├── dev-workflow/                      # Skill: development standards
+├── dev-workflow/                     # Skill: development standards
 │   ├── SKILL.md
-│   ├── checklists/
-│   ├── diagrams/
-│   ├── guides/
 │   ├── references/
-│   └── templates/
+│   └── assets/
+│       └── diagrams/
 │
-├── mcp-builder/                      # Skill: MCP server creation
-│   ├── SKILL.md
-│   ├── reference/
-│   └── scripts/
-│
-├── pdf/                              # Skill: PDF processing
-│   ├── SKILL.md
-│   └── scripts/
-│
-├── sys-env/                          # Skill: system environment
+├── mcp-builder/                     # Skill: MCP server creation
 │   ├── SKILL.md
 │   ├── references/
 │   └── scripts/
 │
-└── web-scraper/                      # Skill: web content extraction
+├── pdf/                             # Skill: PDF processing
+│   ├── SKILL.md
+│   ├── references/
+│   └── scripts/
+│
+├── sys-env/                         # Skill: system environment
+│   ├── SKILL.md
+│   ├── references/
+│   └── scripts/
+│
+└── web-scraper/                     # Skill: web content extraction
     ├── SKILL.md
     └── scripts/
 ```

@@ -113,37 +113,6 @@ Consult these based on your skill's needs:
 
 ### Step 6: Validate and Package
 
-## Continuous Validation & Active Context
-
-Whenever you create, modify, or validate a skill, the `architect` skill **must always be loaded in context**. This ensures standards for folder structure, metadata, workflows, and packaging are enforced at every step.
-
-**Key Policies:**
-- Architect is the official validator for skill anatomy and standards.
-- Every change to a skill (creation, edit, validation, packaging) must:
-  1. Load architect/SKILL.md as context.
-  2. Validate with scripts/quick_validate.py <path/to/skill-folder>.
-  3. Optionally, scripts/validate_skill_on_change.sh can be used as a git hook to enforce validation automatically after every commit.
-- Skills are only considered ready for commit/push if validation passes. Otherwise, fix detected issues before proceeding.
-
-**Workflow Example:**
-```
-Skill Commit Workflow with Architect:
-1. git add skill-name/
-2. Validate:
-   bash scripts/quick_validate.py skill-name/
-3. Only commit and push after successful validation:
-   git commit -m "feat: add skill-name"
-   git push
-```
-
-**Meta Policy:**
-No skill should be edited, created, or installed without architect validation and active context.
-
-**Best Practices:**
-- Architect provides the official rules and automation to maintain quality.
-- Use references/workflows.md and references/output-patterns.md for detailed guidance.
-- For collaborative or large-scale changes, always review and validate structure before any merge.
-
 **Validate:**
 ```bash
 scripts/quick_validate.py <path/to/skill-folder>
@@ -156,34 +125,14 @@ scripts/package_skill.py <path/to/skill-folder> [output-directory]
 
 Creates a `.skill` file (zip format) after automatic validation.
 
-### Step 7: Commit and Sync
+### Step 7: Iterate
 
-#### Automate Hook Installation
+After testing the skill, iterate based on real usage:
 
-After cloning the repository, ensure you run the `post-clone-setup.sh` script to set up the necessary Git hooks automatically.
-
-```bash
-bash scripts/post-clone-setup.sh
-```
-
-This will:
-- Install the `pre-commit` hook to validate skills automatically.
-- Ensure your local environment is correctly configured for quality control during development.
-
-
-
-Follow the **dev-workflow** skill's Git standards for committing:
-
-```bash
-git add skill-name/
-git commit -m "feat: add skill-name"
-git push
-```
-
-Sync to platforms:
-- **GitHub Copilot**: No action needed (source directory)
-- **OpenCode/Claude/Cursor**: Run `scripts/sync-skills.sh` or `git pull` (auto-syncs via hook)
-- **Specific platform**: `scripts/sync-skills.sh --platform <name>`
+1. Use the skill on real tasks
+2. Notice struggles or inefficiencies
+3. Update SKILL.md or bundled resources
+4. Re-validate and test again
 
 ## Scaffolding Agents
 
@@ -268,5 +217,4 @@ Before committing:
 - **Design Patterns:** `references/workflows.md`, `references/output-patterns.md`
 - **Agents Schema:** `references/agents-spec.md`
 - **Platform Sync:** `references/platform-sync.md`
-- **Repository Tooling:** `scripts/init_skill.py`, `scripts/package_skill.py`, `scripts/quick_validate.py`
-- **Skill-specific:** `scripts/update_docs.sh` (fetches upstream docs)
+- **Tooling:** `scripts/init_skill.py`, `scripts/package_skill.py`, `scripts/quick_validate.py`

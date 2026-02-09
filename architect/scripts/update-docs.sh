@@ -1,5 +1,5 @@
 #!/bin/bash
-# scripts/update_docs.sh
+# scripts/update-docs.sh
 #
 # Fetches and cleans upstream documentation for the architect skill.
 # Output goes to references/ for manual curation into the skill.

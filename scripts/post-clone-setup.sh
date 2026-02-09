@@ -9,7 +9,7 @@ set -e
 
 # Ensure git hooks path is properly set
 GIT_HOOKS_DIR="$(git rev-parse --show-toplevel)/.git/hooks"
-HOOK_SCRIPT_SRC="$(git rev-parse --show-toplevel)/scripts/validate_skill_on_change.sh"
+HOOK_SCRIPT_SRC="$(git rev-parse --show-toplevel)/scripts/validate-skill-on-change.sh"
 HOOK_SCRIPT_DEST="$GIT_HOOKS_DIR/pre-commit"
 
 # Check if pre-commit hook exists

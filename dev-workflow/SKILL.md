@@ -22,7 +22,7 @@ These guidelines are **mandatory**.
 ## 3. Core Standards Summary
 
 ### Git Workflow
-**Source of Truth:** [Git Workflow Guide](./guides/01-git-workflow-development.md)
+**Source of Truth:** [Git Workflow Guide](./references/01-git-workflow-development.md)
 
 - **Model:** Gitflow (use `develop` and `main`).
 - **Branch Naming:** `type/description-kebab-case`
@@ -31,7 +31,7 @@ These guidelines are **mandatory**.
 - **Process:** Feature branches merge to `develop`. `develop` merges to `main` for releases.
 
 ### AI & Python Development
-**Source of Truth:** [AI Development Guide](./guides/02-ai-development.md)
+**Source of Truth:** [AI Development Guide](./references/02-ai-development.md)
 
 - **Package Manager:** **`uv`** (all projects must use `uv`, not raw pip/poetry).
 - **Project Structure:** `src/package_name` layout (no flat layouts).
@@ -45,7 +45,7 @@ These guidelines are **mandatory**.
 
 ### Setup New AI Project
 When asked to creating a new Python/AI project:
-1. **Read** [AI Development Guide](./guides/02-ai-development.md) for the exact folder structure and `uv` commands.
+1. **Read** [AI Development Guide](./references/02-ai-development.md) for the exact folder structure and `uv` commands.
 2. **Execute** the `uv init` and setup commands as defined in the guide.
 3. **Ensure** `.gitignore` includes `__pycache__`, `.venv`, and `data/*`.
 

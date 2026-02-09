@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# validate_skill_on_change.sh - Git hook to validate skills on commit
+# validate-skill-on-change.sh - Git hook to validate skills on commit
 # This script validates modified skills using scripts/quick_validate.py.
 # If any skill validation fails, the commit is aborted.
 
