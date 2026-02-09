@@ -160,9 +160,7 @@ The architect skill will:
 4. Set up scripts/, references/, and assets/ directories
 5. Guide you through implementation
 
-**Manual Creation:**
-
-See [architect/knowledge/creating-skills.md](architect/knowledge/creating-skills.md) for detailed guidance.
+See `architect/SKILL.md` for the complete skill creation process.
 
 ## 🔄 Workflow
 
@@ -319,13 +317,16 @@ The repository includes `.git/hooks/post-merge` that runs this script automatica
 │
 ├── architect/              # Skill scaffolding tool
 │   ├── SKILL.md
-│   ├── knowledge/
-│   │   ├── creating-skills.md    # Practical guide for creating skills
-│   │   ├── specs/                # Platform specifications
-│   │   └── templates/
-│   │       └── skill-creator/    # Anthropic's reference template
+│   ├── references/
+│   │   ├── workflows.md          # Workflow design patterns
+│   │   ├── output-patterns.md    # Output quality patterns
+│   │   ├── platform-sync.md      # Multi-platform distribution guide
+│   │   └── agents-spec.md        # Full .agent.md schema reference
 │   └── scripts/
 │       ├── sync-skills.sh        # Multi-platform sync script
+│       ├── init_skill.py         # Skill initializer
+│       ├── package_skill.py      # Skill packager (.skill files)
+│       ├── quick_validate.py     # Skill validator
 │       └── update_docs.sh        # Documentation updater
 │
 ├── dev-workflow/           # Development standards
@@ -358,7 +359,7 @@ The repository includes `.git/hooks/post-merge` that runs this script automatica
 ## 🔗 Resources
 
 - **Repository:** https://github.com/ernestoelo/skills
-- **Anthropic Skills Guide:** See `architect/knowledge/templates/skill-creator/SKILL.md`
+- **Architect Skill:** See `architect/SKILL.md` for complete skill creation guide
 - **OpenCode Docs:** https://opencode.ai/docs/skills
 - **GitHub Copilot Docs:** https://docs.github.com/copilot
 

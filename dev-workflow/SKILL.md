@@ -53,3 +53,64 @@ When asked to create branches or commit code:
 1. **Check** the current branch.
 2. **Enforce** the naming convention `type/description`.
 3. If the user is on `main` and wants to code, **instruct** them to checkout `develop` or a feature branch first.
+
+### Commit & Push Workflow
+
+When asked to commit and/or push changes, follow this **standard procedure** for any repository:
+
+#### Step 1: Assess Changes
+
+Run these in parallel to understand the current state:
+
+```bash
+git status                          # Untracked + modified files
+git diff --stat                     # Summary of unstaged changes
+git diff --cached --stat            # Summary of staged changes
+git log --oneline -5                # Recent commits for style reference
+```
+
+#### Step 2: Stage Files
+
+- Stage only relevant files. **Never stage** files containing secrets (`.env`, `credentials.json`, `conf.env`, `*.key`).
+- Use targeted `git add <path>` rather than `git add .` when possible to avoid accidental inclusions.
+- If `.gitignore` is missing or incomplete, warn the user and suggest additions before staging.
+
+#### Step 3: Write Commit Message
+
+Follow **Conventional Commits** format:
+
+```
+type(scope): subject
+```
+
+- **type**: Must match the nature of changes (`feat`, `fix`, `refactor`, `docs`, `style`, `test`, `chore`, `hotfix`, `perf`, `build`)
+- **scope** (optional): Affected component or area
+- **subject**: Imperative, lowercase, no period, max 50 chars
+- **body** (optional): Explain _why_ and _how_, not _what_. Wrap at 72 chars.
+
+When multiple types of changes are present in a single commit, use the **dominant type** and list details in the body:
+
+```
+refactor(architect): consolidate skill-creator into architect
+
+- Merge skill-creator content into architect/SKILL.md
+- Move scripts and references to architect/{scripts,references}/
+- Remove redundant knowledge/ directory
+- Fix init_skill.py template YAML bug
+```
+
+#### Step 4: Commit and Push
+
+```bash
+git add <files>
+git commit -m "type(scope): subject"
+git push
+```
+
+- Verify success with `git status` after push.
+- If push fails due to upstream changes, run `git pull --rebase` then retry.
+
+#### Step 5: Post-Push (if applicable)
+
+- If the repository has platform sync scripts (e.g., `sync-skills.sh`), run them after push.
+- If git hooks exist (e.g., `post-merge`), confirm they executed correctly.

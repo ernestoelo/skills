@@ -1,116 +1,148 @@
 ---
 name: architect
-description: Scaffolds skills and agents following official standards for multiple AI platforms (OpenCode, GitHub Copilot, Claude, Cursor). Creates proper folder structures, SKILL.md with valid frontmatter, and sets up bundled resources. Use when creating new skills or agents, or when structuring AI extension projects.
+description: Scaffolds skills and agents following official standards for multiple AI platforms (OpenCode, GitHub Copilot, Claude, Cursor). Creates proper folder structures, SKILL.md with valid frontmatter, and sets up bundled resources. Use when creating new skills or agents, or when structuring AI extension projects. Also use when users want to create a new skill (or update an existing skill) that extends AI capabilities with specialized knowledge, workflows, or tool integrations.
 ---
 
 # Skill Architect
 
 Expert scaffolding tool for creating skills and agents across AI platforms.
 
-## Overview
+## Core Principles
 
-This skill helps you create well-structured, platform-compatible skills and agents. It follows official standards from Anthropic and adapts them for use across multiple platforms: OpenCode, GitHub Copilot, Claude Desktop, and Cursor.
+### Concise is Key
 
-## Sources of Truth
+The context window is a public good shared with system prompt, conversation history, other skills' metadata, and the user request. **Default assumption: the AI is already very smart.** Only add context it doesn't already have. Challenge each piece of information: "Does this paragraph justify its token cost?"
 
-The scaffolding process is based on:
+Prefer concise examples over verbose explanations.
 
-1. **Anthropic's Official Template:** `./knowledge/templates/skill-creator/SKILL.md`
-   - The gold standard for skill creation
-   - Comprehensive guide on structure, content, and best practices
-   
-2. **Platform Specifications:** `./knowledge/specs/`
-   - `vscode-agent-skills.md` - VSCode/Copilot specs
-   - `vscode-custom-agents.md` - Custom agents for VSCode
-   - `agentskills-spec.md` - General agent skills specification
+### Set Appropriate Degrees of Freedom
 
-3. **Repository Documentation:** `../../docs/creating-skills.md`
-   - Practical guide for this specific repository
-   - Platform-specific setup instructions
+Match specificity to the task's fragility:
 
-## Capabilities
+- **High freedom** (text instructions): Multiple valid approaches, context-dependent decisions
+- **Medium freedom** (pseudocode/parameterized scripts): Preferred pattern exists, some variation acceptable
+- **Low freedom** (specific scripts): Fragile operations, consistency critical, specific sequence required
 
-### 1. Classify the Need
-
-When asked to create something, first classify:
-
-**Type A: Skill (Reusable Tool/Knowledge)**
-- User wants a specific capability or domain knowledge
-- Examples: "PDF processor", "Database schema reference", "Docker helper"
-- **Output:** Full skill directory with `SKILL.md` + bundled resources
-
-**Type B: Agent (Persona/Role)**
-- User wants a role or specialized persona
-- Examples: "Code reviewer", "Documentation writer", "Test engineer"
-- **Output:** Single `.agent.md` file (if supported by platform)
-
-### 2. Scaffold Skills
-
-For **Type A (Skills)**, create a complete directory structure:
+## Skill Anatomy
 
 ```
 skill-name/
 ├── SKILL.md              # Required: Instructions for AI
 ├── scripts/              # Optional: Executable code (Python, Bash, etc.)
-├── references/           # Optional: Documentation to load as needed
+├── references/           # Optional: Documentation loaded as needed
 └── assets/               # Optional: Templates, images, files for output
 ```
 
-**Naming Convention:**
-- Use kebab-case: `my-skill-name`
-- Lowercase only: `^[a-z0-9]+(-[a-z0-9]+)*$`
-- Name must match directory name
+**Naming:** kebab-case, lowercase only: `^[a-z0-9]+(-[a-z0-9]+)*$`
 
-**SKILL.md Template:**
+### Progressive Disclosure
 
-```markdown
----
-name: skill-name
-description: Comprehensive description of what the skill does and when to use it (include triggers, use cases, file types, etc.)
----
+Three-level loading system:
 
-# Skill Name
+1. **Metadata** (name + description) - Always in context (~100 words)
+2. **SKILL.md body** - When skill triggers (<5k words, <500 lines)
+3. **Bundled resources** - As needed (unlimited; scripts can execute without loading)
 
-Brief overview...
+When SKILL.md approaches 500 lines, split into references. Always reference split files from SKILL.md with clear "when to read" guidance.
 
-## Key Features
+## Skill Creation Process
 
-- Feature 1
-- Feature 2
+### Step 1: Classify the Need
 
-## Usage
+**Type A: Skill (Reusable Tool/Knowledge)**
+- Specific capability or domain knowledge
+- Examples: "PDF processor", "Database schema reference", "Docker helper"
+- Output: Full skill directory with `SKILL.md` + bundled resources
 
-Instructions for the AI...
+**Type B: Agent (Persona/Role)**
+- Role or specialized persona
+- Examples: "Code reviewer", "Documentation writer", "Test engineer"
+- Output: Single `.agent.md` file (if supported by platform)
 
-## Examples
+### Step 2: Understand with Concrete Examples
 
-[Examples here]
+Ask the user:
+- "What functionality should it support?"
+- "Can you give examples of how it would be used?"
+- "What would a user say that should trigger this skill?"
 
-## Resources
+Conclude when there's a clear sense of required functionality.
 
-- See `references/file.md` for detailed documentation
-- Run `scripts/tool.py` for automated processing
+### Step 3: Plan Reusable Contents
+
+Analyze each example to identify:
+- **scripts/**: Code rewritten repeatedly or needing deterministic reliability
+- **references/**: Documentation the AI should consult while working
+- **assets/**: Templates, images, fonts used in output (not loaded into context)
+
+### Step 4: Initialize the Skill
+
+For new skills, run:
+
+```bash
+architect/scripts/init_skill.py <skill-name> --path <output-directory>
 ```
 
-**Bundled Resources Guidelines:**
+This creates the directory structure with template SKILL.md and example resource files.
 
-- **scripts/**: Executable code for deterministic or repeatedly-written operations
-  - Test all scripts before committing
-  - Include only essential scripts
-  
-- **references/**: Documentation loaded as needed
-  - API docs, schemas, detailed guides
-  - Keep SKILL.md lean by moving details here
-  - Include table of contents for files >100 lines
-  
-- **assets/**: Files used in output (not loaded into context)
-  - Templates, boilerplate code
-  - Images, fonts, media
-  - Files to be copied or modified in output
+### Step 5: Implement the Skill
 
-### 3. Scaffold Agents
+#### Start with Bundled Resources
 
-For **Type B (Agents)**, create a persona file:
+Implement scripts, references, and assets first. Test all scripts by running them. Delete example files not needed.
+
+#### Write SKILL.md
+
+**Frontmatter** (only `name` and `description` allowed, plus optional `license`):
+
+```yaml
+---
+name: skill-name
+description: Comprehensive description including WHAT it does and WHEN to use it. Include trigger scenarios, file types, and tasks. All "when to use" info goes HERE, not in the body.
+---
+```
+
+**Body:** Instructions for using the skill and its bundled resources. Use imperative/infinitive form.
+
+#### Design Patterns
+
+Consult these based on your skill's needs:
+- **Multi-step processes**: See `references/workflows.md`
+- **Output formats/quality standards**: See `references/output-patterns.md`
+- **Platform distribution**: See `references/platform-sync.md`
+
+### Step 6: Validate and Package
+
+**Validate:**
+```bash
+architect/scripts/quick_validate.py <path/to/skill-folder>
+```
+
+**Package for distribution:**
+```bash
+architect/scripts/package_skill.py <path/to/skill-folder> [output-directory]
+```
+
+Creates a `.skill` file (zip format) after automatic validation.
+
+### Step 7: Commit and Sync
+
+Follow the **dev-workflow** skill's Git standards for committing:
+
+```bash
+git add skill-name/
+git commit -m "feat: add skill-name"
+git push
+```
+
+Sync to platforms:
+- **GitHub Copilot**: No action needed (source directory)
+- **OpenCode/Claude/Cursor**: Run `architect/scripts/sync-skills.sh` or `git pull` (auto-syncs via hook)
+- **Specific platform**: `architect/scripts/sync-skills.sh --platform <name>`
+
+## Scaffolding Agents
+
+For **Type B (Agents)**, create a single `.agent.md` file:
 
 ```markdown
 ---
@@ -123,244 +155,72 @@ role: Brief role description
 You are a [role] who specializes in [domain].
 
 ## Responsibilities
-
 - Responsibility 1
-- Responsibility 2
 
 ## Approach
-
 Your approach to tasks should...
 
 ## Guidelines
-
 - Guideline 1
-- Guideline 2
 ```
 
-**Note:** Not all platforms support `.agent.md` files. Check platform compatibility.
+**Note:** Not all platforms support `.agent.md` files. For the full `.agent.md` schema (including `tools`, `handoffs`, `mcp-servers`, `model`, etc.), see `references/agents-spec.md`.
 
-### 4. Cross-Platform Compatibility
+## Cross-Platform Compatibility
 
-Ensure skills work across multiple platforms:
-
-**Universal Frontmatter (All Platforms):**
-```yaml
----
-name: skill-name          # Required everywhere
-description: ...          # Required everywhere
----
-```
-
-**Extended Frontmatter (Platform-Specific):**
+**Universal Frontmatter:**
 ```yaml
 ---
 name: skill-name
 description: ...
-license: MIT              # OpenCode, Claude
-compatibility: opencode   # OpenCode only
-metadata:                 # OpenCode only
-  author: Your Name
-  version: 1.0.0
 ---
 ```
 
 **Platform Locations:**
-- **GitHub Copilot:** `~/.copilot/skills/`
-- **OpenCode:** `~/.config/opencode/skills/` (via symlinks)
-- **Claude Desktop:** `~/.claude/skills/`
-- **Cursor:** `~/.cursor/skills/`
+- **GitHub Copilot:** `~/.copilot/skills/` (reads directly)
+- **OpenCode:** `~/.config/opencode/skills/` (symlinks)
+- **Claude Desktop:** `~/.config/claude/skills/` (symlinks)
+- **Cursor:** `~/.config/cursor/skills/` (symlinks)
 
-### 5. Repository Integration
+See `references/platform-sync.md` for complete distribution guide.
 
-For skills in this repository (`~/.copilot/skills/`):
-
-**After Creating a Skill:**
-
-1. **Test the skill** with your AI assistant
-2. **Commit to git:**
-   ```bash
-   git add skill-name/
-   git commit -m "feat: add skill-name"
-   git push
-   ```
-
-3. **Sync to platforms:**
-   - **GitHub Copilot**: No action needed (source directory)
-   - **OpenCode/Claude/Cursor**: Run `./scripts/sync-skills.sh` or `git pull` (auto-syncs)
-   - **Specific platform**: Run `./scripts/sync-skills.sh --platform <name>`
-
-## Workflow Examples
-
-### Example 1: Creating a Database Helper Skill
-
-**User:** "Create a skill to help me work with PostgreSQL databases"
-
-**Architect Analysis:**
-- **Type:** A (Skill - Tool)
-- **Needs:** SQL query helpers, schema documentation
-- **Structure:**
-  ```
-  postgres-helper/
-  ├── SKILL.md              # Quick reference + common queries
-  ├── references/
-  │   ├── schema.md         # Database schema
-  │   └── best-practices.md # SQL best practices
-  └── scripts/
-      ├── backup.sh         # Backup script
-      └── migrate.py        # Migration helper
-  ```
-
-**Actions:**
-1. Create directory structure
-2. Write SKILL.md with frontmatter
-3. Add schema documentation to references/
-4. Create utility scripts
-5. Test with sample queries
-6. Commit and sync
-
-### Example 2: Creating a Code Reviewer Agent
-
-**User:** "Create an agent that reviews code for security issues"
-
-**Architect Analysis:**
-- **Type:** B (Agent - Persona)
-- **Needs:** Security-focused review guidelines
-- **Structure:** Single `security-reviewer.agent.md`
-
-**Actions:**
-1. Create `.agent.md` with persona definition
-2. Include security checklist
-3. Define review approach
-4. Test with sample code
-5. Commit
-
-### Example 3: Multi-Framework Skill
-
-**User:** "Create a skill for deploying to different cloud providers"
-
-**Architect Analysis:**
-- **Type:** A (Skill - Multi-variant)
-- **Structure:**
-  ```
-  cloud-deploy/
-  ├── SKILL.md              # Overview + provider selection
-  └── references/
-      ├── aws.md            # AWS deployment patterns
-      ├── gcp.md            # GCP deployment patterns
-      └── azure.md          # Azure deployment patterns
-  ```
-
-**Progressive Disclosure:**
-- SKILL.md: High-level workflow + "which provider?"
-- AI loads only the relevant reference file based on user's choice
-
-## Best Practices
-
-### Description Writing
+## Description Writing
 
 The `description` field is **critical** - it determines when the skill triggers.
 
-✅ **Good:**
+Good:
 ```yaml
 description: Complete PostgreSQL database management including schema documentation, query helpers, backup scripts, and migration tools. Use when working with PostgreSQL databases, writing SQL queries, designing schemas, or managing database operations.
 ```
 
-❌ **Bad:**
+Bad:
 ```yaml
 description: Database tool
 ```
 
-### Content Organization
+## Content Organization Rules
 
-**Keep SKILL.md under 500 lines:**
-- Core workflow and instructions
-- Quick reference
-- Pointers to bundled resources
+**Keep in SKILL.md:** Core workflow, quick reference, pointers to resources
+**Move to references/:** Long/detailed content, domain-specific docs, occasionally-needed content
+**Move to scripts/:** Frequently rewritten code, deterministic operations, token-heavy tasks
+**Move to assets/:** Templates for output, images, fonts, boilerplate
 
-**Move to references/ when:**
-- Content is long or detailed
-- Content is domain-specific docs
-- Content is only needed occasionally
+**Do NOT create:** README.md, CHANGELOG.md, INSTALLATION_GUIDE.md, or any auxiliary docs.
 
-**Move to scripts/ when:**
-- Code is rewritten frequently
-- Deterministic execution is critical
-- Token efficiency matters
+## Validation Checklist
 
-### Progressive Disclosure
-
-Structure for efficient context usage:
-
-1. **Metadata** (name + description) - Always loaded
-2. **SKILL.md** - Loaded when skill triggers
-3. **Bundled resources** - Loaded as needed
-
-### Validation
-
-Before committing a skill:
-
-**Checklist:**
-- [ ] Valid YAML frontmatter
-- [ ] `name` matches directory name
-- [ ] `description` is comprehensive (includes what, when, triggers)
-- [ ] Name follows pattern: `^[a-z0-9]+(-[a-z0-9]+)*$`
+Before committing:
+- [ ] Valid YAML frontmatter with `name` and `description`
+- [ ] `name` matches directory name (kebab-case)
+- [ ] `description` is comprehensive (what + when + triggers)
 - [ ] No README.md or auxiliary docs
 - [ ] Scripts are tested
-- [ ] References are organized
-- [ ] Compatible across target platforms
-
-## Platform-Specific Notes
-
-### OpenCode
-
-After creating a skill, sync to AI platforms:
-```bash
-cd ~/.copilot/skills
-./architect/scripts/sync-skills.sh  # Auto-syncs to all installed platforms
-```
-
-Or if git hook is configured:
-```bash
-git pull  # Auto-syncs to all installed platforms
-```
-
-### GitHub Copilot
-
-Skills in `~/.copilot/skills/` are immediately available. No sync needed.
-
-### Claude Desktop
-
-If using symlinks from this repository:
-```bash
-ln -s ~/.copilot/skills ~/.claude/skills
-```
-
-### Cursor
-
-If using symlinks from this repository:
-```bash
-ln -s ~/.copilot/skills ~/.cursor/skills
-```
-
-## Error Prevention
-
-**Common mistakes to avoid:**
-
-❌ Creating README.md (use SKILL.md instead)
-❌ Inconsistent name in frontmatter vs directory
-❌ Vague description ("A tool for...")
-❌ Uppercase or underscore in skill names
-❌ Deeply nested references (keep 1 level deep)
-❌ Untested scripts
-❌ Duplicating content between SKILL.md and references
+- [ ] References organized (1 level deep, TOC for >100 lines)
+- [ ] SKILL.md under 500 lines
 
 ## Resources
 
-- **Anthropic's Official Guide:** `./knowledge/templates/skill-creator/SKILL.md`
-- **Creation Guide:** `../../docs/creating-skills.md`
-- **Platform Specs:** `./knowledge/specs/`
-- **Example Skills:** `../../{pdf,mcp-builder,web-scraper}/`
-
----
-
-**When in doubt, consult the official Anthropic template at `./knowledge/templates/skill-creator/SKILL.md` for comprehensive guidance.**
+- **Design Patterns:** `references/workflows.md`, `references/output-patterns.md`
+- **Agents Schema:** `references/agents-spec.md`
+- **Platform Sync:** `references/platform-sync.md`
+- **Scripts:** `scripts/init_skill.py`, `scripts/package_skill.py`, `scripts/quick_validate.py`
