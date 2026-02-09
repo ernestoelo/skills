@@ -167,7 +167,7 @@ EOF
 mkdir -p scripts references assets
 
 # Validate, commit and push
-python3 scripts/quick_validate.py my-new-skill/
+uv run python3 scripts/quick_validate.py my-new-skill/
 git add my-new-skill/
 git commit -m "feat: add my-new-skill"
 git push
@@ -231,10 +231,10 @@ All repository tooling is centralized in the `scripts/` directory at the root:
 
 ```bash
 # Validate a single skill
-python3 scripts/quick_validate.py <skill-directory>
+uv run python3 scripts/quick_validate.py <skill-directory>
 
 # Run full test suite
-pytest tests/ -v
+uv run pytest tests/ -v
 ```
 
 ### CI/CD
@@ -252,6 +252,7 @@ GitHub Actions automatically validates all skills and runs tests on push/PR to `
 │   └── validate-skills.yml           # CI: validate + test on push/PR
 │
 ├── scripts/                          # Centralized repository tooling
+│   ├── __init__.py
 │   ├── init_skill.py
 │   ├── package_skill.py
 │   ├── quick_validate.py
@@ -325,7 +326,7 @@ GitHub Actions automatically validates all skills and runs tests on push/PR to `
 When adding or updating skills:
 
 1. Follow the skill requirements above
-2. Run `python3 scripts/quick_validate.py <skill-dir>` before committing
+2. Run `uv run python3 scripts/quick_validate.py <skill-dir>` before committing
 3. Test the skill with your AI assistant
 4. Use conventional commits (`feat:`, `fix:`, `docs:`)
 5. Push to GitHub for others to use

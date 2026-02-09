@@ -44,7 +44,7 @@ These guidelines are **mandatory**.
 ## 4. Workflows
 
 ### Setup New AI Project
-When asked to creating a new Python/AI project:
+When asked to create a new Python/AI project:
 1. **Read** [AI Development Guide](./references/02-ai-development.md) for the exact folder structure and `uv` commands.
 2. **Execute** the `uv init` and setup commands as defined in the guide.
 3. **Ensure** `.gitignore` includes `__pycache__`, `.venv`, and `data/*`.

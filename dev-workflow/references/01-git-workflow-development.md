@@ -1,7 +1,5 @@
 # Git Workflow Guide
 
-> **Spanish version available:** [01-git-workflow.es.md](01-git-workflow.es.md).
->
 > The English version of this document is the canonical reference.
 >
 > Last updated: 2026-01-02.
@@ -20,7 +18,7 @@ Gitflow is an alternative Git branching model that involves the use of feature b
 Compared to trunk-based development, Gitflow has numerous, longer-lived branches and larger commits. Under this model, developers create a feature branch and delay merging it to the main trunk branch until the feature is complete. These long-lived feature branches require more collaboration to merge and have a higher risk of deviating from the trunk branch. They can also introduce conflicting updates.
 
 ### How it works
-![Gitflow Workflow](../diagrams/imgs/gitflow.png)
+![Gitflow Workflow](../assets/diagrams/imgs/gitflow.png)
 
 
 ### Develop and main branches
@@ -42,7 +40,7 @@ This branch will contain the complete history of the project, whereas `main` wil
 
 Each new feature should reside in its own branch, which can be pushed to the central repository for backup/collaboration. But, instead of branching off of `main`, feature branches use `develop` as their parent branch. When a feature is complete, it gets merged back into `develop`. Features should never interact directly with `main`.
 
-![Gitflow Feature Branch](../diagrams/imgs/gitflow-feature-branch.png)
+![Gitflow Feature Branch](../assets/diagrams/imgs/gitflow-feature-branch.png)
 
 Note that `feature` branches combined with the `develop` branch is, for all intents and purposes, the Feature Branch Workflow. But, the Gitflow workflow doesn’t stop there.
 

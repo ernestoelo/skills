@@ -77,10 +77,10 @@ Analyze each example to identify:
 
 ### Step 4: Initialize the Skill
 
-For new skills, run:
+For new skills, run from the **repository root**:
 
 ```bash
-scripts/init_skill.py <skill-name> --path <output-directory>
+python3 scripts/init_skill.py <skill-name> --path <output-directory>
 ```
 
 This creates the directory structure with template SKILL.md and example resource files.
@@ -113,14 +113,14 @@ Consult these based on your skill's needs:
 
 ### Step 6: Validate and Package
 
-**Validate:**
+**Validate** (from repository root):
 ```bash
-scripts/quick_validate.py <path/to/skill-folder>
+python3 scripts/quick_validate.py <path/to/skill-folder>
 ```
 
-**Package for distribution:**
+**Package for distribution** (from repository root):
 ```bash
-scripts/package_skill.py <path/to/skill-folder> [output-directory]
+python3 scripts/package_skill.py <path/to/skill-folder> [output-directory]
 ```
 
 Creates a `.skill` file (zip format) after automatic validation.
@@ -217,4 +217,4 @@ Before committing:
 - **Design Patterns:** `references/workflows.md`, `references/output-patterns.md`
 - **Agents Schema:** `references/agents-spec.md`
 - **Platform Sync:** `references/platform-sync.md`
-- **Tooling:** `scripts/init_skill.py`, `scripts/package_skill.py`, `scripts/quick_validate.py`
+- **Tooling (repo root):** `scripts/init_skill.py`, `scripts/package_skill.py`, `scripts/quick_validate.py`

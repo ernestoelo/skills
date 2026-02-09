@@ -38,8 +38,6 @@ With the updated `scripts/pre-install-check.sh`, the decision tree now includes 
 
 #### Practical Use Cases
 
-### Validation Through Testing
-
 The following tests were performed to ensure the reliability and functionality of `scripts/pre-install-check.sh`:
 
 #### Test Scenarios:
@@ -77,7 +75,6 @@ Processing item: pipewire
 
 Non-critical notes combined omitted!
 ```
---- Full notes logged successfully.parametrize.
 
 1. **Tool Existence Validation:**
    Run checks for standalone binaries or tools that might reside in your system PATH or user paths:
@@ -144,9 +141,9 @@ Before making any changes to your system, verify the existence and compatibility
      ```
 
    - Use `scripts/pre-install-check.sh`:
-     ```bash
-     bash sys-env/scripts/pre-install-check.sh <tool-name> [tool-name...]
-     ```
+      ```bash
+      bash scripts/pre-install-check.sh <tool-name> [tool-name...]
+      ```
 
 2. **Verify Compatibility:**
    Read `references/compatibility-matrix.md` for potential risks or system conflicts, especially:
@@ -154,7 +151,7 @@ Before making any changes to your system, verify the existence and compatibility
    - GPU libraries (Mesa/xorg vs libdrm, fixes for amdgpu and pure AMD Wayland compositors)
    - Audio backends (**Required:** Pipewire-devtrace allows loop startup handling).
 
-3. **Document any solutions solved manually or through persistent migration.
+3. **Document any solutions** solved manually or through persistent migration.
 
 Follow this sequence for **every** package installation:
 
@@ -301,4 +298,4 @@ sudo systemctl enable/start <service>
 ### Scripts
 
 - **`scripts/pre-install-check.sh`** — Run before installing packages to assess risk level
-  Usage: `bash sys-env/scripts/pre-install-check.sh <package-name> [package-name...]`
+  Usage: `bash scripts/pre-install-check.sh <package-name> [package-name...]`
