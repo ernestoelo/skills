@@ -24,48 +24,56 @@ When skills are stored in a git repository (recommended for version control and 
 
 **Setup:** Requires symbolic links from repository
 
-**Sync:** Use `sync-to-opencode.sh` script (see below)
+**Sync:** Use `architect/scripts/sync-skills.sh` script (see below)
 
 ### Claude Desktop
 
-**Location:** `~/.claude/skills/`
+**Location:** 
+- Linux: `~/.config/claude/skills/`
+- macOS: `~/Library/Application Support/Claude/skills/`
 
-**Setup:**
-- Clone repository directly to this location, OR
-- Create symlink from repository to this location
+**Setup:** Requires symbolic links from repository
 
-**Sync:** Not needed (reads files directly)
+**Sync:** Use `architect/scripts/sync-skills.sh` script (see below)
 
 ### Cursor
 
-**Location:** `~/.cursor/skills/` (verify in settings)
+**Location:**
+- Linux: `~/.config/cursor/skills/`
+- macOS: `~/Library/Application Support/Cursor/skills/`
 
-**Setup:**
-- Clone repository directly to this location, OR
-- Create symlink from repository to this location
+**Setup:** Requires symbolic links from repository
 
-**Sync:** Not needed (reads files directly)
+**Sync:** Use `architect/scripts/sync-skills.sh` script (see below)
 
 ## Recommended Setup: Central Repository
 
-The best practice is to maintain skills in a **single git repository** and create platform-specific access:
+The best practice is to maintain skills in a **single git repository** and use the multi-platform sync script:
 
 ```
-~/skills-repo/              # Your git repository
+~/skills-repo/              # Your git repository (e.g., ~/.copilot/skills)
 ├── .git/
+├── architect/
+│   └── scripts/
+│       └── sync-skills.sh  # Multi-platform sync script
 ├── skill-1/
-├── skill-2/
-└── sync-to-opencode.sh
+└── skill-2/
 
-# Platform access via symlinks:
-~/.copilot/skills/    → ~/skills-repo/
-~/.claude/skills/     → ~/skills-repo/
-~/.cursor/skills/     → ~/skills-repo/
+# GitHub Copilot (uses repository directly):
+~/.copilot/skills/  → This IS the repository
 
-# OpenCode (requires individual skill symlinks):
+# Other platforms (symlinks to individual skills):
 ~/.config/opencode/skills/
-├── skill-1 → ~/skills-repo/skill-1
-├── skill-2 → ~/skills-repo/skill-2
+├── skill-1 → ~/.copilot/skills/skill-1
+├── skill-2 → ~/.copilot/skills/skill-2
+
+~/.config/claude/skills/  (or ~/Library/Application Support/Claude/skills/ on macOS)
+├── skill-1 → ~/.copilot/skills/skill-1
+├── skill-2 → ~/.copilot/skills/skill-2
+
+~/.config/cursor/skills/  (or ~/Library/Application Support/Cursor/skills/ on macOS)
+├── skill-1 → ~/.copilot/skills/skill-1
+├── skill-2 → ~/.copilot/skills/skill-2
 ```
 
 **Benefits:**
@@ -73,74 +81,104 @@ The best practice is to maintain skills in a **single git repository** and creat
 - Version control with git
 - Easy collaboration
 - Changes automatically available across platforms
+- One script for all platforms
 
-## OpenCode Sync Script
+## Multi-Platform Sync Script
 
-OpenCode requires individual skill-level symlinks. Use this script to automate:
+The `sync-skills.sh` script automates synchronization across all AI platforms:
 
-```bash
-#!/bin/bash
-#
-# sync-to-opencode.sh
-# Syncs skills from repository to OpenCode
-#
+**Location:** `architect/scripts/sync-skills.sh`
 
-REPO_DIR="$HOME/.copilot/skills"  # Your repository location
-OPENCODE_DIR="$HOME/.config/opencode/skills"
-
-# Create OpenCode directory
-mkdir -p "$OPENCODE_DIR"
-
-# Sync all skills
-for skill_path in "$REPO_DIR"/*/SKILL.md; do
-    [ -e "$skill_path" ] || continue
-    
-    skill_dir=$(dirname "$skill_path")
-    skill_name=$(basename "$skill_dir")
-    
-    # Skip hidden directories
-    [[ "$skill_name" == .* ]] && continue
-    
-    symlink_path="$OPENCODE_DIR/$skill_name"
-    
-    # Create or update symlink
-    if [ ! -L "$symlink_path" ]; then
-        ln -s "$skill_dir" "$symlink_path"
-        echo "✅ Synced: $skill_name"
-    fi
-done
-
-echo "✨ OpenCode sync complete!"
-```
+**Features:**
+- Auto-detects installed AI platforms (OpenCode, Claude Desktop, Cursor)
+- Creates individual skill symlinks for each platform
+- Cross-platform support (Linux + macOS)
+- Verifies existing symlinks
+- Detailed reporting
+- Dry-run mode for preview
 
 **Usage:**
+
 ```bash
-chmod +x sync-to-opencode.sh
-./sync-to-opencode.sh
+# Auto-sync to all installed platforms
+./architect/scripts/sync-skills.sh
+
+# Sync to specific platform only
+./architect/scripts/sync-skills.sh --platform opencode
+./architect/scripts/sync-skills.sh --platform claude
+./architect/scripts/sync-skills.sh --platform cursor
+
+# Preview changes without applying
+./architect/scripts/sync-skills.sh --dry-run
+
+# Show help
+./architect/scripts/sync-skills.sh --help
+```
+
+**Example Output:**
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║           SKILL SYNCHRONIZATION: Multi-Platform              ║
+╚══════════════════════════════════════════════════════════════╝
+
+🔍 Searching for skills in: ~/.copilot/skills/
+
+📍 Platform Detection:
+  ✅ OpenCode       → ~/.config/opencode/skills/
+  ✅ Claude Desktop → ~/.config/claude/skills/
+  ⊘  Cursor         → Not installed
+
+Syncing to OpenCode...
+  ✅ architect → already synced
+  🆕 my-skill → creating symlink...
+
+Syncing to Claude Desktop...
+  ✅ architect → already synced
+  🆕 my-skill → creating symlink...
+
+╔══════════════════════════════════════════════════════════════╗
+║                          SUMMARY                             ║
+╚══════════════════════════════════════════════════════════════╝
+  Platforms synced:        2 (opencode, claude)
+  Total skills found:      5
+  Already synced:          4
+  Newly synced:            1
+
+✨ Synchronization complete! 1 skill(s) synced across 2 platform(s).
 ```
 
 ## Git Hook for Auto-Sync
 
-Automate OpenCode sync after every `git pull`:
+Automate multi-platform sync after every `git pull`:
 
-**Create `.git/hooks/post-merge`:**
+**The repository includes `.git/hooks/post-merge`:**
+
 ```bash
 #!/bin/bash
 #
 # post-merge hook
-# Auto-syncs skills to OpenCode after git pull/merge
+# Executes automatically after 'git pull' or 'git merge'
+# Syncs skills to installed AI platforms
 #
 
-echo "🔄 Syncing skills to OpenCode..."
-"$(dirname "$0")/../../sync-to-opencode.sh"
+echo ""
+echo "🔄 Syncing skills to installed platforms..."
+echo ""
+
+# Execute the sync script
+"$(dirname "$0")/../../architect/scripts/sync-skills.sh"
+
+exit 0
 ```
 
-**Make executable:**
+**Make executable (if not already):**
+
 ```bash
 chmod +x .git/hooks/post-merge
 ```
 
-Now every `git pull` automatically syncs to OpenCode!
+Now every `git pull` automatically syncs to **all installed platforms**!
 
 ## Workflow Integration
 
@@ -168,11 +206,11 @@ When scaffolding a new skill, include sync step:
 
 4. **Sync to platforms**
    ```bash
-   # OpenCode only (others auto-update via symlinks)
-   ./sync-to-opencode.sh
+   # Auto-sync to all installed platforms
+   ./architect/scripts/sync-skills.sh
    
    # Or if git hook configured:
-   git pull  # Auto-syncs
+   git pull  # Auto-syncs to all platforms
    ```
 
 ### Pulling Updates
@@ -180,12 +218,10 @@ When scaffolding a new skill, include sync step:
 When collaborators add skills:
 
 ```bash
-git pull  # Downloads new skills
+git pull  # Downloads new skills + auto-syncs to all platforms (if git hook configured)
 
-# OpenCode users:
-./sync-to-opencode.sh  # Or auto-syncs with git hook
-
-# Other platforms: already updated via symlinks
+# Manual sync (if needed):
+./architect/scripts/sync-skills.sh  # Syncs to all installed platforms
 ```
 
 ## Multi-Machine Setup
@@ -201,40 +237,50 @@ git push  # Push your changes
 **Machine 2:**
 ```bash
 cd ~/skills-repo
-git pull  # Get latest changes
+git pull  # Get latest changes + auto-syncs to all platforms (if git hook configured)
 
-# OpenCode auto-syncs if git hook configured
-# Otherwise run: ./sync-to-opencode.sh
+# Manual sync (if needed):
+# ./architect/scripts/sync-skills.sh
 ```
 
 ## Troubleshooting
 
-### Skill not appearing in OpenCode
+### Skill not appearing in any platform
 
 1. Verify symlink exists:
    ```bash
+   # OpenCode
    ls -la ~/.config/opencode/skills/
+   
+   # Claude Desktop (Linux)
+   ls -la ~/.config/claude/skills/
+   
+   # Cursor (Linux)
+   ls -la ~/.config/cursor/skills/
    ```
 
-2. Re-sync:
+2. Re-sync to all platforms:
    ```bash
-   ./sync-to-opencode.sh
+   ./architect/scripts/sync-skills.sh
    ```
 
-3. Restart OpenCode
+3. Sync to specific platform:
+   ```bash
+   ./architect/scripts/sync-skills.sh --platform opencode
+   ./architect/scripts/sync-skills.sh --platform claude
+   ./architect/scripts/sync-skills.sh --platform cursor
+   ```
 
-### Skill not appearing in other platforms
+4. Restart your AI assistant
 
-1. Verify platform-specific directory exists and has symlink:
+### Skill not appearing in GitHub Copilot
+
+1. Verify repository location:
    ```bash
    ls -la ~/.copilot/skills/
-   ls -la ~/.claude/skills/
    ```
 
-2. Create symlink if missing:
-   ```bash
-   ln -s ~/skills-repo ~/.copilot/skills
-   ```
+2. GitHub Copilot reads directly from the repository (no sync needed)
 
 ### Git hook not running
 
@@ -254,27 +300,29 @@ git pull  # Get latest changes
 ### OpenCode
 
 - Requires individual skill-level symlinks (not repo-level)
-- Use `sync-to-opencode.sh` script
-- Git hook provides auto-sync
+- Use `architect/scripts/sync-skills.sh` script
+- Git hook provides auto-sync to all platforms
 - Skills listed in skill tool description
 
 ### GitHub Copilot
 
-- Can use repo-level or individual symlinks
-- Prefers direct directory access
-- No sync needed
+- Uses repository directly at `~/.copilot/skills/`
+- No sync needed (source directory)
+- Works in VSCode and Visual Studio
 
 ### Claude Desktop
 
-- Can use repo-level or individual symlinks
-- Follows Anthropic's standard closely
-- No sync needed
+- Requires individual skill-level symlinks
+- Platform-specific paths (Linux vs macOS)
+- Use `architect/scripts/sync-skills.sh --platform claude`
+- Follows Anthropic's skill specification
 
 ### Cursor
 
+- Requires individual skill-level symlinks  
+- Platform-specific paths (Linux vs macOS)
+- Use `architect/scripts/sync-skills.sh --platform cursor`
 - Similar to GitHub Copilot
-- Verify location in Cursor settings
-- No sync needed
 
 ## Best Practices
 
@@ -287,9 +335,9 @@ git pull  # Get latest changes
    - Don't duplicate across platforms
    - Use symlinks for access
 
-3. **Automate sync for OpenCode**
-   - Use git hook for auto-sync
-   - Include sync script in repository
+3. **Automate multi-platform sync**
+   - Use git hook for auto-sync to all installed platforms
+   - Include sync script in repository (`architect/scripts/sync-skills.sh`)
 
 4. **Document your setup**
    - README with setup instructions
@@ -304,35 +352,28 @@ git pull  # Get latest changes
 Starting from scratch:
 
 ```bash
-# 1. Clone repository
-git clone https://github.com/user/skills.git ~/my-skills
+# 1. Clone repository to standard GitHub Copilot location
+git clone https://github.com/user/skills.git ~/.copilot/skills
+cd ~/.copilot/skills
 
-# 2. Set up GitHub Copilot
-ln -s ~/my-skills ~/.copilot/skills
+# 2. GitHub Copilot is already set up (uses this directory directly)
 
-# 3. Set up Claude Desktop
-ln -s ~/my-skills ~/.claude/skills
+# 3. Sync to other platforms (OpenCode, Claude, Cursor)
+./architect/scripts/sync-skills.sh
 
-# 4. Set up Cursor
-ln -s ~/my-skills ~/.cursor/skills
-
-# 5. Set up OpenCode
-cd ~/my-skills
-./sync-to-opencode.sh
-
-# 6. Configure git hook for auto-sync
-chmod +x .git/hooks/post-merge
+# 4. Git hook is already configured - test it
+git pull  # Should auto-sync to all platforms
 
 # Done! All platforms now access the same skills
 ```
 
 ## Summary
 
-| Platform | Location | Sync Method | Auto-Sync |
-|----------|----------|-------------|-----------|
-| GitHub Copilot | `~/.copilot/skills/` | Repo symlink | N/A |
-| OpenCode | `~/.config/opencode/skills/` | Script + skill symlinks | Git hook |
-| Claude Desktop | `~/.claude/skills/` | Repo symlink | N/A |
-| Cursor | `~/.cursor/skills/` | Repo symlink | N/A |
+| Platform | Location (Linux) | Location (macOS) | Sync Method | Auto-Sync |
+|----------|-----------------|------------------|-------------|-----------|
+| GitHub Copilot | `~/.copilot/skills/` | `~/.copilot/skills/` | Direct (repository) | N/A |
+| OpenCode | `~/.config/opencode/skills/` | `~/.config/opencode/skills/` | Script + skill symlinks | Git hook |
+| Claude Desktop | `~/.config/claude/skills/` | `~/Library/Application Support/Claude/skills/` | Script + skill symlinks | Git hook |
+| Cursor | `~/.config/cursor/skills/` | `~/Library/Application Support/Cursor/skills/` | Script + skill symlinks | Git hook |
 
-**Recommendation:** Use the central repository approach with `sync-to-opencode.sh` and git hooks for the best developer experience.
+**Recommendation:** Use the central repository approach at `~/.copilot/skills/` with `architect/scripts/sync-skills.sh` and git hooks for the best multi-platform developer experience.

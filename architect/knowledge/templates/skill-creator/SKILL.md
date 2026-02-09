@@ -358,8 +358,8 @@ If working with a git repository and multiple AI platforms:
 
 2. **Sync to platforms:**
    - **GitHub Copilot**: No action needed (reads directly from repository)
-   - **OpenCode**: Run `sync-to-opencode.sh` or `git pull` (if git hook configured)
-   - **Claude/Cursor**: No action needed (if using symlinks to repository)
+   - **OpenCode/Claude/Cursor**: Run `../../scripts/sync-skills.sh` or `git pull` (if git hook configured)
+   - **Specific platform**: Run `../../scripts/sync-skills.sh --platform <name>`
 
 See `references/platform-sync.md` for comprehensive platform distribution guide.
 

@@ -186,8 +186,8 @@ For skills in this repository (`~/.copilot/skills/`):
 
 3. **Sync to platforms:**
    - **GitHub Copilot**: No action needed (source directory)
-   - **OpenCode**: Run `../../sync-to-opencode.sh` or `git pull` (auto-syncs)
-   - **Claude/Cursor**: Symlinks update automatically
+   - **OpenCode/Claude/Cursor**: Run `./scripts/sync-skills.sh` or `git pull` (auto-syncs)
+   - **Specific platform**: Run `./scripts/sync-skills.sh --platform <name>`
 
 ## Workflow Examples
 
@@ -313,15 +313,15 @@ Before committing a skill:
 
 ### OpenCode
 
-After creating a skill, sync to OpenCode:
+After creating a skill, sync to AI platforms:
 ```bash
 cd ~/.copilot/skills
-./sync-to-opencode.sh
+./architect/scripts/sync-skills.sh  # Auto-syncs to all installed platforms
 ```
 
 Or if git hook is configured:
 ```bash
-git pull  # Auto-syncs
+git pull  # Auto-syncs to all installed platforms
 ```
 
 ### GitHub Copilot

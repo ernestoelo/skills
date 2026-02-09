@@ -61,9 +61,9 @@ git add my-skill-name/
 git commit -m "feat: add my-skill-name"
 git push
 
-# If using OpenCode
+# Sync to AI platforms (OpenCode, Claude, Cursor)
 cd ..
-./sync-to-opencode.sh
+./architect/scripts/sync-skills.sh
 ```
 
 ## Best Practices
