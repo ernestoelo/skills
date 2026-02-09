@@ -106,6 +106,25 @@ ln -s ~/.copilot/skills/nombre-skill ~/.config/opencode/skills/nombre-skill
 
 Si alguien más agregó skills, o trabajas desde otra máquina:
 
+#### Opción 1: Sincronización Automática (Configurado)
+
+Este repositorio tiene un **git hook** que sincroniza automáticamente después de cada `git pull`:
+
+```bash
+cd ~/.copilot/skills
+git pull
+# ✨ La sincronización se ejecuta automáticamente
+```
+
+También puedes usar el alias `sync-skills`:
+
+```bash
+cd ~/.copilot/skills
+git sync-skills  # Hace pull y sincroniza en un solo comando
+```
+
+#### Opción 2: Sincronización Manual
+
 ```bash
 cd ~/.copilot/skills
 git pull
@@ -167,8 +186,39 @@ nombre-skill/
 - **OpenCode Docs:** https://opencode.ai/docs/skills
 - **GitHub Copilot Docs:** https://docs.github.com/copilot
 
+## 🤖 Automatización
+
+Este repositorio incluye automatización para mantener las skills sincronizadas:
+
+### Git Hook (post-merge)
+
+El hook `.git/hooks/post-merge` se ejecuta automáticamente después de cada `git pull` o `git merge`:
+
+```bash
+# Después de hacer git pull, automáticamente:
+# 1. Detecta nuevas skills
+# 2. Crea symlinks en ~/.config/opencode/skills/
+# 3. Muestra reporte de sincronización
+```
+
+### Alias de Git
+
+El alias `sync-skills` combina pull y sincronización:
+
+```bash
+cd ~/.copilot/skills
+git sync-skills  # Equivale a: git pull && ./sync-to-opencode.sh
+```
+
+Configuración del alias:
+```bash
+git config alias.sync-skills '!f() { git pull "$@" && ./sync-to-opencode.sh; }; f'
+```
+
 ## 📝 Notas
 
 - Este repositorio está sincronizado entre GitHub Copilot y OpenCode
 - Los symlinks mantienen ambos sistemas actualizados automáticamente
-- Ejecuta `sync-to-opencode.sh` después de hacer `git pull` para sincronizar nuevas skills
+- El git hook `post-merge` sincroniza automáticamente después de `git pull`
+- También puedes ejecutar `./sync-to-opencode.sh` manualmente cuando quieras
+
