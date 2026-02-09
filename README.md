@@ -333,4 +333,6 @@ When adding or updating skills:
 
 ## License
 
-Individual skills may have different licenses (see LICENSE.txt in each skill directory). Default is for personal use.
+This repository is licensed under the [MIT License](LICENSE) by default.
+
+Individual skills may override this with their own license. If a skill contains a `LICENSE.txt` file or a `license` field in its `SKILL.md` frontmatter, that license takes precedence over the root MIT license for that skill.

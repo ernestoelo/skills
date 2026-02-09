@@ -1,6 +1,6 @@
 ---
 name: web-scraper
-description: Fetches web pages (documentation, articles) and converts them into clean, noise-free Markdown for context building.
+description: Fetches web pages (documentation, articles) and converts them into clean, noise-free Markdown for context building. Use when the user wants to scrape, fetch, or download a page, read a URL, extract content from a website, or convert HTML to Markdown.
 ---
 # Web Scraper & Context Builder
 
@@ -25,7 +25,7 @@ If the user asks to "save" a URL as documentation:
 
 1. Run the script and redirect output to a file in the user's knowledge base.
    ```bash
-   python3 scripts/extract.py "[https://example.com/docs](https://example.com/docs)" > ./knowledge/topic.md
+   python3 scripts/extract.py "https://example.com/docs" > ./knowledge/topic.md
    ```
 
 ## 🧠 Best Practices

@@ -14,6 +14,9 @@ Examples:
 import sys
 from pathlib import Path
 
+# Ensure sibling modules are importable regardless of CWD
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
 from quick_validate import validate_skill
 
 

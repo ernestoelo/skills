@@ -29,10 +29,10 @@ This repository is organized by domain.
 
 - [01-git-workflow-development.md](./01-git-workflow-development.md): Defines branching, commit conventions and repository usage.
 - [02-ai-development.md](./02-ai-development.md): Mandatory structure and operational requirements for AI/ML projects.
-- [02-ai-development.checklist.md](./02-ai-development.checklist.md): Self-validation checklist for AI/ML projects.
+- [02-ai-development-checklist.md](./02-ai-development-checklist.md): Self-validation checklist for AI/ML projects.
 
-- [README.template.md](../assets/README.template.md): Official README template for project repositories.
-- [03-web-and-mobile-systems.diagram-template.md](../assets/03-web-and-mobile-systems.diagram-template.md): Minimal production architecture diagram template.
+- [readme-template.md](../assets/readme-template.md): Official README template for project repositories.
+- [03-web-and-mobile-systems-diagram-template.md](../assets/03-web-and-mobile-systems-diagram-template.md): Minimal production architecture diagram template.
 
 - [diagrams/templates/](../assets/diagrams/templates/): Diagram image templates (overview, architecture, production).
 - [diagrams/examples/](../assets/diagrams/examples/): Real-world diagram examples from production systems.
