@@ -250,16 +250,16 @@ def init_skill(skill_name, path):
         # Create references/ directory with example reference doc
         references_dir = skill_dir / "references"
         references_dir.mkdir(exist_ok=True)
-        example_reference = references_dir / "api_reference.md"
+        example_reference = references_dir / "api-reference.md"
         example_reference.write_text(EXAMPLE_REFERENCE.format(skill_title=skill_title))
-        print("✅ Created references/api_reference.md")
+        print("✅ Created references/api-reference.md")
 
         # Create assets/ directory with example asset placeholder
         assets_dir = skill_dir / "assets"
         assets_dir.mkdir(exist_ok=True)
-        example_asset = assets_dir / "example_asset.txt"
+        example_asset = assets_dir / "example-asset.txt"
         example_asset.write_text(EXAMPLE_ASSET)
-        print("✅ Created assets/example_asset.txt")
+        print("✅ Created assets/example-asset.txt")
     except Exception as e:
         print(f"❌ Error creating resource directories: {e}")
         return None
@@ -299,7 +299,7 @@ def main():
         print("\nSkill name requirements:")
         print("  - Hyphen-case identifier (e.g., 'data-analyzer')")
         print("  - Lowercase letters, digits, and hyphens only")
-        print("  - Max 40 characters")
+        print("  - Max 64 characters")
         print("  - Must match directory name exactly")
         print("\nExamples:")
         print("  init_skill.py my-new-skill --path skills/public")

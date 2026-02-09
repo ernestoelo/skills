@@ -63,7 +63,9 @@ def validate_skill(skill_path):
     if not isinstance(name, str):
         return False, f"Name must be a string, got {type(name).__name__}"
     name = name.strip()
-    if name:
+    if not name:
+        return False, "Name cannot be empty"
+    else:
         if not re.match(r"^[a-z0-9-]+$", name):
             return (
                 False,
@@ -85,7 +87,9 @@ def validate_skill(skill_path):
     if not isinstance(description, str):
         return False, f"Description must be a string, got {type(description).__name__}"
     description = description.strip()
-    if description:
+    if not description:
+        return False, "Description cannot be empty"
+    else:
         if "<" in description or ">" in description:
             return False, "Description cannot contain angle brackets (< or >)"
         if len(description) > 1024:
@@ -93,6 +97,14 @@ def validate_skill(skill_path):
                 False,
                 f"Description is too long ({len(description)} characters). Maximum is 1024 characters.",
             )
+
+    # Validate that name matches the directory name
+    dir_name = skill_path.resolve().name
+    if name != dir_name:
+        return False, (
+            f"Name '{name}' does not match directory name '{dir_name}'. "
+            "The frontmatter 'name' must match the skill directory name exactly."
+        )
 
     # Duplicate name detection across sibling skill directories
     skills_root = skill_path.parent

@@ -23,9 +23,9 @@ Use this when the user sends a link and says "read this", "save this as context"
 
 If the user asks to "save" a URL as documentation:
 
-1. Run the script and redirect output to a file in the user's knowledge base.
+1. Run the script and redirect output to a file in the user's project.
    ```bash
-   python3 scripts/extract.py "https://example.com/docs" > ./knowledge/topic.md
+   python3 scripts/extract.py "https://example.com/docs" > ./docs/topic.md
    ```
 
 ## 🧠 Best Practices
