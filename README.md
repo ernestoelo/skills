@@ -321,15 +321,91 @@ GitHub Actions automatically validates all skills and runs tests on push/PR to `
 - Skills loaded from platform-specific directory
 - Use `scripts/sync-skills.sh --platform cursor` to sync
 
-## Contributing
+## SKILL.md Format
 
-When adding or updating skills:
+To ensure all skills in the repository are consistent, structured, and easy to maintain, each skill includes a `SKILL.md` file. This file acts as the central documentation for the skill, detailing its purpose, usage, and additional resources. The following outlines the structure and expectations for `SKILL.md` files:
 
-1. Follow the skill requirements above
-2. Run `uv run python3 scripts/quick_validate.py <skill-dir>` before committing
-3. Test the skill with your AI assistant
-4. Use conventional commits (`feat:`, `fix:`, `docs:`)
-5. Push to GitHub for others to use
+### Frontmatter (Required)
+Every `SKILL.md` begins with YAML frontmatter that defines basic metadata:
+
+```yaml
+---
+name: skill-name         # Must match the directory name (kebab-case)
+description: Brief description of what the skill does and when to use it
+author: Author name (optional)
+version: 1.0.0           # Versioning for the skill
+license: Optional        # e.g., MIT, Proprietary
+---
+```
+
+- **`name`**: The name of the skill (matches its directory name).
+- **`description`**: A clear and concise explanation of the skill's functionality and use cases.
+- **`version`**: Semantic versioning to track updates and improvements.
+- **`license`** *(optional)*: License applicable to the skill.
+
+### Body Structure
+The main body follows a standard structure to ensure clarity:
+
+1. **Description:** Overview of the skill’s purpose and capabilities.
+2. **When to Use:** Scenarios where the skill is applicable, with examples.
+3. **Usage Guide:** Step-by-step instructions for using the skill, including CLI commands and examples.
+4. **Inputs and Outputs:** Details on input parameters, arguments, and expected outputs.
+5. **Best Practices & Limitations:** Suggestions for effective use and common pitfalls.
+6. **Example Workflows:** Practical examples demonstrating real-world use cases.
+7. **Version History:** A table tracking changes over time.
+8. **Resources:** Links to additional documentation, scripts, or references.
+
+### Example SKILL.md for Reference
+An example of a minimal SKILL.md is as follows:
+
+```markdown
+---
+name: pdf
+description: Automates PDF processing: reading, modifying, OCR, and creation.
+author: OpenCode Project Team
+version: 1.0.0
+---
+
+# PDF Skill
+
+## Description
+This skill enables advanced PDF processing, including text extraction, merging/splitting, and OCR.
+
+## When to Use
+- Extracting data from PDF files.
+- Adding encryption, watermarks, or metadata.
+- Creating brand-new PDF files dynamically.
+
+## Usage Guide
+### Extracting Text
+```python
+from pypdf import PdfReader
+reader = PdfReader("document.pdf")
+for page in reader.pages:
+    print(page.extract_text())
+```
+```
+
+### Creating a Watermarked PDF
+```python
+from pypdf import PdfReader, PdfWriter
+watermark = PdfReader("watermark.pdf").pages[0]
+reader = PdfReader("input.pdf")
+writer = PdfWriter()
+for page in reader.pages:
+    page.merge_page(watermark)
+    writer.add_page(page)
+writer.write("output.pdf")
+```
+```
+
+## Inputs and Outputs
+- **Inputs:** PDF file paths, watermark PDFs.
+- **Outputs:** Modified or transformed PDFs.
+```
+
+### Maintaining SKILL.md Files
+Contributors are expected to format all `SKILL.md` files according to this template when creating or updating skills. This ensures clarity, consistency, and ease of collaboration across all platforms.
 
 ## License
 
