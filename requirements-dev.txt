@@ -1,0 +1,11 @@
+# Development dependencies for the skills repository tooling
+# Install: pip install -r requirements-dev.txt
+
+# Validation
+pyyaml>=6.0
+
+# Testing
+pytest>=8.0
+
+# Linting (optional)
+ruff>=0.4

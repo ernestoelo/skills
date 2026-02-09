@@ -3,11 +3,11 @@
 Skill Packager - Creates a distributable .skill file of a skill folder
 
 Usage:
-    architect/scripts/package_skill.py <path/to/skill-folder> [output-directory]
+    scripts/package_skill.py <path/to/skill-folder> [output-directory]
 
 Example:
-    architect/scripts/package_skill.py my-skill
-    architect/scripts/package_skill.py my-skill ./dist
+    scripts/package_skill.py my-skill
+    scripts/package_skill.py my-skill ./dist
 """
 
 import sys
@@ -85,11 +85,11 @@ def package_skill(skill_path, output_dir=None):
 def main():
     if len(sys.argv) < 2:
         print(
-            "Usage: python utils/package_skill.py <path/to/skill-folder> [output-directory]"
+            "Usage: python scripts/package_skill.py <path/to/skill-folder> [output-directory]"
         )
         print("\nExample:")
-        print("  python utils/package_skill.py skills/public/my-skill")
-        print("  python utils/package_skill.py skills/public/my-skill ./dist")
+        print("  python scripts/package_skill.py my-skill")
+        print("  python scripts/package_skill.py my-skill ./dist")
         sys.exit(1)
 
     skill_path = sys.argv[1]

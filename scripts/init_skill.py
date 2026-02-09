@@ -14,6 +14,8 @@ Examples:
 import sys
 from pathlib import Path
 
+from quick_validate import validate_skill
+
 
 SKILL_TEMPLATE = """---
 name: {skill_name}
@@ -266,7 +268,24 @@ def init_skill(skill_name, path):
     print(
         "2. Customize or delete the example files in scripts/, references/, and assets/"
     )
-    print("3. Run the validator when ready to check the skill structure")
+    print("3. Automatically running validation to check the skill structure...")
+
+    # Validation after skill initialization
+    print("\nRunning validation...")
+    try:
+        valid, message = validate_skill(skill_dir)
+        print(message)
+        if not valid:
+            print(
+                "\n❌ Validation failed. Review the issues above and fix them before proceeding."
+            )
+            print(f"   Revalidate: python3 scripts/quick_validate.py {skill_dir}")
+            return None
+        else:
+            print("\n✅ Validation passed successfully. Skill is ready to use.")
+    except Exception as e:
+        print(f"❌ Error while running validation: {e}")
+        return None
 
     return skill_dir
 

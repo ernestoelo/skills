@@ -17,6 +17,7 @@ These guidelines are **mandatory**.
 ## 2. Capability Scaling
 - **Low Complexity** (Simple questions): Use the summaries below to answer directly.
 - **High Complexity** (Setup, heavy refactoring): **READ the relevant guide file** to get the full context before generating code.
+- **Standards Overview:** [references/standards-overview.md](./references/standards-overview.md) — High-level principles, mandatory artifacts, and document index.
 
 ## 3. Core Standards Summary
 
