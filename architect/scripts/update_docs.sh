@@ -1,28 +1,36 @@
 #!/bin/bash
 # scripts/update_docs.sh
+#
+# Fetches and cleans upstream documentation for the architect skill.
+# Output goes to references/ for manual curation into the skill.
+#
+# Requirements: python3, pandoc, web-scraper skill (extract.py)
+# Usage: Run from architect/scripts/ directory
 
-# Rutas relativas
-KB_DIR="../knowledge/specs"
-# AQUI ESTA EL CAMBIO: Apuntamos a la skill vecina
-EXTRACTOR="../../web-scraper/scripts/extract.py" 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+OUT_DIR="$SCRIPT_DIR/../references"
+EXTRACTOR="$SCRIPT_DIR/../../web-scraper/scripts/extract.py"
 
-mkdir -p "$KB_DIR"
+if [[ ! -f "$EXTRACTOR" ]]; then
+    echo "Error: web-scraper extract.py not found at $EXTRACTOR"
+    exit 1
+fi
 
 download_clean() {
     url=$1
     filename=$2
-    echo "💎 Destilando: $filename..."
+    echo "Fetching: $filename..."
     
-    # Llamamos al extractor usando la variable
     python3 "$EXTRACTOR" "$url" | \
     pandoc -f html -t gfm --wrap=none --strip-comments | \
-    cat -s > "$KB_DIR/$filename.md"
+    cat -s > "$OUT_DIR/$filename.md"
 }
 
-echo "🧠 Iniciando actualización PURISTA..."
+echo "Updating upstream documentation..."
 
-download_clean "https://code.visualstudio.com/docs/copilot/customization/agent-skills" "vscode-agent-skills"
-download_clean "https://code.visualstudio.com/docs/copilot/customization/custom-agents" "vscode-custom-agents"
-download_clean "https://agentskills.io/specification" "agentskills-spec"
+download_clean "https://code.visualstudio.com/docs/copilot/customization/agent-skills" "upstream-vscode-agent-skills"
+download_clean "https://code.visualstudio.com/docs/copilot/customization/custom-agents" "upstream-vscode-custom-agents"
+download_clean "https://agentskills.io/specification" "upstream-agentskills-spec"
 
-echo "✅ Documentación limpia generada en $KB_DIR"
+echo "Done. Files written to $OUT_DIR"
+echo "Review and curate into agents-spec.md as needed."

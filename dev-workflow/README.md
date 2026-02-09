@@ -1,10 +1,6 @@
 # Dev workflow
 
-> **Spanish version available:** [README.es.md](README.es.md).
->
-> The English version of this document is the canonical reference.
->
-> Last updated: 2026-01-02.
+> Last updated: 2026-02-09.
 
 This repository defines the development workflows, technical standards
 and operational guidelines used across the organization.
@@ -31,15 +27,9 @@ the standards defined in this repository.
 
 This repository is organized by domain.
 
-- [guides/01-git-workflow.md](guides/01-git-workflow.md): Defines branching, commit conventions and repository usage.
-- [guides/01-git-workflow.es.md](guides/01-git-workflow.es.md): Spanish version of the Git workflow guide.
+- [guides/01-git-workflow-development.md](guides/01-git-workflow-development.md): Defines branching, commit conventions and repository usage.
 - [guides/02-ai-development.md](guides/02-ai-development.md): Mandatory structure and operational requirements for AI/ML projects.
-- [guides/02-ai-development.es.md](guides/02-ai-development.es.md): Spanish version of the AI development guide.
 - [checklists/02-ai-development.checklist.md](checklists/02-ai-development.checklist.md): Self-validation checklist for AI/ML projects.
-- [guides/03-web-and-mobile-systems.md](guides/03-web-and-mobile-systems.md): Mandatory structure and operational requirements for Web, Mobile and Software Systems.
-- [guides/03-web-and-mobile-systems.es.md](guides/03-web-and-mobile-systems.es.md): Spanish version of the Web and Mobile Systems guide.
-
-- [checklists/03-web-and-mobile-systems.checklist.md](checklists/03-web-and-mobile-systems.checklist.md): Self-validation checklist for Web and Mobile systems.
 
 - [templates/README.template.md](templates/README.template.md): Official README template for project repositories.
 - [templates/03-web-and-mobile-systems.diagram-template.md](templates/03-web-and-mobile-systems.diagram-template.md): Minimal production architecture diagram template.
