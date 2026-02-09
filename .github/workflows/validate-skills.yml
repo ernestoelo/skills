@@ -15,13 +15,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
 
       - name: Install dependencies
-        run: pip install -r requirements-dev.txt
+        run: uv sync --group dev
 
       - name: Validate all skills
         run: |
@@ -29,10 +27,10 @@ jobs:
           for skill_dir in */; do
             if [ -f "${skill_dir}SKILL.md" ]; then
               echo "Validating: ${skill_dir%/}"
-              python3 scripts/quick_validate.py "$skill_dir" || EXIT_CODE=1
+              uv run python3 scripts/quick_validate.py "$skill_dir" || EXIT_CODE=1
             fi
           done
           exit $EXIT_CODE
 
       - name: Run tests
-        run: pytest tests/ -v
+        run: uv run pytest tests/ -v

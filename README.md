@@ -29,7 +29,7 @@ This repository contains modular skills and agents that extend AI assistants wit
 
 - Git installed
 - AI assistant (GitHub Copilot, OpenCode, Cursor, etc.)
-- Python 3.10+ (for tooling scripts)
+- Python 3.12+ and [uv](https://docs.astral.sh/uv/) (for tooling scripts)
 
 ### Clone and Setup
 
@@ -46,10 +46,8 @@ bash scripts/post-clone-setup.sh
 
 ```bash
 cd ~/.copilot/skills
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements-dev.txt
-pytest tests/ -v
+uv sync --group dev
+uv run pytest tests/ -v
 ```
 
 ### Platform Setup
@@ -248,7 +246,8 @@ GitHub Actions automatically validates all skills and runs tests on push/PR to `
 ```
 ~/.copilot/skills/
 ├── README.md                         # This file
-├── requirements-dev.txt              # Dev dependencies (pytest, pyyaml, ruff)
+├── pyproject.toml                    # Project metadata, dev dependencies, tool config
+├── uv.lock                           # Deterministic lockfile for dependencies
 ├── .github/workflows/
 │   └── validate-skills.yml           # CI: validate + test on push/PR
 │
