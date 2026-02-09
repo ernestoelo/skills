@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # sync-skills.sh
 # 
@@ -25,6 +25,7 @@
 #   - Automatically detects installed AI platforms
 #   - Creates symlinks for new skills
 #   - Verifies existing symlinks point to correct locations
+#   - Cleans up stale symlinks for removed/renamed skills
 #   - Cross-platform support (Linux + macOS)
 #   - Provides detailed report of actions taken
 #
@@ -33,10 +34,11 @@
 #   after every 'git pull' or 'git merge' command.
 #
 
-set -e  # Exit on error
+set -euo pipefail
 
-# Configuration
-COPILOT_SKILLS="$HOME/.copilot/skills"
+# Configuration — derive source from script location, not hardcoded $HOME
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+COPILOT_SKILLS="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # Detect OS
 OS_TYPE="$(uname -s)"
@@ -54,13 +56,17 @@ else
     CURSOR_SKILLS="$HOME/.config/cursor/skills"
 fi
 
-# Colors for terminal output
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-RED='\033[0;31m'
-GRAY='\033[0;90m'
-NC='\033[0m'  # No Color
+# Colors for terminal output (suppress when not a terminal)
+if [[ -t 1 ]]; then
+    GREEN='\033[0;32m'
+    YELLOW='\033[1;33m'
+    BLUE='\033[0;34m'
+    RED='\033[0;31m'
+    GRAY='\033[0;90m'
+    NC='\033[0m'
+else
+    GREEN='' YELLOW='' BLUE='' RED='' GRAY='' NC=''
+fi
 
 # Flags
 DRY_RUN=false
@@ -111,6 +117,10 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         --platform)
+            if [[ $# -lt 2 ]]; then
+                echo -e "${RED}Error: --platform requires a value${NC}"
+                exit 1
+            fi
             PLATFORM_FILTER="$2"
             shift 2
             ;;
@@ -157,24 +167,25 @@ fi
 echo -e "${BLUE}🔍 Searching for skills in: $COPILOT_SKILLS${NC}"
 echo ""
 
-# Detect installed platforms
-echo -e "${BLUE}📍 Platform Detection:${NC}"
+# Detect installed platforms — use plain arrays for Bash 3 compatibility (macOS)
+PLATFORM_NAMES=()
+PLATFORM_PATHS_ARR=()
 
-declare -A PLATFORMS
-declare -A PLATFORM_PATHS
+add_platform() {
+    PLATFORM_NAMES+=("$1")
+    PLATFORM_PATHS_ARR+=("$2")
+}
 
 # Check OpenCode
 if [[ -z "$PLATFORM_FILTER" || "$PLATFORM_FILTER" == "opencode" ]]; then
     if [ -d "$(dirname "$OPENCODE_SKILLS")" ] || [[ "$PLATFORM_FILTER" == "opencode" ]]; then
-        PLATFORMS[opencode]=true
-        PLATFORM_PATHS[opencode]="$OPENCODE_SKILLS"
+        add_platform "opencode" "$OPENCODE_SKILLS"
         if [ -d "$OPENCODE_SKILLS" ]; then
             echo -e "  ✅ ${GREEN}OpenCode${NC}       → $OPENCODE_SKILLS"
         else
             echo -e "  📦 ${YELLOW}OpenCode${NC}       → $OPENCODE_SKILLS ${GRAY}(will be created)${NC}"
         fi
     else
-        PLATFORMS[opencode]=false
         echo -e "  ⊘  ${GRAY}OpenCode${NC}       → Not installed"
     fi
 fi
@@ -182,15 +193,13 @@ fi
 # Check Claude Desktop
 if [[ -z "$PLATFORM_FILTER" || "$PLATFORM_FILTER" == "claude" ]]; then
     if [ -d "$(dirname "$CLAUDE_SKILLS")" ] || [[ "$PLATFORM_FILTER" == "claude" ]]; then
-        PLATFORMS[claude]=true
-        PLATFORM_PATHS[claude]="$CLAUDE_SKILLS"
+        add_platform "claude" "$CLAUDE_SKILLS"
         if [ -d "$CLAUDE_SKILLS" ]; then
             echo -e "  ✅ ${GREEN}Claude Desktop${NC} → $CLAUDE_SKILLS"
         else
             echo -e "  📦 ${YELLOW}Claude Desktop${NC} → $CLAUDE_SKILLS ${GRAY}(will be created)${NC}"
         fi
     else
-        PLATFORMS[claude]=false
         echo -e "  ⊘  ${GRAY}Claude Desktop${NC} → Not installed"
     fi
 fi
@@ -198,28 +207,20 @@ fi
 # Check Cursor
 if [[ -z "$PLATFORM_FILTER" || "$PLATFORM_FILTER" == "cursor" ]]; then
     if [ -d "$(dirname "$CURSOR_SKILLS")" ] || [[ "$PLATFORM_FILTER" == "cursor" ]]; then
-        PLATFORMS[cursor]=true
-        PLATFORM_PATHS[cursor]="$CURSOR_SKILLS"
+        add_platform "cursor" "$CURSOR_SKILLS"
         if [ -d "$CURSOR_SKILLS" ]; then
             echo -e "  ✅ ${GREEN}Cursor${NC}         → $CURSOR_SKILLS"
         else
             echo -e "  📦 ${YELLOW}Cursor${NC}         → $CURSOR_SKILLS ${GRAY}(will be created)${NC}"
         fi
     else
-        PLATFORMS[cursor]=false
         echo -e "  ⊘  ${GRAY}Cursor${NC}         → Not installed"
     fi
 fi
 
 echo ""
 
-# Count installed platforms
-installed_count=0
-for platform in "${!PLATFORMS[@]}"; do
-    if [[ "${PLATFORMS[$platform]}" == true ]]; then
-        installed_count=$((installed_count + 1))
-    fi
-done
+installed_count=${#PLATFORM_NAMES[@]}
 
 if [[ $installed_count -eq 0 ]]; then
     echo -e "${YELLOW}⚠️  No AI platforms detected for synchronization.${NC}"
@@ -231,14 +232,37 @@ if [[ $installed_count -eq 0 ]]; then
     exit 0
 fi
 
-# Sync function for a single platform
+# Known non-skill directories to skip
+SKIP_DIRS="docs scripts tests .github"
+
+is_skip_dir() {
+    local name="$1"
+    for skip in $SKIP_DIRS; do
+        [[ "$name" == "$skip" ]] && return 0
+    done
+    return 1
+}
+# Sync a single platform: sync_to_platform <platform_name> <target_dir>
+# Sets global LAST_* variables with results (Bash 3 compatible).
+LAST_TOTAL=0
+LAST_EXISTING=0
+LAST_NEW=0
+LAST_UPDATED=0
+LAST_ERRORS=0
+
 sync_to_platform() {
-    local platform_key=$1     # e.g., "opencode", "claude", "cursor"
-    local platform_name=$2     # e.g., "OpenCode", "Claude Desktop", "Cursor"
-    local target_dir=$3
-    
+    local platform_name="$1"
+    local target_dir="$2"
+
+    # Reset per-platform counters
+    LAST_TOTAL=0
+    LAST_EXISTING=0
+    LAST_NEW=0
+    LAST_UPDATED=0
+    LAST_ERRORS=0
+
     echo -e "${BLUE}Syncing to ${platform_name}...${NC}"
-    
+
     # Create target directory if it doesn't exist
     if [ ! -d "$target_dir" ]; then
         if [[ "$DRY_RUN" == true ]]; then
@@ -248,43 +272,32 @@ sync_to_platform() {
             mkdir -p "$target_dir"
         fi
     fi
-    
-    # Counters for this platform
-    local new_count=0
-    local existing_count=0
-    local updated_count=0
-    local error_count=0
-    local total_count=0
-    
+
     # Iterate over all directories containing SKILL.md
     for skill_path in "$COPILOT_SKILLS"/*/SKILL.md; do
-        # Check if file exists (avoids error if no matches found)
         [ -e "$skill_path" ] || continue
-        
-        # Extract directory and skill name
-        local skill_dir=$(dirname "$skill_path")
-        local skill_name=$(basename "$skill_dir")
-        
-        # Skip hidden directories (like .git)
-        if [[ "$skill_name" == .* ]]; then
-            continue
-        fi
-        
+
+        local skill_dir
+        skill_dir="$(dirname "$skill_path")"
+        local skill_name
+        skill_name="$(basename "$skill_dir")"
+
+        # Skip hidden directories
+        [[ "$skill_name" == .* ]] && continue
+
         # Skip non-skill directories
-        if [[ "$skill_name" == "docs" ]] || [[ "$skill_name" == "scripts" ]]; then
-            continue
-        fi
-        
-        total_count=$((total_count + 1))
+        is_skip_dir "$skill_name" && continue
+
+        LAST_TOTAL=$((LAST_TOTAL + 1))
         local symlink_path="$target_dir/$skill_name"
-        
-        # Check if symlink already exists
+
         if [ -L "$symlink_path" ]; then
             # Verify it points to the correct location
-            local current_target=$(readlink "$symlink_path")
+            local current_target
+            current_target="$(readlink "$symlink_path")"
             if [ "$current_target" = "$skill_dir" ]; then
                 echo -e "  ✅ ${GREEN}$skill_name${NC} → already synced"
-                existing_count=$((existing_count + 1))
+                LAST_EXISTING=$((LAST_EXISTING + 1))
             else
                 if [[ "$DRY_RUN" == true ]]; then
                     echo -e "  ${GRAY}[DRY RUN]${NC} 🔄 ${YELLOW}$skill_name${NC} → would update symlink (currently: $current_target)"
@@ -293,54 +306,87 @@ sync_to_platform() {
                     rm "$symlink_path"
                     ln -s "$skill_dir" "$symlink_path"
                 fi
-                updated_count=$((updated_count + 1))
+                LAST_UPDATED=$((LAST_UPDATED + 1))
             fi
         elif [ -e "$symlink_path" ]; then
-            # Exists but is not a symlink (regular file or directory)
             echo -e "  ❌ ${RED}$skill_name${NC} → exists as regular file/directory (not a symlink)"
             echo -e "     ${YELLOW}Please remove manually: $symlink_path${NC}"
-            error_count=$((error_count + 1))
+            LAST_ERRORS=$((LAST_ERRORS + 1))
         else
-            # Doesn't exist, create symlink
             if [[ "$DRY_RUN" == true ]]; then
                 echo -e "  ${GRAY}[DRY RUN]${NC} 🆕 ${GREEN}$skill_name${NC} → would create symlink"
             else
                 echo -e "  🆕 ${GREEN}$skill_name${NC} → creating symlink..."
                 ln -s "$skill_dir" "$symlink_path"
             fi
-            new_count=$((new_count + 1))
+            LAST_NEW=$((LAST_NEW + 1))
         fi
     done
-    
-    # Store results in global arrays using platform key
-    PLATFORM_TOTALS[$platform_key]=$total_count
-    PLATFORM_EXISTING[$platform_key]=$existing_count
-    PLATFORM_NEW[$platform_key]=$new_count
-    PLATFORM_UPDATED[$platform_key]=$updated_count
-    PLATFORM_ERRORS[$platform_key]=$error_count
-    
+
+    # Clean up stale symlinks (point to skills that no longer exist)
+    if [ -d "$target_dir" ]; then
+        for entry in "$target_dir"/*; do
+            [ -L "$entry" ] || continue
+            local link_target
+            link_target="$(readlink "$entry")"
+            if [ ! -e "$link_target" ]; then
+                local stale_name
+                stale_name="$(basename "$entry")"
+                if [[ "$DRY_RUN" == true ]]; then
+                    echo -e "  ${GRAY}[DRY RUN]${NC} 🗑  ${YELLOW}$stale_name${NC} → would remove stale symlink"
+                else
+                    echo -e "  🗑  ${YELLOW}$stale_name${NC} → removing stale symlink (target missing: $link_target)"
+                    rm "$entry"
+                fi
+            fi
+        done
+    fi
+
     echo ""
 }
 
-# Global result arrays
-declare -A PLATFORM_TOTALS
-declare -A PLATFORM_EXISTING
-declare -A PLATFORM_NEW
-declare -A PLATFORM_UPDATED
-declare -A PLATFORM_ERRORS
+# Aggregate counters across all platforms
+grand_total_skills=0
+grand_total_existing=0
+grand_total_new=0
+grand_total_updated=0
+grand_total_errors=0
+synced_platforms=""
 
 # Sync to each detected platform
-for platform in "${!PLATFORMS[@]}"; do
-    if [[ "${PLATFORMS[$platform]}" == true ]]; then
-        platform_display=""
-        case $platform in
-            opencode) platform_display="OpenCode" ;;
-            claude) platform_display="Claude Desktop" ;;
-            cursor) platform_display="Cursor" ;;
-        esac
-        
-        sync_to_platform "$platform" "$platform_display" "${PLATFORM_PATHS[$platform]}"
+idx=0
+while [ $idx -lt $installed_count ]; do
+    platform_name="${PLATFORM_NAMES[$idx]}"
+    platform_path="${PLATFORM_PATHS_ARR[$idx]}"
+
+    # Build display name
+    platform_display=""
+    case "$platform_name" in
+        opencode) platform_display="OpenCode" ;;
+        claude)   platform_display="Claude Desktop" ;;
+        cursor)   platform_display="Cursor" ;;
+        *)        platform_display="$platform_name" ;;
+    esac
+
+    sync_to_platform "$platform_display" "$platform_path"
+
+    # Accumulate results
+    if [ $LAST_TOTAL -gt $grand_total_skills ]; then
+        grand_total_skills=$LAST_TOTAL
     fi
+    grand_total_existing=$((grand_total_existing + LAST_EXISTING))
+    grand_total_new=$((grand_total_new + LAST_NEW))
+    grand_total_updated=$((grand_total_updated + LAST_UPDATED))
+    grand_total_errors=$((grand_total_errors + LAST_ERRORS))
+
+    # Build synced platforms list
+    if [ -z "$synced_platforms" ]; then
+        synced_platforms="$platform_name"
+    else
+        synced_platforms="$synced_platforms, $platform_name"
+    fi
+
+    idx=$((idx + 1))
 done
 
 # Summary
@@ -348,55 +394,20 @@ echo -e "${BLUE}╔════════════════════�
 echo -e "${BLUE}║                          SUMMARY                             ║${NC}"
 echo -e "${BLUE}╚══════════════════════════════════════════════════════════════╝${NC}"
 
-# Platforms synced
-synced_platforms=""
-for platform in "${!PLATFORMS[@]}"; do
-    if [[ "${PLATFORMS[$platform]}" == true ]]; then
-        if [[ -z "$synced_platforms" ]]; then
-            synced_platforms="$platform"
-        else
-            synced_platforms="$synced_platforms, $platform"
-        fi
-    fi
-done
-
 echo -e "  Platforms synced:        ${GREEN}$installed_count${NC} ($synced_platforms)"
+echo -e "  Total skills found:      ${GREEN}$grand_total_skills${NC}"
+echo -e "  Already synced:          ${GREEN}$grand_total_existing${NC}"
 
-# Aggregate totals across all platforms
-total_skills=0
-total_existing=0
-total_new=0
-total_updated=0
-total_errors=0
-
-for platform in "${!PLATFORMS[@]}"; do
-    if [[ "${PLATFORMS[$platform]}" == true ]]; then
-        # Get the max skills count (should be same across all platforms)
-        platform_skills=${PLATFORM_TOTALS[$platform]:-0}
-        if [ $platform_skills -gt $total_skills ]; then
-            total_skills=$platform_skills
-        fi
-        
-        total_existing=$((total_existing + ${PLATFORM_EXISTING[$platform]:-0}))
-        total_new=$((total_new + ${PLATFORM_NEW[$platform]:-0}))
-        total_updated=$((total_updated + ${PLATFORM_UPDATED[$platform]:-0}))
-        total_errors=$((total_errors + ${PLATFORM_ERRORS[$platform]:-0}))
-    fi
-done
-
-echo -e "  Total skills found:      ${GREEN}$total_skills${NC}"
-echo -e "  Already synced:          ${GREEN}$total_existing${NC}"
-
-if [ $total_new -gt 0 ]; then
-    echo -e "  Newly synced:            ${GREEN}$total_new${NC}"
+if [ $grand_total_new -gt 0 ]; then
+    echo -e "  Newly synced:            ${GREEN}$grand_total_new${NC}"
 fi
 
-if [ $total_updated -gt 0 ]; then
-    echo -e "  Updated:                 ${YELLOW}$total_updated${NC}"
+if [ $grand_total_updated -gt 0 ]; then
+    echo -e "  Updated:                 ${YELLOW}$grand_total_updated${NC}"
 fi
 
-if [ $total_errors -gt 0 ]; then
-    echo -e "  Errors:                  ${RED}$total_errors${NC}"
+if [ $grand_total_errors -gt 0 ]; then
+    echo -e "  Errors:                  ${RED}$grand_total_errors${NC}"
 fi
 
 echo ""
@@ -404,12 +415,12 @@ echo ""
 # Final message
 if [[ "$DRY_RUN" == true ]]; then
     echo -e "${BLUE}🔍 Dry run complete - no changes were made.${NC}"
-elif [ $total_errors -gt 0 ]; then
+elif [ $grand_total_errors -gt 0 ]; then
     echo -e "${RED}⚠️  Synchronization completed with errors.${NC}"
     echo -e "${YELLOW}   Please resolve the errors shown above.${NC}"
     exit 1
-elif [ $total_new -gt 0 ] || [ $total_updated -gt 0 ]; then
-    changes=$((total_new + total_updated))
+elif [ $grand_total_new -gt 0 ] || [ $grand_total_updated -gt 0 ]; then
+    changes=$((grand_total_new + grand_total_updated))
     echo -e "${GREEN}✨ Synchronization complete! $changes skill(s) synced across $installed_count platform(s).${NC}"
 else
     echo -e "${GREEN}✅ All skills already synchronized across $installed_count platform(s).${NC}"
@@ -421,7 +432,7 @@ echo -e "${BLUE}📍 Synced platforms:     $synced_platforms${NC}"
 echo ""
 
 # Helpful tips
-if [ $total_new -gt 0 ] && [[ "$DRY_RUN" == false ]]; then
+if [ $grand_total_new -gt 0 ] && [[ "$DRY_RUN" == false ]]; then
     echo -e "${YELLOW}💡 Tip: Restart your AI assistant to ensure new skills are detected.${NC}"
     echo ""
 fi

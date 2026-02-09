@@ -1,44 +1,41 @@
-#!/bin/bash
-
-# validate-skill-on-change.sh - Git hook to validate skills on commit
-# This script validates modified skills using scripts/quick_validate.py.
+#!/usr/bin/env bash
+#
+# validate-skill-on-change.sh - Git pre-commit hook for skill validation
+#
+# Validates modified skills using scripts/quick_validate.py.
 # If any skill validation fails, the commit is aborted.
 
-# Exit immediately if any command fails (enforces safer scripting)
-set -e
+set -euo pipefail
 
-# Path to the quick_validate.py script
-VALIDATOR="$(git rev-parse --show-toplevel)/scripts/quick_validate.py"
+# Resolve paths relative to the repository root
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+VALIDATOR="$REPO_ROOT/scripts/quick_validate.py"
 
 # Check if validator exists
 if [ ! -f "$VALIDATOR" ]; then
-  echo "Error: Validation script not found at $VALIDATOR. Make sure it exists."
-  exit 1
+    echo "Error: Validation script not found at $VALIDATOR."
+    exit 1
 fi
 
-# Get a list of staged skill directories from git diff
+# Get staged skill directories (one per line, safe for spaces)
 echo "Detecting staged skill changes..."
-CHANGED_SKILLS=$(git diff --cached --name-only | grep '^.*/SKILL.md$' | xargs -I {} dirname {})
+CHANGED_SKILLS="$(git diff --cached --name-only | grep '^.*/SKILL.md$' | while IFS= read -r f; do dirname "$f"; done)"
 
 # Exit quietly if no skills were modified
 if [ -z "$CHANGED_SKILLS" ]; then
-  echo "No skill changes detected. Skipping validation."
-  exit 0
+    echo "No skill changes detected. Skipping validation."
+    exit 0
 fi
 
 # Validate each detected skill directory
-VALIDATION_FAILED=false
-for SKILL in $CHANGED_SKILLS; do
-  echo "Validating skill: $SKILL"
-  python3 "$VALIDATOR" "$SKILL" || VALIDATION_FAILED=true
-  
-  if [ "$VALIDATION_FAILED" = true ]; then
-    echo "Validation failed for $SKILL. Please fix the issues and try again."
-    exit 1
-  fi
+while IFS= read -r SKILL; do
+    [ -n "$SKILL" ] || continue
+    echo "Validating skill: $SKILL"
+    if ! python3 "$VALIDATOR" "$SKILL"; then
+        echo "Validation failed for $SKILL. Please fix the issues and try again."
+        exit 1
+    fi
+done <<< "$CHANGED_SKILLS"
 
-done
-
-# If all validations passed
 echo "All skill validations passed. Proceeding with commit."
 exit 0

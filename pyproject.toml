@@ -15,4 +15,3 @@ dev = [
 addopts = "-p no:cacheprovider"
 
 [tool.ruff]
-cache-dir = "/dev/null"

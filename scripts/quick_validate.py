@@ -6,107 +6,128 @@ Validates SKILL.md frontmatter, naming conventions, and detects
 duplicate skill names across sibling directories.
 """
 
-import sys
+import argparse
 import re
+import sys
 import yaml
 from pathlib import Path
 
+# Ensure sibling modules are importable regardless of CWD
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-def validate_skill(skill_path):
-    """Validate a skill's structure and metadata."""
-    skill_path = Path(skill_path)
+from constants import (
+    ALLOWED_PROPERTIES,
+    DESCRIPTION_MAX_LENGTH,
+    NAME_MAX_LENGTH,
+    NAME_REGEX,
+    REQUIRED_FIELDS,
+)
 
-    # Check SKILL.md exists
-    skill_md = skill_path / "SKILL.md"
-    if not skill_md.exists():
-        return False, "SKILL.md not found"
 
-    # Read and validate frontmatter
-    content = skill_md.read_text()
+# ---------------------------------------------------------------------------
+# Pure validation helpers — each returns (ok: bool, error_message: str | None)
+# ---------------------------------------------------------------------------
+
+
+def parse_frontmatter(content: str) -> tuple[dict | None, str | None]:
+    """Extract and parse YAML frontmatter from SKILL.md content.
+
+    Tolerates both ``\\n`` and ``\\r\\n`` line endings.
+
+    Returns:
+        (frontmatter_dict, None) on success, or (None, error_message) on failure.
+    """
+    # Normalise to \n so the regex stays simple
+    content = content.replace("\r\n", "\n")
+
     if not content.startswith("---"):
-        return False, "No YAML frontmatter found"
+        return None, "No YAML frontmatter found"
 
-    # Extract frontmatter
     match = re.match(r"^---\n(.*?)\n---", content, re.DOTALL)
     if not match:
-        return False, "Invalid frontmatter format"
+        return None, "Invalid frontmatter format"
 
-    frontmatter_text = match.group(1)
-
-    # Parse YAML frontmatter
     try:
-        frontmatter = yaml.safe_load(frontmatter_text)
+        frontmatter = yaml.safe_load(match.group(1))
         if not isinstance(frontmatter, dict):
-            return False, "Frontmatter must be a YAML dictionary"
-    except yaml.YAMLError as e:
-        return False, f"Invalid YAML in frontmatter: {e}"
+            return None, "Frontmatter must be a YAML dictionary"
+        return frontmatter, None
+    except yaml.YAMLError as exc:
+        return None, f"Invalid YAML in frontmatter: {exc}"
 
-    # Define allowed properties
-    ALLOWED_PROPERTIES = {"name", "description", "license", "allowed-tools", "metadata"}
 
-    # Check for unexpected properties
-    unexpected_keys = set(frontmatter.keys()) - ALLOWED_PROPERTIES
-    if unexpected_keys:
+def validate_frontmatter_schema(frontmatter: dict) -> tuple[bool, str | None]:
+    """Check required keys and reject unexpected keys."""
+    unexpected = set(frontmatter.keys()) - ALLOWED_PROPERTIES
+    if unexpected:
         return False, (
-            f"Unexpected key(s) in SKILL.md frontmatter: {', '.join(sorted(unexpected_keys))}. "
+            f"Unexpected key(s) in SKILL.md frontmatter: {', '.join(sorted(unexpected))}. "
             f"Allowed properties are: {', '.join(sorted(ALLOWED_PROPERTIES))}"
         )
 
-    # Check required fields
-    if "name" not in frontmatter:
-        return False, "Missing 'name' in frontmatter"
-    if "description" not in frontmatter:
-        return False, "Missing 'description' in frontmatter"
+    for field in REQUIRED_FIELDS:
+        if field not in frontmatter:
+            return False, f"Missing '{field}' in frontmatter"
 
-    # Validate name
-    name = frontmatter.get("name", "")
+    return True, None
+
+
+def validate_name(name, dir_name: str | None = None) -> tuple[bool, str | None]:
+    """Validate the ``name`` field value.
+
+    If *dir_name* is supplied the name must also match the directory.
+    """
     if not isinstance(name, str):
         return False, f"Name must be a string, got {type(name).__name__}"
+
     name = name.strip()
     if not name:
         return False, "Name cannot be empty"
-    else:
-        if not re.match(r"^[a-z0-9-]+$", name):
-            return (
-                False,
-                f"Name '{name}' should be hyphen-case (lowercase letters, digits, and hyphens only)",
-            )
-        if name.startswith("-") or name.endswith("-") or "--" in name:
-            return (
-                False,
-                f"Name '{name}' cannot start/end with hyphen or contain consecutive hyphens",
-            )
-        if len(name) > 64:
-            return (
-                False,
-                f"Name is too long ({len(name)} characters). Maximum is 64 characters.",
-            )
 
-    # Validate description
-    description = frontmatter.get("description", "")
-    if not isinstance(description, str):
-        return False, f"Description must be a string, got {type(description).__name__}"
-    description = description.strip()
-    if not description:
-        return False, "Description cannot be empty"
-    else:
-        if "<" in description or ">" in description:
-            return False, "Description cannot contain angle brackets (< or >)"
-        if len(description) > 1024:
-            return (
-                False,
-                f"Description is too long ({len(description)} characters). Maximum is 1024 characters.",
-            )
+    if not NAME_REGEX.match(name):
+        return False, (
+            f"Name '{name}' should be hyphen-case "
+            "(lowercase letters, digits, and hyphens only)"
+        )
 
-    # Validate that name matches the directory name
-    dir_name = skill_path.resolve().name
-    if name != dir_name:
+    if len(name) > NAME_MAX_LENGTH:
+        return False, (
+            f"Name is too long ({len(name)} characters). "
+            f"Maximum is {NAME_MAX_LENGTH} characters."
+        )
+
+    if dir_name is not None and name != dir_name:
         return False, (
             f"Name '{name}' does not match directory name '{dir_name}'. "
             "The frontmatter 'name' must match the skill directory name exactly."
         )
 
-    # Duplicate name detection across sibling skill directories
+    return True, None
+
+
+def validate_description(description) -> tuple[bool, str | None]:
+    """Validate the ``description`` field value."""
+    if not isinstance(description, str):
+        return False, f"Description must be a string, got {type(description).__name__}"
+
+    description = description.strip()
+    if not description:
+        return False, "Description cannot be empty"
+
+    if "<" in description or ">" in description:
+        return False, "Description cannot contain angle brackets (< or >)"
+
+    if len(description) > DESCRIPTION_MAX_LENGTH:
+        return False, (
+            f"Description is too long ({len(description)} characters). "
+            f"Maximum is {DESCRIPTION_MAX_LENGTH} characters."
+        )
+
+    return True, None
+
+
+def check_duplicates(skill_path: Path, name: str) -> tuple[bool, str | None]:
+    """Detect duplicate ``name`` values across sibling skill directories."""
     skills_root = skill_path.parent
     for other_dir in skills_root.iterdir():
         if not other_dir.is_dir() or other_dir == skill_path:
@@ -114,25 +135,92 @@ def validate_skill(skill_path):
         other_skill_md = other_dir / "SKILL.md"
         if not other_skill_md.exists():
             continue
-        other_content = other_skill_md.read_text()
-        other_match = re.match(r"^---\n(.*?)\n---", other_content, re.DOTALL)
-        if not other_match:
-            continue
         try:
-            other_fm = yaml.safe_load(other_match.group(1))
-            if isinstance(other_fm, dict) and other_fm.get("name") == name:
-                return False, f"Duplicate skill name conflict with '{other_dir.name}'"
-        except yaml.YAMLError:
+            other_content = other_skill_md.read_text(encoding="utf-8")
+        except OSError:
             continue
+        other_fm, _ = parse_frontmatter(other_content)
+        if other_fm is None:
+            continue
+        if isinstance(other_fm, dict) and other_fm.get("name") == name:
+            return False, f"Duplicate skill name conflict with '{other_dir.name}'"
+
+    return True, None
+
+
+# ---------------------------------------------------------------------------
+# High-level entry point
+# ---------------------------------------------------------------------------
+
+
+def validate_skill(skill_path) -> tuple[bool, str]:
+    """Validate a skill's structure and metadata.
+
+    Returns:
+        (True, "Skill is valid!") or (False, error_message).
+    """
+    skill_path = Path(skill_path)
+
+    # Check SKILL.md exists
+    skill_md = skill_path / "SKILL.md"
+    if not skill_md.exists():
+        return False, "SKILL.md not found"
+
+    # Read content with error handling
+    try:
+        content = skill_md.read_text(encoding="utf-8")
+    except OSError as exc:
+        return False, f"Cannot read SKILL.md: {exc}"
+
+    # Parse frontmatter
+    frontmatter, err = parse_frontmatter(content)
+    if frontmatter is None:
+        return False, err  # type: ignore[return-value]
+
+    # Schema check
+    ok, err = validate_frontmatter_schema(frontmatter)
+    if not ok:
+        return False, err  # type: ignore[return-value]
+
+    # Name
+    dir_name = skill_path.resolve().name
+    ok, err = validate_name(frontmatter.get("name", ""), dir_name=dir_name)
+    if not ok:
+        return False, err  # type: ignore[return-value]
+
+    # Description
+    ok, err = validate_description(frontmatter.get("description", ""))
+    if not ok:
+        return False, err  # type: ignore[return-value]
+
+    # Duplicates
+    name = frontmatter["name"].strip()
+    ok, err = check_duplicates(skill_path, name)
+    if not ok:
+        return False, err  # type: ignore[return-value]
 
     return True, "Skill is valid!"
 
 
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python quick_validate.py <skill_directory>")
-        sys.exit(1)
+# ---------------------------------------------------------------------------
+# CLI
+# ---------------------------------------------------------------------------
 
-    valid, message = validate_skill(sys.argv[1])
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Validate a skill directory's SKILL.md frontmatter and structure.",
+    )
+    parser.add_argument(
+        "skill_directory",
+        help="Path to the skill directory to validate",
+    )
+    args = parser.parse_args()
+
+    valid, message = validate_skill(args.skill_directory)
     print(message)
     sys.exit(0 if valid else 1)
+
+
+if __name__ == "__main__":
+    main()
