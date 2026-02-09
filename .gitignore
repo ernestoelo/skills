@@ -16,6 +16,14 @@ validator-env/
 # AI session artifacts
 .opencode/
 
+# Build Artifacts
+*.egg-info/
+*.build/
+*.dist/
+*.log/
+*.coverage
+.coverage.*
+
 # OS files
 .DS_Store
 Thumbs.db

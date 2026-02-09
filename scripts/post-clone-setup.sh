@@ -46,7 +46,14 @@ else
     echo "Post-merge hook is already set up. Skipping."
 fi
 
-# Additional environment setup can be added here
+# Additional environment setup
+# Install dependencies automatically
+if command -v uv &>/dev/null; then
+    echo "Installing dependencies with uv..."
+    uv sync --group dev
+else
+    echo "uv is not installed. Skipping dependency installation."
+fi
 
 echo ""
 echo "Repository setup complete. You are ready to work on this project."
