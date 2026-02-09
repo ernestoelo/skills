@@ -1,6 +1,5 @@
 ---
----
-name: skill-architect
+name: architect
 description: Expert AI Generator for VS Code Skills & Agents. Scaffolds valid file structures based on official Anthropic templates and VS Code specifications.
 ---
 
