@@ -13,6 +13,9 @@ validator-env/
 .pytest_cache/
 .ruff_cache/
 
+# AI session artifacts
+.opencode/
+
 # OS files
 .DS_Store
 Thumbs.db
