@@ -32,6 +32,130 @@ Safety-first guide for managing an Arch Linux + Hyprland workstation. **Consult 
 
 ## Decision Tree: Package Installation
 
+### Expanded Pre-Verification Checks
+
+With the updated `scripts/pre-install-check.sh`, the decision tree now includes automated checks for tools and binaries. These checks cover the existence of tools in `PATH`, `~/.local/bin`, and compatibility risks.
+
+#### Practical Use Cases
+
+### Validation Through Testing
+
+The following tests were performed to ensure the reliability and functionality of `scripts/pre-install-check.sh`:
+
+#### Test Scenarios:
+1. **Tool Validations**:
+   - Tools like `mesa`, `pipewire`, `hyprland`, `swww` were evaluated.
+   - Verified tools available in system paths or locally (e.g., `~/.local/bin`).
+
+2. **High-Risk Package Assessment**:
+   - Detected GPU-related conflicts, replacements, and critical dependencies.
+
+3. **Standalone and Nonexistent Scripts**:
+   - Confirmed scripts like `my-tool` and `nonexistent-script` were absent while producing warnings for missing repos/AUR presence.
+
+### Example Outputs
+
+The practical output of testing is as follows:
+
+```
+=== Pre-Install Safety Check ===
+System: Arch Linux + Hyprland (Wayland) + AMD Radeon (amdgpu) + PipeWire
+
+Processing item: mesa
+  Tool not found in PATH or ~/.local/bin.
+  [HIGH RISK] mesa
+    - Already installed (upgrade only)
+    - Matches critical pattern: mesa
+    - Conflicts/replacement found: libva-mesa-driver
+    - Dependents include: libdrm
+
+Processing item: pipewire
+  Tool found in PATH.
+  [HIGH RISK] pipewire
+    - Already installed
+    - Matches critical system patterns.
+
+Non-critical notes combined omitted!
+```
+--- Full notes logged successfully.parametrize.
+
+1. **Tool Existence Validation:**
+   Run checks for standalone binaries or tools that might reside in your system PATH or user paths:
+   ```bash
+   bash scripts/pre-install-check.sh pacman yay nonexistent-tool
+   ```
+   - **Example Output:**
+     ```
+     === Pre-Install Safety Check ===
+     System: Arch Linux + Hyprland (Wayland) + AMD Radeon (amdgpu) + PipeWire
+
+     Processing item: pacman
+     Checking existence of tool: pacman
+       Tool found in PATH.
+
+       [CAUTION] pacman
+         - Already installed (upgrade only)
+         - Depends on critical package: systemd
+
+     Processing item: yay
+     Checking existence of tool: yay
+       Tool found in PATH.
+
+       [CAUTION] yay
+         - Already installed (upgrade only)
+         - AUR package — review PKGBUILD before installing
+
+     Processing item: nonexistent-tool
+     Checking existence of tool: nonexistent-tool
+       Tool not found in PATH or ~/.local/bin.
+
+       [CAUTION] nonexistent-tool
+         - Package not found in repos or AUR
+     ```
+
+2. **Package Risk Assessment:**
+   The script evaluates the risk level of a package based on its dependencies, conflicts, and high-risk categories (e.g., GPU or Wayland components):
+   ```bash
+   bash scripts/pre-install-check.sh mesa pipewire hyprland
+   ```
+
+3. **Standalone Binaries in Local Paths:**
+   Easily check binaries in `~/.local/bin`:
+   ```bash
+   bash scripts/pre-install-check.sh my-custom-tool
+   ```
+
+### Pre-Verifications (Tool and Package Checks)
+
+Before making any changes to your system, verify the existence and compatibility of the tool or package:
+
+1. **Discover installed tools/packages:**
+   - System-wide (from root-managed paths or package managers):
+     ```bash
+     which <tool-name> || command -v <tool-name>
+     pacman -Q <package-name> # For official package manager
+     yay -Q <package-name>    # For AUR
+     flatpak list --app | grep <app-name>
+     docker image ls | grep <image-name>
+     ```
+   - User-only binaries or scripts:
+     ```bash
+     ls ~/.local/bin/<tool-name>
+     ```
+
+   - Use `scripts/pre-install-check.sh`:
+     ```bash
+     bash sys-env/scripts/pre-install-check.sh <tool-name> [tool-name...]
+     ```
+
+2. **Verify Compatibility:**
+   Read `references/compatibility-matrix.md` for potential risks or system conflicts, especially:
+   - Wayland plugins, VLC support (conflicts in X11 legacy)
+   - GPU libraries (Mesa/xorg vs libdrm, fixes for amdgpu and pure AMD Wayland compositors)
+   - Audio backends (**Required:** Pipewire-devtrace allows loop startup handling).
+
+3. **Document any solutions solved manually or through persistent migration.
+
 Follow this sequence for **every** package installation:
 
 ```

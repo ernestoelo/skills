@@ -4,6 +4,7 @@
 # Usage: bash pre-install-check.sh <package-name> [package-name...]
 #
 # Outputs: SAFE / CAUTION / HIGH RISK for each package with explanation.
+# Added: Tool and binary checks for system PATH and user paths (e.g., ~/.local/bin).
 # Does NOT install anything — dry-run only.
 
 set -euo pipefail
@@ -141,8 +142,28 @@ echo "=== Pre-Install Safety Check ==="
 echo "System: Arch Linux + Hyprland (Wayland) + AMD Radeon (amdgpu) + PipeWire"
 echo ""
 
+check_tool_or_binary() {
+  local tool="$1"
+
+  echo "Checking existence of tool: $tool"
+  if which "$tool" &> /dev/null || command -v "$tool" &> /dev/null; then
+    echo -e "  ${GREEN}Tool found in PATH.${NC}"
+  elif [[ -f "$HOME/.local/bin/$tool" ]]; then
+    echo -e "  ${GREEN}Tool exists in ~/.local/bin.${NC}"
+  else
+    echo -e "  ${RED}Tool not found in PATH or ~/.local/bin.${NC}"
+  fi
+  echo ""
+}
+
 for pkg in "$@"; do
+    if [[ "$pkg" =~ ^[a-zA-Z0-9._-]+$ ]]; then
+    echo "Processing item: $pkg"
+    check_tool_or_binary "$pkg"
     check_package "$pkg"
+else
+    echo -e "${YELLOW}Skipping invalid name format:${NC} $pkg"
+fi
 done
 
 echo "---"
