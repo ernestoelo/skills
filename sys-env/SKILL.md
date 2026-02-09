@@ -109,14 +109,10 @@ Follow this sequence for **every** package installation:
 
 **Structure:** `~/dotfiles/<app>/.config/<app>/`
 
-```
-~/dotfiles/
-├── hypr/.config/hypr/          → symlinked to ~/.config/hypr/
-├── waybar/.config/waybar/      → symlinked to ~/.config/waybar/
-├── kitty/.config/kitty/        → symlinked to ~/.config/kitty/
-├── zsh/.zshrc                  → symlinked to ~/.zshrc
-├── starship/.config/starship.toml
-└── ...
+Discover managed apps at runtime:
+```bash
+ls ~/dotfiles/          # list all Stow packages
+stow -n -v <app> 2>&1  # dry-run to preview symlink targets
 ```
 
 **Workflow:**
@@ -135,18 +131,11 @@ Follow this sequence for **every** package installation:
 
 Location: `~/.config/hypr/scripts/` (Stow-managed via `~/dotfiles/hypr/`)
 
-| Script                   | Keybind         | Purpose                          |
-|--------------------------|-----------------|----------------------------------|
-| `cycle_wallpaper.sh`     | SUPER+W         | Cycle wallpapers (swww)          |
-| `rotate_window.sh`       | SUPER+R         | Rotate window layout             |
-| `screenshot_region.sh`   | SUPER+Shift+S   | Region screenshot                |
-| `screenshot_window.sh`   | SUPER+Print     | Window screenshot                |
-| `toggle_dock.sh`         | SUPER+D         | Toggle nwg-dock                  |
-| `toggle_drawer.sh`       | SUPER+A         | Toggle nwg-drawer                |
-| `toggle_glava.sh`        | SUPER+G         | Toggle Glava visualizer          |
-| `toggle_opacity.sh`      | SUPER+O         | Toggle window opacity            |
-| `toggle_opencode.sh`     | SUPER+C         | Toggle OpenCode terminal         |
-| `toggle_waybar.sh`       | SUPER+B         | Toggle Waybar visibility         |
+Discover scripts and keybinds at runtime:
+```bash
+ls ~/.config/hypr/scripts/                  # available scripts
+grep '^bind' ~/.config/hypr/hyprland.conf   # keybind definitions
+```
 
 When modifying scripts:
 - Test changes in isolation before committing
@@ -157,14 +146,16 @@ When modifying scripts:
 
 **User services** (managed per-user, no sudo):
 ```bash
-systemctl --user status waybar pipewire wireplumber swaync
+systemctl --user list-unit-files --state=enabled   # discover active user services
+systemctl --user status <service>
 systemctl --user restart <service>
 journalctl --user -u <service>   # check logs
 ```
 
 **System services** (require sudo):
 ```bash
-sudo systemctl status docker NetworkManager bluetooth
+systemctl list-unit-files --state=enabled          # discover active system services
+sudo systemctl status <service>
 sudo systemctl enable/start <service>
 ```
 
@@ -179,7 +170,7 @@ sudo systemctl enable/start <service>
 ### References (load into context as needed)
 
 - **`references/hardware-profile.md`** — Read for driver questions, hardware capabilities, kernel module info
-- **`references/software-stack.md`** — Read for "is X installed?", package inventory, service list
+- **`references/software-stack.md`** — Stack-defining software + runtime query commands for discovering installed packages and services
 - **`references/compatibility-matrix.md`** — Read before ANY high-risk operation (GPU, audio, Wayland components)
 - **`references/remote-targets.md`** — Read when working with Lab PC, ZedBox, or Jetson targets
 

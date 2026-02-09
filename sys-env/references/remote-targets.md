@@ -1,5 +1,7 @@
 # Remote Targets
 
+> **Last verified: 2025-02-09** — IPs, OS versions, and SDK versions below may have changed. Verify via SSH if accuracy is critical.
+
 Remote machines accessed via SSH. These have **completely different** package managers, OSes, and hardware constraints from the local Arch workstation.
 
 ## Network Topology
