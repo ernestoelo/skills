@@ -1,224 +1,361 @@
-# Skills Repository
+# Skills & Agents Repository
 
-Este repositorio contiene skills reutilizables para **GitHub Copilot** y **OpenCode**.
+Personal collection of reusable skills and agents for AI coding assistants across multiple platforms.
 
-## 📚 Skills Disponibles
+## 🎯 Overview
 
-| Skill | Descripción |
-|-------|-------------|
-| **architect** | Generador experto de estructuras para VS Code Skills & Agents |
-| **dev-workflow** | Estándares oficiales de desarrollo y workflows (Git, AI/ML) |
-| **mcp-builder** | Guía completa para crear servidores MCP (Model Context Protocol) |
-| **pdf** | Procesamiento completo de PDFs (leer, crear, modificar, OCR) |
-| **web-scraper** | Extracción y limpieza de contenido web a Markdown |
+This repository contains modular skills and agents that extend AI assistants with specialized knowledge, workflows, and tools. Skills are designed to be **platform-agnostic** and work across:
 
-## 🔧 Instalación
+- **GitHub Copilot** (VSCode/Visual Studio)
+- **OpenCode** (Terminal/Desktop/IDE)
+- **Anthropic Claude** (Desktop/Web)
+- **Cursor** (IDE)
+- Any AI assistant supporting the standard skills format
 
-### Para GitHub Copilot
+## 📚 Available Skills
 
-Las skills ya están en la ubicación correcta: `~/.copilot/skills/`
+| Skill | Description | Platforms |
+|-------|-------------|-----------|
+| **architect** | Scaffolds skills & agents following official standards | All |
+| **dev-workflow** | Development standards and Git workflows | All |
+| **mcp-builder** | Guide for creating Model Context Protocol servers | All |
+| **pdf** | Complete PDF processing (read, create, modify, OCR) | All |
+| **web-scraper** | Web content extraction and conversion to Markdown | All |
 
-### Para OpenCode
+## 🚀 Quick Start
 
-Este repositorio se sincroniza con OpenCode usando **enlaces simbólicos (symlinks)**.
+### Prerequisites
 
-#### Sincronización Automática
+- Git installed
+- AI assistant (GitHub Copilot, OpenCode, Cursor, etc.)
+- Platform-specific configuration (see Platform Setup below)
 
-Ejecuta el script de sincronización para crear/actualizar todos los symlinks:
+### Clone Repository
 
 ```bash
-cd ~/.copilot/skills
+# Clone to standard location
+git clone https://github.com/ernestoelo/skills.git ~/.copilot/skills
+
+# Or clone to custom location
+git clone https://github.com/ernestoelo/skills.git ~/my-skills
+```
+
+### Platform Setup
+
+<details>
+<summary><b>GitHub Copilot (VSCode/Visual Studio)</b></summary>
+
+Skills should be located at `~/.copilot/skills/`
+
+```bash
+# If you cloned to the standard location, you're done!
+# Otherwise, create a symlink:
+ln -s ~/path/to/your/skills ~/.copilot/skills
+```
+
+</details>
+
+<details>
+<summary><b>OpenCode</b></summary>
+
+OpenCode reads skills from `~/.config/opencode/skills/`. Use the sync script:
+
+```bash
+cd ~/.copilot/skills  # or your skills directory
 ./sync-to-opencode.sh
 ```
 
-Este script:
-- ✅ Detecta automáticamente todas las skills en el repositorio
-- ✅ Crea symlinks en `~/.config/opencode/skills/`
-- ✅ Verifica que los symlinks existentes apunten correctamente
-- ✅ Informa qué skills son nuevas y cuáles ya estaban sincronizadas
+**Automatic Sync (Recommended):**
 
-#### Sincronización Manual (skill individual)
-
-Si prefieres agregar una skill específica manualmente:
+This repository includes a git hook that automatically syncs after `git pull`:
 
 ```bash
-ln -s ~/.copilot/skills/nombre-skill ~/.config/opencode/skills/nombre-skill
+cd ~/.copilot/skills
+git pull  # Skills automatically sync to OpenCode
 ```
 
-## 🔄 Workflow de Desarrollo
+</details>
 
-### Agregar una Nueva Skill
+<details>
+<summary><b>Anthropic Claude Desktop</b></summary>
 
-1. **Crear la estructura de la skill:**
-   ```bash
-   cd ~/.copilot/skills
-   mkdir nueva-skill
-   cd nueva-skill
-   ```
+Skills should be located at `~/.claude/skills/`
 
-2. **Crear SKILL.md con frontmatter válido:**
-   ```markdown
-   ---
-   name: nueva-skill
-   description: Descripción breve de la skill (1-1024 caracteres)
-   ---
-   
-   # Contenido de la skill...
-   ```
+```bash
+# Create symlink from your skills directory
+ln -s ~/.copilot/skills ~/.claude/skills
+```
 
-3. **Agregar archivos de soporte (opcional):**
-   ```bash
-   mkdir scripts      # Scripts ejecutables (Python, Bash, etc.)
-   mkdir references   # Documentación, APIs, guías
-   mkdir knowledge    # Templates, specs, etc.
-   ```
+</details>
 
-4. **Hacer commit y push:**
-   ```bash
-   git add nueva-skill/
-   git commit -m "feat: add nueva-skill"
-   git push
-   ```
+<details>
+<summary><b>Cursor</b></summary>
 
-5. **Sincronizar con OpenCode:**
-   ```bash
-   ./sync-to-opencode.sh
-   ```
+Skills should be located at `~/.cursor/skills/` (verify in Cursor settings)
 
-### Actualizar Skills Existentes
+```bash
+# Create symlink from your skills directory
+ln -s ~/.copilot/skills ~/.cursor/skills
+```
 
-1. **Hacer cambios en cualquier skill:**
-   ```bash
-   cd ~/.copilot/skills/nombre-skill
-   # editar archivos
-   ```
+</details>
 
-2. **Commit y push:**
-   ```bash
-   git add .
-   git commit -m "fix: descripción del cambio"
-   git push
-   ```
+## 📖 Usage
 
-3. **Los cambios son automáticos en OpenCode** (gracias a los symlinks)
+### Using Skills
 
-### Sincronizar desde GitHub
+Skills are automatically available to your AI assistant. Simply mention what you need:
 
-Si alguien más agregó skills, o trabajas desde otra máquina:
+```
+"I need help processing a PDF"  → Loads pdf skill
+"Help me create an MCP server"  → Loads mcp-builder skill
+"How should I structure my project?" → Loads dev-workflow skill
+```
 
-#### Opción 1: Sincronización Automática (Configurado)
+### Creating New Skills
 
-Este repositorio tiene un **git hook** que sincroniza automáticamente después de cada `git pull`:
+Use the **architect** skill to scaffold new skills:
+
+```
+"Create a new skill for database migrations"
+"I need a skill to work with Docker containers"
+```
+
+The architect skill will:
+1. Analyze your requirements
+2. Generate proper folder structure
+3. Create SKILL.md with valid frontmatter
+4. Set up scripts/, references/, and assets/ directories
+5. Guide you through implementation
+
+**Manual Creation:**
+
+See [docs/creating-skills.md](docs/creating-skills.md) for detailed guidance.
+
+## 🔄 Workflow
+
+### Adding a New Skill
+
+**Option 1: Use the architect skill (Recommended)**
+
+```
+Ask your AI assistant: "Create a new skill called my-new-skill for [purpose]"
+```
+
+**Option 2: Manual creation**
+
+```bash
+cd ~/.copilot/skills
+mkdir my-new-skill
+cd my-new-skill
+
+# Create SKILL.md with frontmatter
+cat > SKILL.md << 'EOF'
+---
+name: my-new-skill
+description: Brief description of what the skill does and when to use it
+---
+
+# Skill Content
+
+Instructions for the AI...
+EOF
+
+# Create resource directories as needed
+mkdir -p scripts references assets
+
+# Commit and push
+git add my-new-skill/
+git commit -m "feat: add my-new-skill"
+git push
+```
+
+**For OpenCode users:**
+
+```bash
+# Sync new skill to OpenCode
+./sync-to-opencode.sh
+
+# Or if you have the git hook configured, just:
+git pull  # Auto-syncs
+```
+
+### Updating Existing Skills
+
+```bash
+cd ~/.copilot/skills/skill-name
+# Edit files
+git add .
+git commit -m "fix: description of changes"
+git push
+```
+
+Changes are immediately available in GitHub Copilot and Cursor (they read files directly). For OpenCode, changes are visible after `git pull` (with auto-sync).
+
+### Syncing from GitHub
+
+When someone else adds skills, or you work from another machine:
 
 ```bash
 cd ~/.copilot/skills
 git pull
-# ✨ La sincronización se ejecuta automáticamente
+
+# For OpenCode users (if auto-sync not configured):
+./sync-to-opencode.sh
 ```
 
-También puedes usar el alias `sync-skills`:
+## 📋 Skill Requirements
+
+For a skill to work across all platforms:
+
+### Frontmatter (Required)
+
+```yaml
+---
+name: skill-name         # Must match directory name
+description: Clear description of what the skill does and when to use it (1-1024 chars)
+license: Optional        # e.g., MIT, Proprietary
+---
+```
+
+### Naming Conventions
+
+**Skill names** must follow the pattern: `^[a-z0-9]+(-[a-z0-9]+)*$`
+
+✅ Valid: `pdf`, `web-scraper`, `mcp-builder`, `dev-workflow`
+❌ Invalid: `PDF`, `web_scraper`, `mcp--builder`, `-myskill`
+
+### Directory Structure
+
+```
+skill-name/
+├── SKILL.md              # Required: AI instructions
+├── scripts/              # Optional: Executable code
+├── references/           # Optional: Documentation
+└── assets/               # Optional: Templates, files
+```
+
+**Do NOT create:**
+- README.md (redundant with SKILL.md)
+- INSTALL.md
+- CHANGELOG.md
+- Other auxiliary documentation
+
+## 🛠️ Tools & Scripts
+
+### sync-to-opencode.sh
+
+Syncs all skills to OpenCode automatically:
 
 ```bash
-cd ~/.copilot/skills
-git sync-skills  # Hace pull y sincroniza en un solo comando
+./sync-to-opencode.sh
 ```
 
-#### Opción 2: Sincronización Manual
+**Features:**
+- Detects all skills automatically
+- Creates symlinks for new skills
+- Verifies existing symlinks
+- Shows detailed report
+
+**Auto-sync with git hook:**
+
+The repository includes `.git/hooks/post-merge` that runs this script automatically after `git pull`.
+
+### Git Aliases
 
 ```bash
-cd ~/.copilot/skills
-git pull
-./sync-to-opencode.sh  # Sincroniza las nuevas skills con OpenCode
+# Combines pull + sync in one command
+git sync-skills
 ```
 
-## 📋 Requisitos para Skills Válidas
+## 📁 Repository Structure
 
-Para que una skill sea compatible con OpenCode:
-
-### Frontmatter YAML
-- ✅ Campo `name` (requerido): debe coincidir con el nombre del directorio
-- ✅ Campo `description` (requerido): 1-1024 caracteres
-- ✅ Campo `license` (opcional)
-- ✅ Campo `compatibility` (opcional)
-- ✅ Campo `metadata` (opcional)
-
-### Nombre de la Skill
-Debe cumplir con el patrón: `^[a-z0-9]+(-[a-z0-9]+)*$`
-
-- ✅ Solo minúsculas
-- ✅ Números permitidos
-- ✅ Separadores con guión simple `-`
-- ❌ No puede empezar/terminar con `-`
-- ❌ No puede tener `--` consecutivos
-
-Ejemplos válidos: `pdf`, `web-scraper`, `mcp-builder`, `dev-workflow`
-
-### Estructura Recomendada
 ```
-nombre-skill/
-├── SKILL.md              (Requerido: Instrucciones para el AI)
-├── scripts/              (Opcional: Código ejecutable)
-├── references/           (Opcional: Documentación)
-└── knowledge/            (Opcional: Templates, specs)
+~/.copilot/skills/          # Repository root
+├── README.md               # This file
+├── sync-to-opencode.sh     # OpenCode sync script
+├── .git/
+│   └── hooks/
+│       └── post-merge      # Auto-sync git hook
+│
+├── architect/              # Skill scaffolding tool
+│   ├── SKILL.md
+│   ├── knowledge/
+│   │   ├── specs/          # Platform specifications
+│   │   └── templates/
+│   │       └── skill-creator/  # Anthropic's reference template
+│   └── scripts/
+│
+├── dev-workflow/           # Development standards
+│   ├── SKILL.md
+│   └── guides/
+│
+├── mcp-builder/            # MCP server creation guide
+│   ├── SKILL.md
+│   ├── reference/
+│   └── scripts/
+│
+├── pdf/                    # PDF processing
+│   ├── SKILL.md
+│   └── scripts/
+│
+└── web-scraper/            # Web content extraction
+    ├── SKILL.md
+    └── scripts/
 ```
 
-## 🎯 Ventajas de esta Configuración
+## 🎯 Benefits
 
-✅ **Un solo repositorio Git**
-- Mantén todas tus skills en un solo lugar
-- Control de versiones centralizado
+✅ **Single source of truth** - One repository for all platforms
+✅ **Version controlled** - Full git history and collaboration
+✅ **Cross-platform** - Works with multiple AI assistants
+✅ **Modular** - Each skill is self-contained
+✅ **Extensible** - Easy to add new skills
+✅ **Well-documented** - Clear structure and guidelines
 
-✅ **Compatible con ambos sistemas**
-- GitHub Copilot: usa directamente `~/.copilot/skills/`
-- OpenCode: usa symlinks desde `~/.config/opencode/skills/`
+## 🔗 Resources
 
-✅ **Sincronización automática**
-- Cambios en el repositorio se reflejan en ambos sistemas
-- No duplicar archivos ni esfuerzo
-
-✅ **Fácil de mantener**
-- Script `sync-to-opencode.sh` para sincronización rápida
-- Nuevas skills detectadas automáticamente
-
-## 🔗 Enlaces
-
-- **Repositorio:** https://github.com/ernestoelo/skills
+- **Repository:** https://github.com/ernestoelo/skills
+- **Anthropic Skills Guide:** See `architect/knowledge/templates/skill-creator/SKILL.md`
 - **OpenCode Docs:** https://opencode.ai/docs/skills
 - **GitHub Copilot Docs:** https://docs.github.com/copilot
 
-## 🤖 Automatización
+## 🤖 Platform-Specific Notes
 
-Este repositorio incluye automatización para mantener las skills sincronizadas:
+### OpenCode
 
-### Git Hook (post-merge)
+- Skills loaded from `~/.config/opencode/skills/` (symlinks to this repo)
+- Use `sync-to-opencode.sh` to sync new skills
+- Git hook provides automatic sync after `git pull`
+- Skills listed in skill tool description
 
-El hook `.git/hooks/post-merge` se ejecuta automáticamente después de cada `git pull` o `git merge`:
+### GitHub Copilot
 
-```bash
-# Después de hacer git pull, automáticamente:
-# 1. Detecta nuevas skills
-# 2. Crea symlinks en ~/.config/opencode/skills/
-# 3. Muestra reporte de sincronización
-```
+- Skills loaded directly from `~/.copilot/skills/`
+- No sync needed (this is the source directory)
+- Works in VSCode and Visual Studio
 
-### Alias de Git
+### Anthropic Claude
 
-El alias `sync-skills` combina pull y sincronización:
+- Skills loaded from `~/.claude/skills/`
+- Create symlink to this repository
+- Follow Anthropic's skill specification
 
-```bash
-cd ~/.copilot/skills
-git sync-skills  # Equivale a: git pull && ./sync-to-opencode.sh
-```
+### Cursor
 
-Configuración del alias:
-```bash
-git config alias.sync-skills '!f() { git pull "$@" && ./sync-to-opencode.sh; }; f'
-```
+- Skills loaded from `~/.cursor/skills/` (verify in settings)
+- Create symlink to this repository
 
-## 📝 Notas
+## 📝 Contributing
 
-- Este repositorio está sincronizado entre GitHub Copilot y OpenCode
-- Los symlinks mantienen ambos sistemas actualizados automáticamente
-- El git hook `post-merge` sincroniza automáticamente después de `git pull`
-- También puedes ejecutar `./sync-to-opencode.sh` manualmente cuando quieras
+When adding or updating skills:
 
+1. Follow the skill requirements above
+2. Test the skill with your AI assistant
+3. Update this README if adding a new skill
+4. Use conventional commits (`feat:`, `fix:`, `docs:`)
+5. Push to GitHub for others to use
+
+## 📄 License
+
+Individual skills may have different licenses (see LICENSE.txt in each skill directory). Default is for personal use.

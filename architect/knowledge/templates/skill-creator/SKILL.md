@@ -286,6 +286,7 @@ Consult these helpful guides based on your skill's needs:
 
 - **Multi-step processes**: See references/workflows.md for sequential workflows and conditional logic
 - **Specific output formats or quality standards**: See references/output-patterns.md for template and example patterns
+- **Platform distribution and sync**: See references/platform-sync.md for git repository setup and cross-platform access
 
 These files contain established best practices for effective skill design.
 
@@ -343,6 +344,24 @@ The packaging script will:
 2. **Package** the skill if validation passes, creating a .skill file named after the skill (e.g., `my-skill.skill`) that includes all files and maintains the proper directory structure for distribution. The .skill file is a zip file with a .skill extension.
 
 If validation fails, the script will report the errors and exit without creating a package. Fix any validation errors and run the packaging command again.
+
+#### Platform Distribution
+
+If working with a git repository and multiple AI platforms:
+
+1. **Commit the skill to git:**
+   ```bash
+   git add skill-name/
+   git commit -m "feat: add skill-name"
+   git push
+   ```
+
+2. **Sync to platforms:**
+   - **GitHub Copilot**: No action needed (reads directly from repository)
+   - **OpenCode**: Run `sync-to-opencode.sh` or `git pull` (if git hook configured)
+   - **Claude/Cursor**: No action needed (if using symlinks to repository)
+
+See `references/platform-sync.md` for comprehensive platform distribution guide.
 
 ### Step 6: Iterate
 
