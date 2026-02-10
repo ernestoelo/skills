@@ -23,6 +23,7 @@ python3 ../scripts/init_skill.py <skill-name> --path <output-dir>
 ```
 - Generates a skill folder with `SKILL.md` and template resources.
 - Naming follows kebab-case conventions (e.g., `pdf-processor`).
+- **Post-Scaffold Step:** Run `./scripts/sync-skills.sh` to sync the new skill to AI platforms (e.g., OpenCode). Restart your assistant if needed for detection.
 
 #### Validate and Package
 ```bash
