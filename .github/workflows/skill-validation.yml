@@ -15,17 +15,21 @@ jobs:
 
     steps:
     - name: Check out repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.x'
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v6
 
     - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
+      run: uv sync --group dev
 
     - name: Validate SKILL.md
       run: |
-        python3 scripts/quick_validate.py "$skill_dir"
+        CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha || 'HEAD~1' }})
+        for file in $CHANGED_FILES; do
+          if [[ $file == */SKILL.md ]]; then
+            skill_dir=$(dirname "$file")
+            echo "Validating: $skill_dir"
+            uv run python3 scripts/quick_validate.py "$skill_dir" || exit 1
+          fi
+        done
