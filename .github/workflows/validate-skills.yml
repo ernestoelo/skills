@@ -34,7 +34,7 @@ jobs:
             if [ -f "${skill_dir}SKILL.md" ]; then
               echo "Validating: ${skill_dir%/}"
               chmod +x $GITHUB_WORKSPACE/scripts/quick_validate.py
-               uv run python3 $GITHUB_WORKSPACE/scripts/quick_validate.py "$skill_dir" || EXIT_CODE=1
+               python3 $GITHUB_WORKSPACE/scripts/quick_validate.py || EXIT_CODE=1
             fi
           done
           exit $EXIT_CODE
