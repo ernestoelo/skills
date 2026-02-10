@@ -1,5 +1,8 @@
 # Skills & Agents Repository
 
+[![Validate Skills](https://github.com/ernestoelo/skills/actions/workflows/validate-skills.yml/badge.svg)](https://github.com/ernestoelo/skills/actions/workflows/validate-skills.yml)
+[![Skill Validation CI](https://github.com/ernestoelo/skills/actions/workflows/skill-validation.yml/badge.svg)](https://github.com/ernestoelo/skills/actions/workflows/skill-validation.yml)
+
 Personal collection of reusable skills and agents for AI coding assistants across multiple platforms.
 
 ## Overview
@@ -240,6 +243,11 @@ uv run pytest tests/ -v
 ### CI/CD
 
 GitHub Actions automatically validates all skills and runs tests on push/PR to `main` and `develop`.
+
+- **Validate Skills** workflow: Runs full validation, Ruff checks, and tests using `uv sync --group dev`.
+- **Skill Validation CI** workflow: Validates only changed SKILL.md files on PR/push, using `uv sync` and git diff for efficiency.
+
+✅ CI is fully operational and validated (Feb 2026) - all workflows pass consistently.
 
 ## Repository Structure
 

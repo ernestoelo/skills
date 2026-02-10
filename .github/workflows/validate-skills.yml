@@ -13,7 +13,6 @@ jobs:
       matrix:
         python-version: [3.12]
     name: Validate & Test
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -27,14 +26,14 @@ jobs:
       - name: Validate all skills
         run: |
           EXIT_CODE=0
-           for skill_dir in */; do
-             if [[ $skill_dir == tests/* ]]; then
-               continue
-             fi
+          chmod +x scripts/quick_validate.py
+          for skill_dir in */; do
+            if [[ $skill_dir == tests/* ]]; then
+              continue
+            fi
             if [ -f "${skill_dir}SKILL.md" ]; then
-              echo "Validating: ${skill_dir%/}"
-              chmod +x $GITHUB_WORKSPACE/scripts/quick_validate.py
-               uv run python3 $GITHUB_WORKSPACE/scripts/quick_validate.py "$skill_dir" || EXIT_CODE=1
+              echo "Validando: ${skill_dir%/}"
+              uv run python3 scripts/quick_validate.py "$skill_dir" || EXIT_CODE=1
             fi
           done
           exit $EXIT_CODE
@@ -47,3 +46,4 @@ jobs:
 
       - name: Run tests
         run: uv run pytest tests/ -v
+
