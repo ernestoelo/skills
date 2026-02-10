@@ -241,6 +241,9 @@ uv run pytest tests/ -v
 
 GitHub Actions automatically validates all skills and runs tests on push/PR to `main` and `develop`.
 
+- **Validate Skills** workflow: Runs full validation, Ruff checks, and tests using `uv sync --group dev`.
+- **Skill Validation CI** workflow: Validates only changed SKILL.md files on PR/push, using `uv sync` and git diff for efficiency.
+
 ## Repository Structure
 
 ```
