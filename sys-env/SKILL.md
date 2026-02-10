@@ -1,301 +1,51 @@
 ---
 name: sys-env
-description: "System environment manager for Arch Linux + Hyprland + Wayland workstation. Consult this skill BEFORE installing packages, modifying drivers, changing environment variables, editing dotfiles, or configuring system services. Covers package safety checks, hardware compatibility (AMD Ryzen APU with Radeon integrated graphics), Wayland-specific requirements, PipeWire audio stack, dotfiles via GNU Stow, and remote target awareness (Jetson/ZedBox via SSH). Use when the user mentions pacman, yay, system packages, drivers, mesa, vulkan, environment variables, dotfiles, stow, hyprland config, waybar, pipewire, or system services."
+description: System environment manager for Arch Linux with Hyprland + Wayland. This skill ensures safe and optimal configuration for package management, drivers, services, and hardware compatibility.
+author: OpenCode Project Team
+version: 1.2.0
 ---
 
-# System Environment Manager
+# System Environment Manager Skill Guide
 
-Safety-first guide for managing an Arch Linux + Hyprland workstation. **Consult this skill before any system modification.**
+## Description
+The `sys-env` skill is designed for managing a Wayland-based Arch Linux workstation with Hyprland as the compositor. It ensures compatibility with hardware (AMD Radeon), services (PipeWire, systemd), and package managers (pacman, yay). Always consult this skill for best practices and safety checks when modifying system configurations.
 
-## Core Safety Rule
+## When to Use the Skill
+- **Installing or upgrading packages:** Safety checks for conflicts using pre-install scripts.
+- **Modifying environment variables:** Guidance on scope and compatibility.
+- **Managing dotfiles:** Best practices for GNU Stow and version control.
+- **Editing system services:** Safely restarting critical services.
+- **Working remotely:** Special considerations for Jetson/ZedBox with SSH or local setups.
 
-**ALWAYS** check this skill before:
-- Installing or removing packages (pacman, yay, uv, docker)
-- Modifying GPU/display drivers or libraries
-- Changing environment variables
-- Editing system configs or dotfiles
-- Enabling/disabling system services
-- Adding kernel parameters or modules
+## Usage Guide
+### Package Safety Verification
+#### Check Package Compatibility
+```bash
+bash scripts/pre-install-check.sh mesa pipewire hyprland
+```
+- Validates the presence of tools and evaluates risk levels (e.g., GPU or audio stack).
 
-## Quick Reference
-
-| Component       | Value                              | Constraint                              |
-|-----------------|------------------------------------|-----------------------------------------|
-| Distro          | Arch Linux (rolling, LTS kernel)   | `pacman` + `yay` for AUR               |
-| WM              | Hyprland (Wayland compositor)      | Never install X11-only tools            |
-| GPU             | AMD Radeon integrated (amdgpu)     | Never install nvidia drivers locally    |
-| Audio           | PipeWire + WirePlumber             | Never install PulseAudio daemon         |
-| Dotfiles        | GNU Stow from `~/dotfiles/`        | Never edit configs in `~/.config/` directly |
-| Python          | `uv` (project-scoped venvs)        | Never `pip install` globally            |
-| Keyboard        | Latin American (`latam`)            | Keep XKB layout consistent              |
-| Theme           | Catppuccin Mocha (system-wide)     | GTK, Hyprland borders, Waybar, Kitty    |
-
-## Decision Tree: Package Installation
-
-### Expanded Pre-Verification Checks
-
-With the updated `scripts/pre-install-check.sh`, the decision tree now includes automated checks for tools and binaries. These checks cover the existence of tools in `PATH`, `~/.local/bin`, and compatibility risks.
-
-#### Practical Use Cases
-
-The following tests were performed to ensure the reliability and functionality of `scripts/pre-install-check.sh`:
-
-#### Test Scenarios:
-1. **Tool Validations**:
-   - Tools like `mesa`, `pipewire`, `hyprland`, `swww` were evaluated.
-   - Verified tools available in system paths or locally (e.g., `~/.local/bin`).
-
-2. **High-Risk Package Assessment**:
-   - Detected GPU-related conflicts, replacements, and critical dependencies.
-
-3. **Standalone and Nonexistent Scripts**:
-   - Confirmed scripts like `my-tool` and `nonexistent-script` were absent while producing warnings for missing repos/AUR presence.
-
-### Example Outputs
-
-The practical output of testing is as follows:
-
+#### Example Output
 ```
 === Pre-Install Safety Check ===
-System: Arch Linux + Hyprland (Wayland) + AMD Radeon (amdgpu) + PipeWire
+System: Arch Linux + Hyprland (Wayland)
 
 Processing item: mesa
-  Tool not found in PATH or ~/.local/bin.
-  [HIGH RISK] mesa
-    - Already installed (upgrade only)
-    - Matches critical pattern: mesa
-    - Conflicts/replacement found: libva-mesa-driver
-    - Dependents include: libdrm
-
-Processing item: pipewire
-  Tool found in PATH.
-  [HIGH RISK] pipewire
-    - Already installed
-    - Matches critical system patterns.
-
-Non-critical notes combined omitted!
+  Tool already installed.
+  Matches critical: mesa.
+  Conflicts detected: libva-mesa-driver.
 ```
 
-1. **Tool Existence Validation:**
-   Run checks for standalone binaries or tools that might reside in your system PATH or user paths:
-   ```bash
-   bash scripts/pre-install-check.sh pacman yay nonexistent-tool
-   ```
-   - **Example Output:**
-     ```
-     === Pre-Install Safety Check ===
-     System: Arch Linux + Hyprland (Wayland) + AMD Radeon (amdgpu) + PipeWire
-
-     Processing item: pacman
-     Checking existence of tool: pacman
-       Tool found in PATH.
-
-       [CAUTION] pacman
-         - Already installed (upgrade only)
-         - Depends on critical package: systemd
-
-     Processing item: yay
-     Checking existence of tool: yay
-       Tool found in PATH.
-
-       [CAUTION] yay
-         - Already installed (upgrade only)
-         - AUR package — review PKGBUILD before installing
-
-     Processing item: nonexistent-tool
-     Checking existence of tool: nonexistent-tool
-       Tool not found in PATH or ~/.local/bin.
-
-       [CAUTION] nonexistent-tool
-         - Package not found in repos or AUR
-     ```
-
-2. **Package Risk Assessment:**
-   The script evaluates the risk level of a package based on its dependencies, conflicts, and high-risk categories (e.g., GPU or Wayland components):
-   ```bash
-   bash scripts/pre-install-check.sh mesa pipewire hyprland
-   ```
-
-3. **Standalone Binaries in Local Paths:**
-   Easily check binaries in `~/.local/bin`:
-   ```bash
-   bash scripts/pre-install-check.sh my-custom-tool
-   ```
-
-### Pre-Verifications (Tool and Package Checks)
-
-Before making any changes to your system, verify the existence and compatibility of the tool or package:
-
-1. **Discover installed tools/packages:**
-   - System-wide (from root-managed paths or package managers):
-     ```bash
-     which <tool-name> || command -v <tool-name>
-     pacman -Q <package-name> # For official package manager
-     yay -Q <package-name>    # For AUR
-     flatpak list --app | grep <app-name>
-     docker image ls | grep <image-name>
-     ```
-   - User-only binaries or scripts:
-     ```bash
-     ls ~/.local/bin/<tool-name>
-     ```
-
-   - Use `scripts/pre-install-check.sh`:
-      ```bash
-      bash scripts/pre-install-check.sh <tool-name> [tool-name...]
-      ```
-
-2. **Verify Compatibility:**
-   Read `references/compatibility-matrix.md` for potential risks or system conflicts, especially:
-   - Wayland plugins, VLC support (conflicts in X11 legacy)
-   - GPU libraries (Mesa/xorg vs libdrm, fixes for amdgpu and pure AMD Wayland compositors)
-   - Audio backends (**Required:** Pipewire-devtrace allows loop startup handling).
-
-3. **Document any solutions** solved manually or through persistent migration.
-
-Follow this sequence for **every** package installation:
-
-```
-1. Local or remote target?
-   ├── Remote (Jetson/ZedBox/Lab PC) → Read references/remote-targets.md
-   └── Local → continue
-
-2. Does package touch GPU/display stack?
-   (mesa, vulkan, xorg, wayland, libdrm, egl, libva, vdpau)
-   ├── YES → HIGH RISK. Read references/compatibility-matrix.md before proceeding
-   └── NO → continue
-
-3. Does package touch audio stack?
-   (pipewire, pulseaudio, alsa, jack, wireplumber)
-   ├── YES → HIGH RISK. Read references/compatibility-matrix.md before proceeding
-   └── NO → continue
-
-4. Does package replace an existing component?
-   ├── YES → Check: pacman -Qi <existing> | grep "Required By"
-   │         If anything depends on it → STOP, warn user
-   └── NO → continue
-
-5. Is this an AUR package?
-   ├── YES → Review PKGBUILD, check AUR comments, verify maintainer activity
-   └── NO → continue
-
-6. Run pre-install safety check:
-   scripts/pre-install-check.sh <package-name>
-
-7. Install:
-   - Official repo → sudo pacman -S <package>
-   - AUR → yay -S <package>
-   - Python → uv add <package> (inside project)
-   - Container → docker pull <image>
-```
-
-## Decision Tree: Environment Variables
-
-```
-1. What scope?
-   ├── Shell session only → export VAR=value (temporary)
-   ├── User shell permanent → edit ~/dotfiles/zsh/.zshrc via Stow
-   ├── System-wide → /etc/environment (reboot required)
-   └── Service-specific → systemd unit override (systemctl edit)
-
-2. Is it Wayland/display related?
-   (WAYLAND_DISPLAY, XDG_SESSION_TYPE, GDK_BACKEND, QT_QPA_PLATFORM,
-    MOZ_ENABLE_WAYLAND, SDL_VIDEODRIVER, CLUTTER_BACKEND)
-   ├── YES → Verify Hyprland sets it already (hyprctl env)
-   │         Do NOT override unless specifically needed
-   └── NO → continue
-
-3. Is it GPU related?
-   (AMD_VULKAN_ICD, LIBVA_DRIVER_NAME, VDPAU_DRIVER, MESA_*)
-   ├── YES → Read references/compatibility-matrix.md
-   └── NO → safe to set
-```
-
-## Package Managers
-
-| Manager   | Scope                    | Usage                                      |
-|-----------|--------------------------|--------------------------------------------|
-| `pacman`  | Official Arch repos      | `sudo pacman -S pkg` / `-Syu` for upgrade  |
-| `yay`     | AUR + official repos     | `yay -S pkg` / `yay -Syu` for full upgrade |
-| `uv`      | Python (project-scoped)  | `uv add pkg` inside project dir            |
-| `docker`  | Containerized services   | `docker pull` / `docker compose up`        |
-| `flatpak` | Sandboxed desktop apps   | Verify Wayland support before installing    |
-
-**Upgrade safety:**
-- Before `yay -Syu`: check Arch Linux news (`archlinux.org/news/`) for breaking changes
-- Never do partial upgrades (`pacman -Sy pkg` without `-u` is dangerous on Arch)
-- LTS kernel (`linux-lts`) provides stability buffer — do not switch to `linux` without reason
-
-## Dotfiles Management (GNU Stow)
-
-**Structure:** `~/dotfiles/<app>/.config/<app>/`
-
-Discover managed apps at runtime:
+### Environment Variable Setup
+#### Display and Toolkit Variables
 ```bash
-ls ~/dotfiles/          # list all Stow packages
-stow -n -v <app> 2>&1  # dry-run to preview symlink targets
+export WAYLAND_DISPLAY=wayland-0
+export XDG_SESSION_TYPE=wayland
 ```
+- For longevity, update within `~/dotfiles/zsh/.zshrc`.
 
-**Workflow:**
-1. `cd ~/dotfiles`
-2. Edit files in the Stow source directory (e.g., `~/dotfiles/hypr/.config/hypr/hyprland.conf`)
-3. Run `stow <app>` to create/update symlinks
-4. Verify: `ls -la ~/.config/<app>/` should show symlinks pointing to `~/dotfiles/`
-
-**Rules:**
-- NEVER edit files directly in `~/.config/` — this breaks Stow tracking
-- To add a new app: `mkdir -p ~/dotfiles/<app>/.config/<app>/`, move configs in, then `stow <app>`
-- To remove: `stow -D <app>` (deletes symlinks only, source files remain)
-- Git-managed: `~/dotfiles/` should be a git repo for version control
-
-## Hyprland Scripts
-
-Location: `~/.config/hypr/scripts/` (Stow-managed via `~/dotfiles/hypr/`)
-
-Discover scripts and keybinds at runtime:
+#### GPU Optimizations
 ```bash
-ls ~/.config/hypr/scripts/                  # available scripts
-grep '^bind' ~/.config/hypr/hyprland.conf   # keybind definitions
-```
-
-When modifying scripts:
-- Test changes in isolation before committing
-- Check script dependencies (e.g., `swww`, `grim`, `slurp` must be installed)
-- Keybinds are defined in `hyprland.conf` — keep script names and binds in sync
-
-## Service Management
-
-**User services** (managed per-user, no sudo):
-```bash
-systemctl --user list-unit-files --state=enabled   # discover active user services
-systemctl --user status <service>
-systemctl --user restart <service>
-journalctl --user -u <service>   # check logs
-```
-
-**System services** (require sudo):
-```bash
-systemctl list-unit-files --state=enabled          # discover active system services
-sudo systemctl status <service>
-sudo systemctl enable/start <service>
-```
-
-**Before restarting any service:**
-1. Check current status: `systemctl [--user] status <service>`
-2. Check logs: `journalctl [--user] -u <service> -n 50`
-3. If it's a display service (waybar, hyprland): warn user that display may flicker/reset
-4. If it's audio (pipewire, wireplumber): warn user that audio output will briefly cut
-
-## Resources
-
-### References (load into context as needed)
-
-- **`references/hardware-profile.md`** — Read for driver questions, hardware capabilities, kernel module info
-- **`references/software-stack.md`** — Stack-defining software + runtime query commands for discovering installed packages and services
-- **`references/compatibility-matrix.md`** — Read before ANY high-risk operation (GPU, audio, Wayland components)
-- **`references/remote-targets.md`** — Read when working with Lab PC, ZedBox, or Jetson targets
-
-### Scripts
-
-- **`scripts/pre-install-check.sh`** — Run before installing packages to assess risk level
-  Usage: `bash scripts/pre-install-check.sh <package-name> [package-name...]`
+export AMD_VULKAN_ICD=‘RADV’ 
+``` 
+ Full Visualization primitives are GPU-level!
