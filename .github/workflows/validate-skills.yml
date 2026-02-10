@@ -39,12 +39,11 @@ jobs:
            done
            exit $EXIT_CODE
 
-      - name: Run ruff checks
-        run: uv run ruff check .
+- name: Run ruff checks
+  run: uv run ruff check .
 
 - name: Run ruff formatting check
   run: uv run ruff format --check .
 
-
-      - name: Run tests
-        run: uv run pytest tests/ -v
+- name: Run tests
+  run: uv run pytest tests/ -v
