@@ -15,10 +15,19 @@ The `architect` skill provides tools and workflows for creating scalable, reusab
 - **Packaging skills for distribution:** Prepare skills for deployment.
 
 ## Usage Guide
+Note: The following commands should be run from the repository root directory to access the shared tooling scripts.
+
 ### Skill Scaffolding
-#### Create a New Skill
 ```bash
-python3 scripts/init_skill.py <skill-name> --path <output-dir>
+python3 ../scripts/init_skill.py <skill-name> --path <output-dir>
+```
+- Generates a skill folder with `SKILL.md` and template resources.
+- Naming follows kebab-case conventions (e.g., `pdf-processor`).
+
+#### Validate and Package
+```bash
+python3 ../scripts/quick_validate.py <skill-path>
+python3 ../scripts/package_skill.py <skill-path> [output-dir]
 ```
 - Generates a skill folder with `SKILL.md` and template resources.
 - Naming follows kebab-case conventions (e.g., `pdf-processor`).
@@ -69,6 +78,6 @@ Responsibilities, approaches, and task guidelines for the agent.
 ## Resources
 - **Design Patterns:** `references/workflows.md`, `references/output-patterns.md`
 - **Platform Sync:** `references/platform-sync.md`
-- **Tooling Scripts:** `scripts/init_skill.py`, `scripts/package_skill.py`, `scripts/quick_validate.py`
+- **Tooling Scripts:** `../scripts/init_skill.py`, `../scripts/package_skill.py`, `../scripts/quick_validate.py`
 
 <!-- Test change for CI validation -->
