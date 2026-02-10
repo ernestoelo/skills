@@ -1,8 +1,6 @@
 ---
 name: architect
 description: Scaffolds skills and agents for AI platforms, ensuring proper structures, workflows, and resources. Use to create or refine skills and maintain compatibility across tooling.
-author: OpenCode Project Team
-version: 1.1.0
 ---
 
 # Architect Skill Guide

@@ -1,8 +1,6 @@
 ---
 name: mcp-builder
 description: Develop and scaffold MCP servers (Model Context Protocol) to integrate LLMs with external services, ensuring high-quality, extensible designs.
-author: OpenCode Project Team
-version: 1.1.0
 ---
 
 # MCP Builder Skill Guide
