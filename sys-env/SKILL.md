@@ -1,8 +1,6 @@
 ---
 name: sys-env
 description: System environment manager for Arch Linux with Hyprland + Wayland. This skill ensures safe and optimal configuration for package management, drivers, services, and hardware compatibility.
-author: OpenCode Project Team
-version: 1.2.0
 ---
 
 # System Environment Manager Skill Guide

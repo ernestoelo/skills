@@ -1,8 +1,6 @@
 ---
 name: dev-workflow
 description: Provides official development standards and workflows for structuring projects, handling version control, and ensuring best practices for development processes.
-author: OpenCode Project Team
-version: 1.1.0
 ---
 
 # Development Workflow Skill Guide

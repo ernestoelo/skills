@@ -1,8 +1,6 @@
 ---
 name: pdf
 description: The PDF skill enables advanced operations on PDF files, including merging, splitting, extracting, creating, and modifying PDFs. It also supports OCR for scanned PDFs and detailed table/text extraction.
-author: OpenCode Project Team
-version: 1.0.0
 ---
 
 # PDF Processing Skill Guide
