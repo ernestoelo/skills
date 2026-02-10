@@ -27,7 +27,10 @@ jobs:
       - name: Validate all skills
         run: |
           EXIT_CODE=0
-          for skill_dir in */; do
+           for skill_dir in */; do
+             if [[ $skill_dir == tests/* ]]; then
+               continue
+             fi
             if [ -f "${skill_dir}SKILL.md" ]; then
               echo "Validating: ${skill_dir%/}"
               uv run python3 scripts/quick_validate.py "$skill_dir" || EXIT_CODE=1
