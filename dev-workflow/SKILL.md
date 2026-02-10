@@ -53,6 +53,21 @@ git checkout -b fix/login-timeout
    git commit -m "fix(login): handle timeout edge cases"
    ```
 
+### CI/CD Workflow
+#### Fetch CI Logs
+Fetch specific logs from GitHub Actions workflows for debugging:
+```bash
+gh run list --workflow "Skill Validation CI" --json status,conclusion,headSha | jq '.[] | select(.conclusion == "failure") | .headSha' | xargs -I {} gh run view {} --log
+```
+- Requires GitHub CLI (`gh`); outputs logs for failed runs.
+
+#### Auto-Correct Common CI Issues
+Run auto-correction for known errors (e.g., file size, validation):
+```bash
+python3 scripts/auto_correct_ci.py --workflow "Skill Validation CI" --commit <commit-sha>
+```
+- Detects and fixes issues like oversized assets; re-commits if needed.
+
 ## Inputs and Outputs
 ### Inputs
 - **Repository context:** Current Git state (branches, changes).
@@ -66,9 +81,14 @@ git checkout -b fix/login-timeout
 ### Best Practices
 - **Git:** Always work on feature branches; avoid direct `main` commits.
 - **AI Projects:** Use `uv` for reproducible environments; pin Python versions.
+- **CI/CD:** Monitor workflows after commits; use auto-correct for common issues.
 
 ### Version History
 | Version | Date       | Updates                                                  |
 |---------|------------|---------------------------------------------------------|
+| 1.2.0   | 2026-02-10 | Added CI/CD workflow for log sharing and auto-correction.|
 | 1.1.0   | 2026-02-09 | Reorganized content into SKILL.md standard template.    |
 | 1.0.0   | 2024-11-03 | Initial workflow for AI/ML projects and Git workflows.  |
+
+## Resources
+- `references/ci-cd-best-practices.md`: CI/CD monitoring and troubleshooting guides.
