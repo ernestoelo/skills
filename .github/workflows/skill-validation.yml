@@ -25,7 +25,12 @@ jobs:
 
     - name: Validate SKILL.md
       run: |
-        CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha || 'HEAD~1' }})
+        BASE_SHA=${{ github.event.before || github.event.pull_request.base.sha }}
+        if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+          echo "No base SHA available, skipping validation for new branches or initial commits."
+          exit 0
+        fi
+        CHANGED_FILES=$(git diff --name-only $BASE_SHA ${{ github.sha }})
         for file in $CHANGED_FILES; do
           if [[ $file == */SKILL.md ]]; then
             skill_dir=$(dirname "$file")
