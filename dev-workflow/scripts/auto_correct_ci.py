@@ -42,6 +42,9 @@ def auto_correct_ci(workflow_name, commit_sha):
     else:
         print("No common errors detected. Manual intervention needed.")
 
+    # Notify user with GitHub validation link
+    notify_validation(workflow_name, commit_sha)
+
 
 def check_error_in_logs(error, workflow, commit):
     """Placeholder: Check if error is in logs (integrate with fetch_ci_logs)."""
@@ -64,12 +67,34 @@ def install_missing_deps():
     subprocess.run(["uv", "sync"], check=True)
 
 
-def run_tests_locally():
-    """Run tests to fix failures."""
-    subprocess.run(["uv", "run", "pytest"], check=True)
-
-
-if __name__ == "__main__":
+def notify_validation(workflow_name, commit_sha):
+    """Notify user with GitHub Actions run link for validation review."""
+    try:
+        # Get the run URL for the commit
+        cmd = [
+            "gh",
+            "run",
+            "list",
+            "--workflow",
+            workflow_name,
+            "--commit",
+            commit_sha,
+            "--json",
+            "url",
+            "--limit",
+            "1",
+        ]
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        runs = json.loads(result.stdout)
+        if runs:
+            url = runs[0].get("url")
+            print(f"CI/CD validation completed. Review results at: {url}")
+        else:
+            print("No GitHub run found for the specified commit.")
+    except subprocess.CalledProcessError:
+        print("Failed to fetch GitHub run URL. Ensure GitHub CLI is authenticated.")
+    except json.JSONDecodeError:
+        print("Error parsing GitHub CLI output.")
     import argparse
 
     parser = argparse.ArgumentParser(description="Auto-correct common CI/CD errors.")
