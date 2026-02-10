@@ -43,7 +43,11 @@ jobs:
         run: uv run ruff check .
 
       - name: Run ruff formatting check
-        run: - run: ls -R $GITHUB_WORKSPACE
+        run: |
+         ls -R $GITHUB_WORKSPACE
+         echo "Debugging path resolution"
+         pwd
+         uv run ruff format --check .
          - run: echo "Debugging path resolution"
          - run: pwd
          - run: uv run ruff format --check .
