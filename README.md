@@ -2,7 +2,7 @@
 
 Personal collection of reusable skills and agents for AI coding assistants across multiple platforms.
 
-## 🎯 Overview
+## Overview
 
 This repository contains modular skills and agents that extend AI assistants with specialized knowledge, workflows, and tools. Skills are designed to be **platform-agnostic** and work across:
 
@@ -12,7 +12,7 @@ This repository contains modular skills and agents that extend AI assistants wit
 - **Cursor** (IDE)
 - Any AI assistant supporting the standard skills format
 
-## 📚 Available Skills
+## Available Skills
 
 | Skill | Description | Platforms |
 |-------|-------------|-----------|
@@ -20,24 +20,34 @@ This repository contains modular skills and agents that extend AI assistants wit
 | **dev-workflow** | Development standards and Git workflows | All |
 | **mcp-builder** | Guide for creating Model Context Protocol servers | All |
 | **pdf** | Complete PDF processing (read, create, modify, OCR) | All |
+| **sys-env** | System environment manager for Arch Linux + Hyprland | All |
 | **web-scraper** | Web content extraction and conversion to Markdown | All |
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
 - Git installed
 - AI assistant (GitHub Copilot, OpenCode, Cursor, etc.)
-- Platform-specific configuration (see Platform Setup below)
+- Python 3.12+ and [uv](https://docs.astral.sh/uv/) (for tooling scripts)
 
-### Clone Repository
+### Clone and Setup
 
 ```bash
 # Clone to standard location
 git clone https://github.com/ernestoelo/skills.git ~/.copilot/skills
 
-# Or clone to custom location
-git clone https://github.com/ernestoelo/skills.git ~/my-skills
+# Set up git hooks and environment
+cd ~/.copilot/skills
+bash scripts/post-clone-setup.sh
+```
+
+### Development Environment (optional, for running tests)
+
+```bash
+cd ~/.copilot/skills
+uv sync --group dev
+uv run pytest tests/ -v
 ```
 
 ### Platform Setup
@@ -61,8 +71,8 @@ ln -s ~/path/to/your/skills ~/.copilot/skills
 OpenCode reads skills from `~/.config/opencode/skills/`. Use the sync script:
 
 ```bash
-cd ~/.copilot/skills  # or your skills directory
-./architect/scripts/sync-skills.sh
+cd ~/.copilot/skills
+./scripts/sync-skills.sh
 ```
 
 **Automatic Sync (Recommended):**
@@ -87,19 +97,9 @@ Use the sync script:
 
 ```bash
 cd ~/.copilot/skills
-./architect/scripts/sync-skills.sh
+./scripts/sync-skills.sh
 # or sync only to Claude:
-./architect/scripts/sync-skills.sh --platform claude
-```
-
-**Alternative - Manual Symlink:**
-
-```bash
-# Linux
-ln -s ~/.copilot/skills ~/.config/claude/skills
-
-# macOS
-ln -s ~/.copilot/skills ~/Library/Application\ Support/Claude/skills
+./scripts/sync-skills.sh --platform claude
 ```
 
 </details>
@@ -115,33 +115,23 @@ Use the sync script:
 
 ```bash
 cd ~/.copilot/skills
-./architect/scripts/sync-skills.sh
+./scripts/sync-skills.sh
 # or sync only to Cursor:
-./architect/scripts/sync-skills.sh --platform cursor
-```
-
-**Alternative - Manual Symlink:**
-
-```bash
-# Linux
-ln -s ~/.copilot/skills ~/.config/cursor/skills
-
-# macOS
-ln -s ~/.copilot/skills ~/Library/Application\ Support/Cursor/skills
+./scripts/sync-skills.sh --platform cursor
 ```
 
 </details>
 
-## 📖 Usage
+## Usage
 
 ### Using Skills
 
 Skills are automatically available to your AI assistant. Simply mention what you need:
 
 ```
-"I need help processing a PDF"  → Loads pdf skill
-"Help me create an MCP server"  → Loads mcp-builder skill
-"How should I structure my project?" → Loads dev-workflow skill
+"I need help processing a PDF"        -> Loads pdf skill
+"Help me create an MCP server"        -> Loads mcp-builder skill
+"How should I structure my project?"   -> Loads dev-workflow skill
 ```
 
 ### Creating New Skills
@@ -153,31 +143,13 @@ Use the **architect** skill to scaffold new skills:
 "I need a skill to work with Docker containers"
 ```
 
-The architect skill will:
-1. Analyze your requirements
-2. Generate proper folder structure
-3. Create SKILL.md with valid frontmatter
-4. Set up scripts/, references/, and assets/ directories
-5. Guide you through implementation
-
 See `architect/SKILL.md` for the complete skill creation process.
 
-## 🔄 Workflow
-
-### Adding a New Skill
-
-**Option 1: Use the architect skill (Recommended)**
-
-```
-Ask your AI assistant: "Create a new skill called my-new-skill for [purpose]"
-```
-
-**Option 2: Manual creation**
+### Adding a New Skill Manually
 
 ```bash
 cd ~/.copilot/skills
-mkdir my-new-skill
-cd my-new-skill
+mkdir my-new-skill && cd my-new-skill
 
 # Create SKILL.md with frontmatter
 cat > SKILL.md << 'EOF'
@@ -194,7 +166,8 @@ EOF
 # Create resource directories as needed
 mkdir -p scripts references assets
 
-# Commit and push
+# Validate, commit and push
+uv run python3 scripts/quick_validate.py my-new-skill/
 git add my-new-skill/
 git commit -m "feat: add my-new-skill"
 git push
@@ -203,41 +176,12 @@ git push
 **Sync to AI platforms:**
 
 ```bash
-# Auto-sync to all installed platforms (OpenCode, Claude, Cursor)
-./architect/scripts/sync-skills.sh
-
-# Or sync to specific platform
-./architect/scripts/sync-skills.sh --platform opencode
-
-# Or if you have the git hook configured, just:
-git pull  # Auto-syncs to all installed platforms
+./scripts/sync-skills.sh                      # Auto-detect and sync to all
+./scripts/sync-skills.sh --platform opencode  # Sync to specific platform
+git pull                                       # Auto-syncs via hook
 ```
 
-### Updating Existing Skills
-
-```bash
-cd ~/.copilot/skills/skill-name
-# Edit files
-git add .
-git commit -m "fix: description of changes"
-git push
-```
-
-Changes are immediately available in GitHub Copilot (reads files directly). For OpenCode, Claude, and Cursor, changes are visible after `git pull` (with auto-sync).
-
-### Syncing from GitHub
-
-When someone else adds skills, or you work from another machine:
-
-```bash
-cd ~/.copilot/skills
-git pull  # Auto-syncs to all installed platforms
-
-# If auto-sync not configured:
-./architect/scripts/sync-skills.sh
-```
-
-## 📋 Skill Requirements
+## Skill Requirements
 
 For a skill to work across all platforms:
 
@@ -255,10 +199,10 @@ license: Optional        # e.g., MIT, Proprietary
 
 **Skill names** must follow the pattern: `^[a-z0-9]+(-[a-z0-9]+)*$`
 
-✅ Valid: `pdf`, `web-scraper`, `mcp-builder`, `dev-workflow`
-❌ Invalid: `PDF`, `web_scraper`, `mcp--builder`, `-myskill`
+Valid: `pdf`, `web-scraper`, `mcp-builder`, `dev-workflow`
+Invalid: `PDF`, `web_scraper`, `mcp--builder`, `-myskill`
 
-### Directory Structure
+### Skill Directory Structure
 
 ```
 skill-name/
@@ -268,139 +212,203 @@ skill-name/
 └── assets/               # Optional: Templates, files
 ```
 
-**Do NOT create:**
-- README.md (redundant with SKILL.md)
-- INSTALL.md
-- CHANGELOG.md
-- Other auxiliary documentation
+**Do NOT create** README.md, INSTALL.md, CHANGELOG.md, or other auxiliary docs inside skills.
 
-## 🛠️ Tools & Scripts
+## Tools & Scripts
 
-### sync-skills.sh
+All repository tooling is centralized in the `scripts/` directory at the root:
 
-Multi-platform synchronization script that automatically syncs skills to installed AI platforms:
+| Script | Purpose |
+|--------|---------|
+| `scripts/quick_validate.py` | Validates skill structure, frontmatter, and conventions |
+| `scripts/init_skill.py` | Scaffolds a new skill from template |
+| `scripts/package_skill.py` | Packages a skill into a distributable `.skill` file |
+| `scripts/sync-skills.sh` | Syncs skills to AI platform directories (OpenCode, Claude, Cursor) |
+| `scripts/validate-skill-on-change.sh` | Git pre-commit hook for automatic validation |
+| `scripts/post-clone-setup.sh` | Post-clone setup (installs git hooks) |
+
+### Validation
 
 ```bash
-./architect/scripts/sync-skills.sh                 # Auto-detect and sync to all
-./architect/scripts/sync-skills.sh --platform opencode  # Sync only to OpenCode
-./architect/scripts/sync-skills.sh --platform claude    # Sync only to Claude
-./architect/scripts/sync-skills.sh --platform cursor    # Sync only to Cursor
-./architect/scripts/sync-skills.sh --dry-run            # Preview changes
-./architect/scripts/sync-skills.sh --help               # Show help
+# Validate a single skill
+uv run python3 scripts/quick_validate.py <skill-directory>
+
+# Run full test suite
+uv run pytest tests/ -v
 ```
 
-**Supported Platforms:**
-- **OpenCode** - Terminal/Desktop/IDE AI assistant
-- **Claude Desktop** - Anthropic's desktop application
-- **Cursor** - AI-powered IDE
-- **GitHub Copilot** - No sync needed (uses repository directly)
+### CI/CD
 
-**Features:**
-- Auto-detects installed platforms
-- Creates symlinks for new skills
-- Verifies existing symlinks
-- Cross-platform (Linux + macOS)
-- Detailed reporting
+GitHub Actions automatically validates all skills and runs tests on push/PR to `main` and `develop`.
 
-**Auto-sync with git hook:**
-
-The repository includes `.git/hooks/post-merge` that runs this script automatically after `git pull`.
-
-## 📁 Repository Structure
+## Repository Structure
 
 ```
-~/.copilot/skills/          # Repository root
-├── README.md               # This file
-├── .git/
-│   └── hooks/
-│       └── post-merge      # Auto-sync git hook
+~/.copilot/skills/
+├── README.md                         # This file
+├── pyproject.toml                    # Project metadata, dev dependencies, tool config
+├── uv.lock                           # Deterministic lockfile for dependencies
+├── .github/workflows/
+│   └── validate-skills.yml           # CI: validate + test on push/PR
 │
-├── architect/              # Skill scaffolding tool
+├── scripts/                          # Centralized repository tooling
+│   ├── __init__.py
+│   ├── init_skill.py
+│   ├── package_skill.py
+│   ├── quick_validate.py
+│   ├── sync-skills.sh
+│   ├── validate-skill-on-change.sh
+│   └── post-clone-setup.sh
+│
+├── tests/                            # Test suite
+│   └── validator/
+│       ├── test_validator.py
+│       ├── passing-skills/
+│       └── failing-skills/
+│
+├── architect/                        # Skill: scaffolding tool
 │   ├── SKILL.md
 │   ├── references/
-│   │   ├── workflows.md          # Workflow design patterns
-│   │   ├── output-patterns.md    # Output quality patterns
-│   │   ├── platform-sync.md      # Multi-platform distribution guide
-│   │   └── agents-spec.md        # Full .agent.md schema reference
 │   └── scripts/
-│       ├── sync-skills.sh        # Multi-platform sync script
-│       ├── init_skill.py         # Skill initializer
-│       ├── package_skill.py      # Skill packager (.skill files)
-│       ├── quick_validate.py     # Skill validator
-│       └── update_docs.sh        # Documentation updater
+│       └── update-docs.sh
 │
-├── dev-workflow/           # Development standards
+├── dev-workflow/                     # Skill: development standards
 │   ├── SKILL.md
-│   └── guides/
+│   ├── references/
+│   └── assets/
+│       └── diagrams/
 │
-├── mcp-builder/            # MCP server creation guide
+├── mcp-builder/                     # Skill: MCP server creation
 │   ├── SKILL.md
-│   ├── reference/
+│   ├── references/
 │   └── scripts/
 │
-├── pdf/                    # PDF processing
+├── pdf/                             # Skill: PDF processing
 │   ├── SKILL.md
+│   ├── references/
 │   └── scripts/
 │
-└── web-scraper/            # Web content extraction
+├── sys-env/                         # Skill: system environment
+│   ├── SKILL.md
+│   ├── references/
+│   └── scripts/
+│
+└── web-scraper/                     # Skill: web content extraction
     ├── SKILL.md
     └── scripts/
 ```
 
-## 🎯 Benefits
-
-✅ **Single source of truth** - One repository for all platforms
-✅ **Version controlled** - Full git history and collaboration
-✅ **Cross-platform** - Works with multiple AI assistants
-✅ **Modular** - Each skill is self-contained
-✅ **Extensible** - Easy to add new skills
-✅ **Well-documented** - Clear structure and guidelines
-
-## 🔗 Resources
-
-- **Repository:** https://github.com/ernestoelo/skills
-- **Architect Skill:** See `architect/SKILL.md` for complete skill creation guide
-- **OpenCode Docs:** https://opencode.ai/docs/skills
-- **GitHub Copilot Docs:** https://docs.github.com/copilot
-
-## 🤖 Platform-Specific Notes
+## Platform-Specific Notes
 
 ### OpenCode
 
 - Skills loaded from `~/.config/opencode/skills/` (symlinks to this repo)
-- Use `architect/scripts/sync-skills.sh` to sync new skills
+- Use `scripts/sync-skills.sh` to sync new skills
 - Git hook provides automatic sync after `git pull`
-- Skills listed in skill tool description
 
 ### GitHub Copilot
 
 - Skills loaded directly from `~/.copilot/skills/`
 - No sync needed (this is the source directory)
-- Works in VSCode and Visual Studio
 
 ### Anthropic Claude
 
 - Skills loaded from platform-specific directory
-- Use `architect/scripts/sync-skills.sh --platform claude` to sync
-- Or create manual symlink to this repository
-- Follow Anthropic's skill specification
+- Use `scripts/sync-skills.sh --platform claude` to sync
 
 ### Cursor
 
 - Skills loaded from platform-specific directory
-- Use `architect/scripts/sync-skills.sh --platform cursor` to sync
-- Or create manual symlink to this repository
+- Use `scripts/sync-skills.sh --platform cursor` to sync
 
-## 📝 Contributing
+## SKILL.md Format
 
-When adding or updating skills:
+To ensure all skills in the repository are consistent, structured, and easy to maintain, each skill includes a `SKILL.md` file. This file acts as the central documentation for the skill, detailing its purpose, usage, and additional resources. The following outlines the structure and expectations for `SKILL.md` files:
 
-1. Follow the skill requirements above
-2. Test the skill with your AI assistant
-3. Update this README if adding a new skill
-4. Use conventional commits (`feat:`, `fix:`, `docs:`)
-5. Push to GitHub for others to use
+### Frontmatter (Required)
+Every `SKILL.md` begins with YAML frontmatter that defines basic metadata:
 
-## 📄 License
+```yaml
+---
+name: skill-name         # Must match the directory name (kebab-case)
+description: Brief description of what the skill does and when to use it
+author: Author name (optional)
+version: 1.0.0           # Versioning for the skill
+license: Optional        # e.g., MIT, Proprietary
+---
+```
 
-Individual skills may have different licenses (see LICENSE.txt in each skill directory). Default is for personal use.
+- **`name`**: The name of the skill (matches its directory name).
+- **`description`**: A clear and concise explanation of the skill's functionality and use cases.
+- **`version`**: Semantic versioning to track updates and improvements.
+- **`license`** *(optional)*: License applicable to the skill.
+
+### Body Structure
+The main body follows a standard structure to ensure clarity:
+
+1. **Description:** Overview of the skill’s purpose and capabilities.
+2. **When to Use:** Scenarios where the skill is applicable, with examples.
+3. **Usage Guide:** Step-by-step instructions for using the skill, including CLI commands and examples.
+4. **Inputs and Outputs:** Details on input parameters, arguments, and expected outputs.
+5. **Best Practices & Limitations:** Suggestions for effective use and common pitfalls.
+6. **Example Workflows:** Practical examples demonstrating real-world use cases.
+7. **Version History:** A table tracking changes over time.
+8. **Resources:** Links to additional documentation, scripts, or references.
+
+### Example SKILL.md for Reference
+An example of a minimal SKILL.md is as follows:
+
+```markdown
+---
+name: pdf
+description: Automates PDF processing: reading, modifying, OCR, and creation.
+author: OpenCode Project Team
+version: 1.0.0
+---
+
+# PDF Skill
+
+## Description
+This skill enables advanced PDF processing, including text extraction, merging/splitting, and OCR.
+
+## When to Use
+- Extracting data from PDF files.
+- Adding encryption, watermarks, or metadata.
+- Creating brand-new PDF files dynamically.
+
+## Usage Guide
+### Extracting Text
+```python
+from pypdf import PdfReader
+reader = PdfReader("document.pdf")
+for page in reader.pages:
+    print(page.extract_text())
+```
+```
+
+### Creating a Watermarked PDF
+```python
+from pypdf import PdfReader, PdfWriter
+watermark = PdfReader("watermark.pdf").pages[0]
+reader = PdfReader("input.pdf")
+writer = PdfWriter()
+for page in reader.pages:
+    page.merge_page(watermark)
+    writer.add_page(page)
+writer.write("output.pdf")
+```
+```
+
+## Inputs and Outputs
+- **Inputs:** PDF file paths, watermark PDFs.
+- **Outputs:** Modified or transformed PDFs.
+```
+
+### Maintaining SKILL.md Files
+Contributors are expected to format all `SKILL.md` files according to this template when creating or updating skills. This ensures clarity, consistency, and ease of collaboration across all platforms.
+
+## License
+
+This repository is licensed under the [MIT License](LICENSE) by default.
+
+Individual skills may override this with their own license. If a skill contains a `LICENSE.txt` file or a `license` field in its `SKILL.md` frontmatter, that license takes precedence over the root MIT license for that skill.

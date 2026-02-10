@@ -1,7 +1,5 @@
 # AI Project Development Guide
 
-> **Spanish version available:** [02-ai-development.es.md](02-ai-development.es.md).
->
 > The English version of this document is the canonical reference.
 >
 > Last updated: 2026-02-02.

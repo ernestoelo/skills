@@ -1,4 +1,4 @@
-# Dev workflow
+# Development Standards Overview
 
 > Last updated: 2026-02-09.
 
@@ -27,15 +27,15 @@ the standards defined in this repository.
 
 This repository is organized by domain.
 
-- [guides/01-git-workflow-development.md](guides/01-git-workflow-development.md): Defines branching, commit conventions and repository usage.
-- [guides/02-ai-development.md](guides/02-ai-development.md): Mandatory structure and operational requirements for AI/ML projects.
-- [checklists/02-ai-development.checklist.md](checklists/02-ai-development.checklist.md): Self-validation checklist for AI/ML projects.
+- [01-git-workflow-development.md](./01-git-workflow-development.md): Defines branching, commit conventions and repository usage.
+- [02-ai-development.md](./02-ai-development.md): Mandatory structure and operational requirements for AI/ML projects.
+- [02-ai-development-checklist.md](./02-ai-development-checklist.md): Self-validation checklist for AI/ML projects.
 
-- [templates/README.template.md](templates/README.template.md): Official README template for project repositories.
-- [templates/03-web-and-mobile-systems.diagram-template.md](templates/03-web-and-mobile-systems.diagram-template.md): Minimal production architecture diagram template.
+- [readme-template.md](../assets/readme-template.md): Official README template for project repositories.
+- [03-web-and-mobile-systems-diagram-template.md](../assets/03-web-and-mobile-systems-diagram-template.md): Minimal production architecture diagram template.
 
-- [diagrams/templates/](diagrams/templates/): Diagram image templates (overview, architecture, production).
-- [diagrams/examples/](diagrams/examples/): Real-world diagram examples from production systems.
+- [diagrams/templates/](../assets/diagrams/templates/): Diagram image templates (overview, architecture, production).
+- [diagrams/examples/](../assets/diagrams/examples/): Real-world diagram examples from production systems.
 
 ## How to Use These Guides
 

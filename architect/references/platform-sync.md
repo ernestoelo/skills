@@ -24,7 +24,7 @@ When skills are stored in a git repository (recommended for version control and 
 
 **Setup:** Requires symbolic links from repository
 
-**Sync:** Use `architect/scripts/sync-skills.sh` script (see below)
+**Sync:** Use `scripts/sync-skills.sh` script (see below)
 
 ### Claude Desktop
 
@@ -34,7 +34,7 @@ When skills are stored in a git repository (recommended for version control and 
 
 **Setup:** Requires symbolic links from repository
 
-**Sync:** Use `architect/scripts/sync-skills.sh` script (see below)
+**Sync:** Use `scripts/sync-skills.sh` script (see below)
 
 ### Cursor
 
@@ -44,7 +44,7 @@ When skills are stored in a git repository (recommended for version control and 
 
 **Setup:** Requires symbolic links from repository
 
-**Sync:** Use `architect/scripts/sync-skills.sh` script (see below)
+**Sync:** Use `scripts/sync-skills.sh` script (see below)
 
 ## Recommended Setup: Central Repository
 
@@ -53,9 +53,9 @@ The best practice is to maintain skills in a **single git repository** and use t
 ```
 ~/skills-repo/              # Your git repository (e.g., ~/.copilot/skills)
 ├── .git/
+├── scripts/
+│   └── sync-skills.sh      # Multi-platform sync script
 ├── architect/
-│   └── scripts/
-│       └── sync-skills.sh  # Multi-platform sync script
 ├── skill-1/
 └── skill-2/
 
@@ -87,7 +87,7 @@ The best practice is to maintain skills in a **single git repository** and use t
 
 The `sync-skills.sh` script automates synchronization across all AI platforms:
 
-**Location:** `architect/scripts/sync-skills.sh`
+**Location:** `scripts/sync-skills.sh`
 
 **Features:**
 - Auto-detects installed AI platforms (OpenCode, Claude Desktop, Cursor)
@@ -101,18 +101,18 @@ The `sync-skills.sh` script automates synchronization across all AI platforms:
 
 ```bash
 # Auto-sync to all installed platforms
-./architect/scripts/sync-skills.sh
+./scripts/sync-skills.sh
 
 # Sync to specific platform only
-./architect/scripts/sync-skills.sh --platform opencode
-./architect/scripts/sync-skills.sh --platform claude
-./architect/scripts/sync-skills.sh --platform cursor
+./scripts/sync-skills.sh --platform opencode
+./scripts/sync-skills.sh --platform claude
+./scripts/sync-skills.sh --platform cursor
 
 # Preview changes without applying
-./architect/scripts/sync-skills.sh --dry-run
+./scripts/sync-skills.sh --dry-run
 
 # Show help
-./architect/scripts/sync-skills.sh --help
+./scripts/sync-skills.sh --help
 ```
 
 **Example Output:**
@@ -167,7 +167,7 @@ echo "🔄 Syncing skills to installed platforms..."
 echo ""
 
 # Execute the sync script
-"$(dirname "$0")/../../architect/scripts/sync-skills.sh"
+"$(dirname "$0")/../../scripts/sync-skills.sh"
 
 exit 0
 ```
@@ -207,7 +207,7 @@ When scaffolding a new skill, include sync step:
 4. **Sync to platforms**
    ```bash
    # Auto-sync to all installed platforms
-   ./architect/scripts/sync-skills.sh
+   ./scripts/sync-skills.sh
    
    # Or if git hook configured:
    git pull  # Auto-syncs to all platforms
@@ -221,7 +221,7 @@ When collaborators add skills:
 git pull  # Downloads new skills + auto-syncs to all platforms (if git hook configured)
 
 # Manual sync (if needed):
-./architect/scripts/sync-skills.sh  # Syncs to all installed platforms
+./scripts/sync-skills.sh  # Syncs to all installed platforms
 ```
 
 ## Multi-Machine Setup
@@ -240,7 +240,7 @@ cd ~/skills-repo
 git pull  # Get latest changes + auto-syncs to all platforms (if git hook configured)
 
 # Manual sync (if needed):
-# ./architect/scripts/sync-skills.sh
+# ./scripts/sync-skills.sh
 ```
 
 ## Troubleshooting
@@ -261,14 +261,14 @@ git pull  # Get latest changes + auto-syncs to all platforms (if git hook config
 
 2. Re-sync to all platforms:
    ```bash
-   ./architect/scripts/sync-skills.sh
+   ./scripts/sync-skills.sh
    ```
 
 3. Sync to specific platform:
    ```bash
-   ./architect/scripts/sync-skills.sh --platform opencode
-   ./architect/scripts/sync-skills.sh --platform claude
-   ./architect/scripts/sync-skills.sh --platform cursor
+   ./scripts/sync-skills.sh --platform opencode
+   ./scripts/sync-skills.sh --platform claude
+   ./scripts/sync-skills.sh --platform cursor
    ```
 
 4. Restart your AI assistant
@@ -300,7 +300,7 @@ git pull  # Get latest changes + auto-syncs to all platforms (if git hook config
 ### OpenCode
 
 - Requires individual skill-level symlinks (not repo-level)
-- Use `architect/scripts/sync-skills.sh` script
+- Use `scripts/sync-skills.sh` script
 - Git hook provides auto-sync to all platforms
 - Skills listed in skill tool description
 
@@ -314,14 +314,14 @@ git pull  # Get latest changes + auto-syncs to all platforms (if git hook config
 
 - Requires individual skill-level symlinks
 - Platform-specific paths (Linux vs macOS)
-- Use `architect/scripts/sync-skills.sh --platform claude`
+- Use `scripts/sync-skills.sh --platform claude`
 - Follows Anthropic's skill specification
 
 ### Cursor
 
 - Requires individual skill-level symlinks  
 - Platform-specific paths (Linux vs macOS)
-- Use `architect/scripts/sync-skills.sh --platform cursor`
+- Use `scripts/sync-skills.sh --platform cursor`
 - Similar to GitHub Copilot
 
 ## Best Practices
@@ -337,7 +337,7 @@ git pull  # Get latest changes + auto-syncs to all platforms (if git hook config
 
 3. **Automate multi-platform sync**
    - Use git hook for auto-sync to all installed platforms
-   - Include sync script in repository (`architect/scripts/sync-skills.sh`)
+   - Include sync script in repository (`scripts/sync-skills.sh`)
 
 4. **Document your setup**
    - README with setup instructions
@@ -359,7 +359,7 @@ cd ~/.copilot/skills
 # 2. GitHub Copilot is already set up (uses this directory directly)
 
 # 3. Sync to other platforms (OpenCode, Claude, Cursor)
-./architect/scripts/sync-skills.sh
+./scripts/sync-skills.sh
 
 # 4. Git hook is already configured - test it
 git pull  # Should auto-sync to all platforms
@@ -376,4 +376,4 @@ git pull  # Should auto-sync to all platforms
 | Claude Desktop | `~/.config/claude/skills/` | `~/Library/Application Support/Claude/skills/` | Script + skill symlinks | Git hook |
 | Cursor | `~/.config/cursor/skills/` | `~/Library/Application Support/Cursor/skills/` | Script + skill symlinks | Git hook |
 
-**Recommendation:** Use the central repository approach at `~/.copilot/skills/` with `architect/scripts/sync-skills.sh` and git hooks for the best multi-platform developer experience.
+**Recommendation:** Use the central repository approach at `~/.copilot/skills/` with `scripts/sync-skills.sh` and git hooks for the best multi-platform developer experience.
