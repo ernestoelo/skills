@@ -28,4 +28,4 @@ jobs:
 
     - name: Validate SKILL.md
       run: |
-        python quick_validate.py
+        python3 scripts/quick_validate.py "$skill_dir"
