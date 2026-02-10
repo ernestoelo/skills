@@ -24,20 +24,23 @@ jobs:
       - name: Install dependencies
         run: uv sync --group dev
 
-      - name: Validate all skills
-        run: |
-           EXIT_CODE=0
-           chmod +x scripts/quick_validate.py
-           for skill_dir in */; do
-             if [[ $skill_dir == tests/* ]]; then
-               continue
-             fi
-            if [ -f "${skill_dir}SKILL.md" ]; then
-              echo "Validando: ${skill_dir%/}"
-              python3 scripts/quick_validate.py "$skill_dir" || EXIT_CODE=1
-            fi
-           done
-           exit $EXIT_CODE
+- name: Validate all skills
+  run: |
+    EXIT_CODE=0
+    chmod +x scripts/quick_validate.py
+    for skill_dir in */; do
+      if [[ $skill_dir == tests/* ]]; then
+        continue
+      fi
+      if [ -f "${skill_dir}SKILL.md" ]; then
+        echo "Validando: ${skill_dir%/}"
+        python3 scripts/quick_validate.py "$skill_dir" || EXIT_CODE=1
+      fi
+    done
+    exit $EXIT_CODE
+
+- name: Install PyYAML
+  run: python3 -m pip install PyYAML
 
 - name: Run ruff checks
   run: uv run ruff check .
@@ -47,3 +50,4 @@ jobs:
 
 - name: Run tests
   run: uv run pytest tests/ -v
+
