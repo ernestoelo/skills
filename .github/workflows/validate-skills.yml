@@ -43,10 +43,10 @@ jobs:
         run: uv run ruff check .
 
       - name: Run ruff formatting check
-        run: ls -R $GITHUB_WORKSPACE
-         echo Debugging path resolution
-         pwd
-         uv run ruff format --check .
+        run: - run: ls -R $GITHUB_WORKSPACE
+         - run: echo "Debugging path resolution"
+         - run: pwd
+         - run: uv run ruff format --check .
 
       - name: Run tests
         run: uv run pytest tests/ -v
