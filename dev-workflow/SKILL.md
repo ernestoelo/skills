@@ -71,8 +71,8 @@ python3 scripts/auto_correct_ci.py --workflow "Skill Validation CI" --commit <co
 #### Automated CI/CD with GitHub Actions
 The repository includes automated CI/CD monitoring via `.github/workflows/auto-correct-ci.yml`:
 - Triggers on CI failures (e.g., "Skill Validation CI").
-- Iterates auto-corrections up to 3 times for all common issues (linting, tests, builds, deps, YAML, file size).
-- Notifies via GitHub issue if fails after 3 attempts.
+- Iterates auto-corrections up to 5 times for all common issues (linting, tests, builds, deps, YAML, file size).
+- Notifies via GitHub issue if fails after 5 attempts.
 
 ## Inputs and Outputs
 ### Inputs
