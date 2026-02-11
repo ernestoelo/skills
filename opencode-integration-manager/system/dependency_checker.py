@@ -8,7 +8,7 @@ import os
 import subprocess
 import platform
 import logging
-from typing import List, Dict, Set
+from typing import List, Dict
 
 logger = logging.getLogger(__name__)
 

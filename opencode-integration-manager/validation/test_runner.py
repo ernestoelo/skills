@@ -4,11 +4,9 @@ Test Runner - Ejecución de tests automatizada
 Sigue las mejores prácticas de dev-workflow para testing.
 """
 
-import os
 import subprocess
 import logging
 from pathlib import Path
-from typing import List, Optional
 
 logger = logging.getLogger(__name__)
 

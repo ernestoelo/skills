@@ -5,10 +5,9 @@ Sigue las mejores prácticas de code-review para control de calidad.
 """
 
 import os
-import subprocess
 import logging
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import Dict, Any
 
 logger = logging.getLogger(__name__)
 

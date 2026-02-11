@@ -6,9 +6,8 @@ This MCP server provides automatic loading of skills based on conversation conte
 It analyzes messages and loads relevant skill instructions to enhance OpenCode conversations.
 """
 
-import os
 import json
-from typing import Optional, List, Dict, Any
+from typing import Optional, List
 from pathlib import Path
 from enum import Enum
 import re

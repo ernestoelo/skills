@@ -8,7 +8,7 @@ import os
 import subprocess
 import logging
 from pathlib import Path
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -135,9 +135,6 @@ class RepositoryManager:
         if "github.com/" in target_repo:
             parts = target_repo.split("github.com/")[1].split("/")
             if len(parts) >= 2:
-                owner = parts[0]
-                repo = parts[1].replace(".git", "")
-
                 # Obtener usuario actual de GitHub
                 result = subprocess.run(
                     ["gh", "auth", "status", "--show-token"],

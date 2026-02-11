@@ -7,7 +7,7 @@ Maneja la aplicación de cambios con resolución automática de conflictos.
 import os
 import subprocess
 import logging
-import difflib
+import shutil
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
@@ -230,9 +230,6 @@ class ChangeApplier:
         """Aplica cambios desde archivo .rej."""
         try:
             # Leer el archivo .rej y aplicar cambios manualmente
-            with open(rej_file, "r") as f:
-                rej_content = f.read()
-
             # Parsear cambios del .rej (simplificado)
             # En una implementación completa, esto sería más sofisticado
             target_file = self.repo_dir / file_path
@@ -273,14 +270,7 @@ class ChangeApplier:
             # Leer ambos archivos
             with open(source, "r") as f:
                 source_lines = f.readlines()
-            with open(target, "r") as f:
-                target_lines = f.readlines()
-
             # Usar difflib para merge inteligente
-            merger = difflib.unified_diff(
-                target_lines, source_lines, fromfile="target", tofile="source"
-            )
-
             # Para merge simple, si no hay conflictos obvios
             # En una implementación completa, usaríamos un merge driver
             merged_lines = source_lines  # Simplificado: usar versión nueva
@@ -294,7 +284,7 @@ class ChangeApplier:
 
     def _report_results(self, applied_changes: List[str], conflicts: List[str]):
         """Reporta los resultados de la aplicación de cambios."""
-        logger.info(f"📊 Change Application Summary:")
+        logger.info("📊 Change Application Summary:")
         logger.info(f"  ✅ Applied: {len(applied_changes)} files")
         logger.info(f"  ⚠️  Conflicts resolved: {len(conflicts)} files")
 

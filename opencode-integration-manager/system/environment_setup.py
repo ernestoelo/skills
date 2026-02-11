@@ -4,11 +4,10 @@ Environment Setup - Configuración de entorno de desarrollo
 Sigue las mejores prácticas de sys-env para setup seguro.
 """
 
-import os
 import subprocess
 import logging
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict
 
 logger = logging.getLogger(__name__)
 

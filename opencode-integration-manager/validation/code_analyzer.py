@@ -4,11 +4,10 @@ Code Analyzer - Análisis estático de código
 Sigue las mejores prácticas de code-review para validación de código.
 """
 
-import os
 import subprocess
 import logging
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import List
 
 logger = logging.getLogger(__name__)
 

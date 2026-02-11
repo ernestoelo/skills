@@ -105,7 +105,6 @@ def validate_config_file() -> bool:
 def validate_integration_files() -> bool:
     """Validate that all integration files exist."""
     script_dir = Path(__file__).parent.parent
-    project_root = script_dir.parent
 
     required_files = [
         # Integration files

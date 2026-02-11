@@ -74,14 +74,48 @@ The repository includes automated CI/CD monitoring via `.github/workflows/auto-c
 - Iterates auto-corrections up to 5 times for all common issues (linting, tests, builds, deps, YAML, file size).
 - Notifies via GitHub issue if fails after 5 attempts.
 
-#### Portable CI Auto-Correction
-Automatically detect CI failures and apply safe fixes iteratively in any repository:
-- Supported fixes: Linting (ruff --fix), tests (pytest), builds (python -m build) – limited to safe, non-destructive changes.
-- Triggered by GitHub Actions webhooks on workflow failure.
-- Checks for missing dependencies (gh CLI, GITHUB_TOKEN) and installs/configures if needed.
-- Includes post-push CI verification with initial wait for CI processing and filtering by commit SHA to avoid confusion with auto-correct runs.
-- Command: `python3 scripts/auto_correct_portable.py --workflow <workflow_name>`.
-- For porting: Copy `scripts/auto_correct_portable.py`, `scripts/verify_ci.py`, `scripts/post-commit-hook.sh`, and `.github/workflows/auto-correct-on-failure.yml` to `<target-repo>`. Run `chmod +x scripts/post-commit-hook.sh && cp scripts/post-commit-hook.sh .git/hooks/post-commit` for automatic verification after commits.
+#### Automated Workflow Monitoring and Iterative Correction
+Monitor GitHub Actions workflows post-commit, verify success, and apply iterative corrections until CI/CD converges. This ensures robust automation across repositories, following @architect for modular structure, @mcp-builder for seamless integration, and @sys-env for dependency management.
+
+- **Process Overview:**
+  1. Post-push, poll for workflow runs matching the commit SHA.
+  2. Verify conclusion (success/failure).
+  3. On failure, fetch logs and detect error types (YAML syntax, linting, tests, builds).
+  4. Apply safe fixes iteratively (up to 5 attempts).
+  5. Re-commit, push, and monitor again.
+  6. Converge on success or notify for manual intervention.
+
+- **Generic Implementation:**
+  - Works in any repository with GitHub Actions and gh CLI.
+  - Portable scripts detect repo context automatically.
+  - Integrates @sys-env for installing missing deps (gh, jq).
+
+- **Usage:**
+  ```bash
+  # After commit and push, run monitoring script
+  python3 scripts/monitor_ci_iterative.py --workflow "<workflow-name>" --max-attempts 5
+  ```
+  - Monitors until workflow for current commit SHA completes.
+  - Auto-corrects common issues and re-commits.
+  - Outputs status and logs for transparency.
+
+- **Supported Corrections (Safe, Non-Destructive):**
+  - **YAML Syntax:** Validate and fix indentation/structure using Python yaml library.
+  - **Linting:** Run ruff --fix or equivalent.
+  - **Tests:** Execute pytest with fixes.
+  - **Builds:** Run python -m build.
+  - **Dependencies:** Install missing packages via @sys-env.
+
+- **Integration with Other Skills:**
+  - @architect: Ensures modular script structure for portability.
+  - @mcp-builder: Provides protocol for external API interactions (GitHub API).
+  - @sys-env: Manages system deps for cross-platform compatibility.
+
+- **Porting to Any Repository:**
+  1. Copy `scripts/monitor_ci_iterative.py`, `scripts/auto_correct_portable.py`, `scripts/verify_ci.py` to `<target-repo>/scripts/`.
+  2. Ensure gh CLI and GITHUB_TOKEN access.
+  3. Run `python3 scripts/monitor_ci_iterative.py --workflow <name>` post-push.
+  - Universal: Adapts to repo's CI setup without hardcoded values.
 
 #### Local Development Automation (Experimental)
 For local development workflows, automate linting, staging, and committing (optional, non-mandatory):
@@ -146,6 +180,7 @@ To use this diagram generation kit in any repository:
 ### Version History
 | Version | Date       | Updates                                                  |
 |---------|------------|---------------------------------------------------------|
+| 2.1.0   | 2026-02-11 | Added automated workflow monitoring and iterative correction for generic CI/CD convergence across repositories.|
 | 2.0.0   | 2026-02-11 | Added experimental local auto-commit script for development automation.|
 | 1.9.2   | 2026-02-11 | Improved CI verification by filtering runs by commit SHA to avoid confusion with auto-correct workflows.|
 | 1.7.0   | 2026-02-11 | Integrated imgs/ and examples/ as permanent visual references for diagrams in any repo.|
@@ -159,3 +194,5 @@ To use this diagram generation kit in any repository:
 
 ## Resources
 - `references/ci-cd-best-practices.md`: CI/CD monitoring and troubleshooting guides.
+- `scripts/monitor_ci_iterative.py`: Automated monitoring and iterative correction script.
+- `scripts/auto_correct_portable.py`: Portable auto-correction for CI issues.
