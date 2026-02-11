@@ -11,7 +11,6 @@ Usage: python3 auto_commit_local.py --message "commit message" [--force]
 import subprocess
 import sys
 import argparse
-import os
 
 
 def run_command(cmd, cwd=None):

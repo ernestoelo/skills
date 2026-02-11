@@ -99,7 +99,7 @@ def apply_safe_fix(error_type):
     fixes = {
         "linting": [
             "python3",
-            "../code-review/scripts/analyze.py",
+            "code-review/scripts/analyze.py",
             "--dir",
             ".",
             "--ci",
