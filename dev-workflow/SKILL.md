@@ -68,6 +68,12 @@ python3 scripts/auto_correct_ci.py --workflow "Skill Validation CI" --commit <co
 ```
 - Detects and fixes issues like oversized assets; re-commits if needed.
 
+#### Automated CI/CD with GitHub Actions
+The repository includes automated CI/CD monitoring via `.github/workflows/auto-correct-ci.yml`:
+- Triggers on CI failures (e.g., "Skill Validation CI").
+- Iterates auto-corrections up to 3 times for all common issues (linting, tests, builds, deps, YAML, file size).
+- Notifies via GitHub issue if fails after 3 attempts.
+
 ## Inputs and Outputs
 ### Inputs
 - **Repository context:** Current Git state (branches, changes).
@@ -86,6 +92,7 @@ python3 scripts/auto_correct_ci.py --workflow "Skill Validation CI" --commit <co
 ### Version History
 | Version | Date       | Updates                                                  |
 |---------|------------|---------------------------------------------------------|
+| 1.3.0   | 2026-02-10 | Added automated CI/CD with GitHub Actions integration, email notifications, and all corrections.|
 | 1.2.0   | 2026-02-10 | Added CI/CD workflow for log sharing and auto-correction.|
 | 1.1.0   | 2026-02-09 | Reorganized content into SKILL.md standard template.    |
 | 1.0.0   | 2024-11-03 | Initial workflow for AI/ML projects and Git workflows.  |

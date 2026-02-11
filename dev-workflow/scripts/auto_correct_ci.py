@@ -12,6 +12,8 @@ def auto_correct_ci(workflow_name, commit_sha):
             "file too large": lambda: remove_large_files(),
             "YAML validation failed": lambda: fix_yaml_syntax(),
             "missing dependency": lambda: install_missing_deps(),
+            "linting error": lambda: fix_linting(),
+            "build failure": lambda: fix_build_errors(),
         },
         "Validate Skills": {
             "test failure": lambda: run_tests_locally(),
@@ -69,6 +71,16 @@ def install_missing_deps():
 def run_tests_locally():
     """Run tests to fix failures."""
     subprocess.run(["uv", "run", "pytest"], check=True)
+
+
+def fix_linting():
+    """Fix common linting errors."""
+    subprocess.run(["uv", "run", "ruff", "check", ".", "--fix"], check=True)
+
+
+def fix_build_errors():
+    """Placeholder: Fix build errors (e.g., install build tools)."""
+    subprocess.run(["uv", "sync"], check=True)  # Assume deps fix builds
 
 
 def notify_validation(workflow_name, commit_sha):

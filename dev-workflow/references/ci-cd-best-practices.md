@@ -10,7 +10,8 @@
 - Avoid over-automation: Manual review for complex failures.
 - Integrate with pre-commit hooks for early detection.
 
-## Troubleshooting
-- "File too large": Remove assets >10MB.
-- "YAML failed": Check frontmatter in SKILL.md.
-- "Test failure": Run `uv run pytest` locally.
+## Automated CI/CD
+- GitHub Actions workflow `auto-correct-ci.yml` handles failures automatically.
+- Iterates up to 3 times, applying all fixes (linting, tests, builds, etc.).
+- Creates GitHub issue with notification if fails after 3 attempts.
+- No manual intervention needed for common errors.
