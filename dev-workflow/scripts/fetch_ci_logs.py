@@ -1,6 +1,7 @@
 import subprocess
 import json
 import sys
+import os
 
 
 def fetch_ci_logs(workflow_name, commit_sha=None):
