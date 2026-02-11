@@ -23,7 +23,7 @@ def check_dependencies():
             os_release = f.read().lower()
             is_ubuntu = "ubuntu" in os_release
             is_arch = "arch" in os_release
-    except:
+    except Exception:
         is_ubuntu = is_arch = False
 
     # Check gh
