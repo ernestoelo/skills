@@ -13,22 +13,39 @@ import subprocess
 import sys
 import json
 import os
-from pathlib import Path
 
 
 def check_dependencies():
     """Check and install missing dependencies (gh, token)."""
+    # Check OS
+    try:
+        with open("/etc/os-release") as f:
+            os_release = f.read().lower()
+            is_ubuntu = "ubuntu" in os_release
+            is_arch = "arch" in os_release
+    except:
+        is_ubuntu = is_arch = False
+
     # Check gh
     try:
         subprocess.run(["gh", "--version"], capture_output=True, check=True)
     except (subprocess.CalledProcessError, FileNotFoundError):
         print("GitHub CLI (gh) not found. Installing...")
-        subprocess.run(["pacman", "-S", "--noconfirm", "github-cli"], check=True)
+        if is_ubuntu:
+            subprocess.run(["sudo", "apt-get", "update"], check=True)
+            subprocess.run(["sudo", "apt-get", "install", "-y", "gh"], check=True)
+        elif is_arch:
+            subprocess.run(
+                ["sudo", "pacman", "-S", "--noconfirm", "github-cli"], check=True
+            )
+        else:
+            print("Unsupported OS for auto-install. Please install gh manually.")
+            sys.exit(1)
 
     # Check token
     token = os.getenv("GITHUB_TOKEN")
     if not token:
-        print("GITHUB_TOKEN not set. Please set it or configure gh auth.")
+        print("GITHUB_TOKEN not set. Please set it in environment or GitHub secrets.")
         sys.exit(1)
 
 
