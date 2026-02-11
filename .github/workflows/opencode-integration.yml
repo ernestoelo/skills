@@ -21,7 +21,7 @@ on:
         default: false
 
 env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   PYTHON_VERSION: '3.12'
 
 jobs:
@@ -96,26 +96,22 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y git curl
 
-      - name: Install GitHub CLI
-        run: |
-          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-          sudo apt update
-          sudo apt install gh
+       - name: Install GitHub CLI
+         run: |
+           curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+           echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+           sudo apt update
+           sudo apt install gh
 
-      - name: Authenticate GitHub CLI
-        run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
+       - name: Prepare integration environment
+         id: prepare
+         run: |
+           # Determine target repository
+           TARGET_REPO="${{ github.event.inputs.target_repo || 'https://github.com/opencode-ai/opencode' }}"
 
-      - name: Prepare integration environment
-        id: prepare
-        run: |
-          # Determine target repository
-          TARGET_REPO="${{ github.event.inputs.target_repo || 'https://github.com/opencode-ai/opencode' }}"
-
-          echo "Target repository: $TARGET_REPO"
-          echo "target_repo=$TARGET_REPO" >> $GITHUB_OUTPUT
-          echo "ready=true" >> $GITHUB_OUTPUT
+           echo "Target repository: $TARGET_REPO"
+           echo "target_repo=$TARGET_REPO" >> $GITHUB_OUTPUT
+           echo "ready=true" >> $GITHUB_OUTPUT
 
   run-integration:
     name: Run OpenCode Integration
