@@ -71,4 +71,4 @@ done
 - `references/workflow-details.md`: Step-by-step guide.
 - `references/context-limits.md`: Model windows.
 - `references/robotics-examples.md`: ZedBox applications.
-- `assets/recursive_language_models_paper.pdf`: Full RLM paper for technical details.
+- `docs/assets/recursive_language_models_paper.pdf`: Full RLM paper for technical details.
