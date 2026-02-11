@@ -51,22 +51,45 @@ class OpenCodeIntegrationManager:
         try:
             logger.info("🚀 Starting OpenCode integration...")
 
-            # Simplified for testing - just validate files exist
-            import os
-            from pathlib import Path
+            # 1. Configurar entorno
+            if not self.setup_environment():
+                return False
 
-            required_files = [
-                "types/proactive-loader.ts",
-                "types/skill-modified.ts",
-                "types/config-modified.ts",
-                "types/session-modified.ts",
-                "OPENCODE_PR_README.md",
-            ]
+            # 2. Preparar repositorio
+            if not self.prepare_repository(target_repo):
+                return False
 
-            for file in required_files:
-                if not Path(file).exists():
-                    logger.error(f"Missing file: {file}")
-                    return False
+            # 3. Aplicar cambios
+            if not self.apply_changes(changes_dir):
+                return False
+
+            # 4. Validar cambios
+            if not self.validate_changes():
+                return False
+
+            # 5. Commit automático
+            if auto_commit and not self.auto_commit():
+                return False
+
+            # 6. Ejecutar CI
+            if not self.run_ci():
+                return False
+
+            # 7. Crear PR
+            if create_pr and not self.create_pr():
+                return False
+
+            logger.info("✅ Integration completed successfully!")
+            return True
+
+        except Exception as e:
+            logger.error(f"❌ Integration failed: {e}")
+            return False
+
+            readme_path = Path(changes_dir).parent / "OPENCODE_PR_README.md"
+            if not readme_path.exists():
+                logger.error("Missing file: OPENCODE_PR_README.md")
+                return False
 
             logger.info("All required files found")
 
