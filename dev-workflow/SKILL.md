@@ -74,6 +74,16 @@ The repository includes automated CI/CD monitoring via `.github/workflows/auto-c
 - Iterates auto-corrections up to 5 times for all common issues (linting, tests, builds, deps, YAML, file size).
 - Notifies via GitHub issue if fails after 5 attempts.
 
+### Skills Architecture Diagrams
+Visual representation of the skills ecosystem and activation flow:
+- Central repository connects to individual skills.
+- Sync process links skills to platforms like OpenCode.
+- Automatic validation and loading at conversation start enables autonomous AI behavior.
+
+![Skills Architecture](assets/diagrams/skills-architecture.png)
+
+*(Diagram generated from `assets/diagrams/skills-architecture.puml` using PlantUML. Run `plantuml skills-architecture.puml` to regenerate PNG.)*
+
 ## Inputs and Outputs
 ### Inputs
 - **Repository context:** Current Git state (branches, changes).
@@ -92,6 +102,7 @@ The repository includes automated CI/CD monitoring via `.github/workflows/auto-c
 ### Version History
 | Version | Date       | Updates                                                  |
 |---------|------------|---------------------------------------------------------|
+| 1.4.0   | 2026-02-11 | Added skills architecture diagrams in PlantUML style.   |
 | 1.3.0   | 2026-02-10 | Added automated CI/CD with GitHub Actions integration, email notifications, and all corrections.|
 | 1.2.0   | 2026-02-10 | Added CI/CD workflow for log sharing and auto-correction.|
 | 1.1.0   | 2026-02-09 | Reorganized content into SKILL.md standard template.    |
