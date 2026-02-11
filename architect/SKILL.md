@@ -41,7 +41,40 @@ python3 scripts/package_skill.py <skill-path> [output-dir]
 - Ensures the skill meets structural requirements.
 - Creates a distributable `.skill` package.
 
-### Agent Configuration
+### Global Skill Activation
+For platforms like OpenCode that support declarative skill loading, activate all skills at conversation start to ensure availability without runtime code execution.
+
+```bash
+python3 architect/scripts/activate_all.py
+```
+- Discovers all skills in the repository.
+- Validates each skill using `quick_validate.py`.
+- Outputs a summary of valid skills ready for activation.
+- Run from repository root; fails if invalid skills found.
+
+**Example Output:**
+```
+🔍 Discovering skills...
+Found 7 skill(s): architect, dev-workflow, mcp-builder, pdf, recursive-context, sys-env, web-scraper
+
+🔧 Validating skills...
+✅ architect: Skill is valid!
+✅ dev-workflow: Skill is valid!
+✅ mcp-builder: Skill is valid!
+✅ pdf: Skill is valid!
+✅ recursive-context: Skill is valid!
+✅ sys-env: Skill is valid!
+✅ web-scraper: Skill is valid!
+
+📋 Summary:
+Total skills: 7
+Valid skills: 7
+Available for activation: architect, dev-workflow, mcp-builder, pdf, recursive-context, sys-env, web-scraper
+
+✨ All skills validated! Ready for OpenCode activation.
+```
+
+**Integration Notes:** Use in OpenCode conversations requiring multiple skills. No platform restart needed if declarative. Run after adding new skills or updates.
 #### Create a New Agent
 For Type B workflows, create an `.agent.md` file:
 ```markdown
@@ -73,6 +106,7 @@ Responsibilities, approaches, and task guidelines for the agent.
 ### Version History
 | Version | Date       | Updates                                                |
 |---------|------------|-------------------------------------------------------|
+| 1.2.0   | 2026-02-10 | Added global skill activation script for OpenCode support|
 | 1.1.0   | 2026-02-09 | Applied standardized SKILL.md template for consistency|
 | 1.0.0   | 2025-05-16 | Initial documentation for skills and agents scaffolding|
 
