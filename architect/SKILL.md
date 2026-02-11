@@ -24,6 +24,13 @@ python3 ../scripts/init_skill.py <skill-name> --path <output-dir>
 - Generates a skill folder with `SKILL.md` and template resources.
 - Naming follows kebab-case conventions (e.g., `pdf-processor`).
 - **Post-Scaffold Step:** Run `./scripts/sync-skills.sh` to sync the new skill to AI platforms (e.g., OpenCode). Restart your assistant if needed for detection.
+- **Apply Development Workflow:** Always run @dev-workflow after scaffolding: validate, commit, push, and verify CI.
+  ```bash
+  python3 scripts/quick_validate.py <skill-name>
+  python3 dev-workflow/scripts/auto_correct_portable.py --workflow "Skill Validation CI"
+  git add . && git commit -m "feat: add <skill-name> skill"
+  git push
+  ```
 
 #### Validate and Package
 ```bash
@@ -109,6 +116,7 @@ Responsibilities, approaches, and task guidelines for the agent.
 ### Version History
 | Version | Date       | Updates                                                |
 |---------|------------|-------------------------------------------------------|
+| 1.4.0   | 2026-02-11 | Added post-scaffold @dev-workflow application for consistent skill creation|
 | 1.3.0   | 2026-02-11 | Added automatic skill activation for OpenCode via sync script|
 | 1.2.0   | 2026-02-10 | Added global skill activation script for OpenCode support|
 | 1.1.0   | 2026-02-09 | Applied standardized SKILL.md template for consistency|

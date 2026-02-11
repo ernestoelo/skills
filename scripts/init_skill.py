@@ -15,6 +15,7 @@ import argparse
 import shutil
 import sys
 from pathlib import Path
+import subprocess
 
 # Ensure sibling modules are importable regardless of CWD
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -216,7 +217,7 @@ def _validate_name_early(skill_name: str) -> str | None:
     return None
 
 
-def init_skill(skill_name: str, path: str):
+def init_skill(skill_name: str, path: str, apply_dev_workflow: bool = False):
     """
     Initialize a new skill directory with template SKILL.md.
 
@@ -307,6 +308,37 @@ def init_skill(skill_name: str, path: str):
         print(f"❌ Error while running validation: {exc}")
         return None
 
+    if apply_dev_workflow:
+        print("\n🔧 Applying dev-workflow...")
+        try:
+            # Run auto-correct
+            subprocess.run(
+                [
+                    "python3",
+                    "dev-workflow/scripts/auto_correct_portable.py",
+                    "--workflow",
+                    "Skill Validation CI",
+                ],
+                check=True,
+                cwd=skill_dir.parent.parent,
+            )
+
+            # Git operations
+            subprocess.run(["git", "add", "."], check=True, cwd=skill_dir.parent.parent)
+            subprocess.run(
+                ["git", "commit", "-m", f"feat: add {skill_name} skill"],
+                check=True,
+                cwd=skill_dir.parent.parent,
+            )
+            subprocess.run(["git", "push"], check=True, cwd=skill_dir.parent.parent)
+
+            print(
+                "✅ Dev-workflow applied successfully: validated, committed, and pushed."
+            )
+        except subprocess.CalledProcessError as exc:
+            print(f"❌ Dev-workflow failed: {exc}")
+            return None
+
     return skill_dir
 
 
@@ -323,13 +355,18 @@ def main() -> None:
         required=True,
         help="Parent directory where the skill folder will be created",
     )
+    parser.add_argument(
+        "--apply-dev-workflow",
+        action="store_true",
+        help="Apply dev-workflow: validate, commit, push after creation",
+    )
     args = parser.parse_args()
 
     print(f"🚀 Initializing skill: {args.skill_name}")
     print(f"   Location: {args.path}")
     print()
 
-    result = init_skill(args.skill_name, args.path)
+    result = init_skill(args.skill_name, args.path, args.apply_dev_workflow)
     sys.exit(0 if result else 1)
 
 

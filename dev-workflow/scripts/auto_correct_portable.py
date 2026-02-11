@@ -97,7 +97,22 @@ def detect_error_type():
 def apply_safe_fix(error_type):
     """Apply safe fixes based on error type."""
     fixes = {
-        "linting": ["uv", "run", "ruff", "check", "--fix", "."],
+        "linting": [
+            "python3",
+            "../code-review/scripts/analyze.py",
+            "--dir",
+            ".",
+            "--ci",
+            "--check",
+            "lint",
+            "&&",
+            "uv",
+            "run",
+            "ruff",
+            "check",
+            "--fix",
+            ".",
+        ],
         "tests": ["uv", "run", "pytest"],  # Run tests to check
         "builds": ["uv", "run", "python", "-m", "build"],  # Build check
     }
