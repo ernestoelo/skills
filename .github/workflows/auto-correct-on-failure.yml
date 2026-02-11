@@ -27,6 +27,8 @@ jobs:
       - name: Verify CI Status Post-Auto-Correct
         if: success()
         run: |
+          echo "Waiting for CI to process auto-correct push..."
+          sleep 30
           echo "Verifying CI status after auto-correct..."
           python3 dev-workflow/scripts/verify_ci.py --workflow "${{ github.event.workflow_run.name }}"
         env:

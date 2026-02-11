@@ -60,9 +60,16 @@ def get_last_run_status(workflow_name):
 def verify_ci(workflow_name, timeout=300):
     """Verify CI status, wait up to timeout seconds."""
     print(f"Verifying CI for '{workflow_name}'...")
+    print("Waiting for CI to process...")
+    time.sleep(30)  # Initial wait
+
     start_time = time.time()
     while time.time() - start_time < timeout:
         status, conclusion = get_last_run_status(workflow_name)
+        if status is None:
+            print("No CI run found yet, waiting...")
+            time.sleep(10)
+            continue
         if status == "completed":
             if conclusion == "success":
                 print("✅ CI verification: SUCCESS")

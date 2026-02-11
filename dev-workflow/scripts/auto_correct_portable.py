@@ -97,14 +97,28 @@ def apply_safe_fix(error_type):
     return False
 
 
+def re_commit():
+    """Stage, commit, and push changes."""
+    subprocess.run(["git", "add", "."], check=True)
+    subprocess.run(["git", "commit", "-m", "fix: auto-correct CI issues"], check=True)
+    subprocess.run(["git", "push"], check=True)
+
+
 def verify_ci_after_push(workflow_name, timeout=300):
     """Verify CI status after push, wait up to timeout seconds."""
     import time
 
     print(f"Verifying CI status for '{workflow_name}' after push...")
+    print("Waiting for CI to process the push...")
+    time.sleep(30)  # Initial wait for GitHub to detect push and start workflow
+
     start_time = time.time()
     while time.time() - start_time < timeout:
         status, conclusion = get_last_run_status(workflow_name)
+        if status is None:
+            print("No CI run found yet, waiting...")
+            time.sleep(10)
+            continue
         if status == "completed":
             if conclusion == "success":
                 print("CI verification: SUCCESS")

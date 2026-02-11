@@ -12,6 +12,8 @@ if [ -f "$REPO_ROOT/scripts/verify_ci.py" ]; then
     # For simplicity, default to "Validate Skills" or parse from commit
     WORKFLOW_NAME="Validate Skills"  # Customize per repo
 
+    echo "Waiting for CI processing after commit..."
+    sleep 30
     echo "Running post-commit CI verification..."
     python3 "$REPO_ROOT/scripts/verify_ci.py" --workflow "$WORKFLOW_NAME"
 else
