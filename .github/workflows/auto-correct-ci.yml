@@ -33,16 +33,16 @@ jobs:
           pip install uv
           uv sync
 
-       - name: Install GitHub CLI
-         run: |
-           curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-           echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-           sudo apt update
-           sudo apt install gh
+      - name: Install GitHub CLI
+        run: |
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install gh
 
-       - name: Authenticate GitHub CLI
-         run: |
-           gh auth login --with-token <<< ${{ github.token }}
+      - name: Authenticate GitHub CLI
+        run: |
+          gh auth login --with-token <<< ${{ github.token }}
 
       - name: Run Auto-Correct (Attempt 1)
         id: attempt1
@@ -83,15 +83,49 @@ jobs:
           python3 dev-workflow/scripts/auto_correct_ci.py --workflow "${{ github.event.workflow_run.name }}" --commit ${{ github.event.workflow_run.head_sha }}
         continue-on-error: true
 
-      - name: Notify on Failure After 3 Attempts
-        if: steps.check2.outputs.fixed == 'false' && steps.attempt3.outcome == 'failure'
+      - name: Check if Fixed
+        id: check3
+        if: steps.check2.outputs.fixed == 'false'
+        run: |
+          if [ "${{ steps.attempt3.outcome }}" == "success" ]; then
+            echo "fixed=true" >> $GITHUB_OUTPUT
+          else
+            echo "fixed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run Auto-Correct (Attempt 4)
+        if: steps.check3.outputs.fixed == 'false'
+        id: attempt4
+        run: |
+          python3 dev-workflow/scripts/auto_correct_ci.py --workflow "${{ github.event.workflow_run.name }}" --commit ${{ github.event.workflow_run.head_sha }}
+        continue-on-error: true
+
+      - name: Check if Fixed
+        id: check4
+        if: steps.check3.outputs.fixed == 'false'
+        run: |
+          if [ "${{ steps.attempt4.outcome }}" == "success" ]; then
+            echo "fixed=true" >> $GITHUB_OUTPUT
+          else
+            echo "fixed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run Auto-Correct (Attempt 5)
+        if: steps.check4.outputs.fixed == 'false'
+        id: attempt5
+        run: |
+          python3 dev-workflow/scripts/auto_correct_ci.py --workflow "${{ github.event.workflow_run.name }}" --commit ${{ github.event.workflow_run.head_sha }}
+        continue-on-error: true
+
+      - name: Notify on Failure After 5 Attempts
+        if: steps.check4.outputs.fixed == 'false' && steps.attempt5.outcome == 'failure'
         uses: actions/github-script@v7
         with:
           script: |
             github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: 'CI Auto-Correct Failed After 3 Attempts',
-              body: 'The CI workflow ${{ github.event.workflow_run.name }} failed and auto-correction did not succeed after 3 attempts. Manual intervention required.\n\nCommit: ${{ github.event.workflow_run.head_sha }}\n\nWorkflow Run: ${{ github.event.workflow_run.html_url }}',
+              title: 'CI Auto-Correct Failed After 5 Attempts',
+              body: 'The CI workflow ${{ github.event.workflow_run.name }} failed and auto-correction did not succeed after 5 attempts. Manual intervention required.\n\nCommit: ${{ github.event.workflow_run.head_sha }}\n\nWorkflow Run: ${{ github.event.workflow_run.html_url }}',
               assignees: [context.actor]
             })
