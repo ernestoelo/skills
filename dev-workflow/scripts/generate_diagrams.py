@@ -6,9 +6,7 @@ Generates PNG diagrams from PlantUML files. If PlantUML is not installed,
 provides instructions using sys-env for installation on Arch Linux.
 """
 
-import subprocess
-import sys
-from pathlib import Path
+import getpass
 
 
 def check_plantuml():
@@ -27,19 +25,26 @@ def check_plantuml():
 
 
 def install_plantuml_via_sys_env():
-    """Provide sys-env style installation instructions and attempt automatic install."""
+    """Provide interactive prompt for password and install via @sys-env."""
     print("Activating @sys-env/SKILL.md for installation:")
-    print("If NOPASSWD is configured for pacman, attempting automatic install...")
+    print(
+        "Enter your sudo password to install PlantUML (interactive prompt for security):"
+    )
+    password = getpass.getpass("Password: ")
     try:
-        subprocess.run(["pacman", "-S", "--noconfirm", "plantuml"], check=True)
+        # Use echo to pipe password to sudo -S
+        proc = subprocess.run(
+            ["sudo", "-S", "pacman", "-S", "--noconfirm", "plantuml"],
+            input=password + "\n",
+            text=True,
+            capture_output=True,
+            check=True,
+        )
         print("PlantUML installed successfully via @sys-env.")
         return True
-    except subprocess.CalledProcessError:
-        print(
-            "Automatic install failed. Configure NOPASSWD in /etc/sudoers as per @sys-env/SKILL.md:"
-        )
-        print("  your_username ALL=(ALL) NOPASSWD: /usr/bin/pacman")
-        print("Then run: pacman -S --noconfirm plantuml")
+    except subprocess.CalledProcessError as e:
+        print(f"Installation failed: {e.stderr}")
+        print("Check @sys-env/SKILL.md for manual installation or NOPASSWD config.")
         return False
 
 

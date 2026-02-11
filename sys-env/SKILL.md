@@ -52,8 +52,17 @@ pacman -S --noconfirm <package>
 - Use in scripts when packages are missing (e.g., plantuml).
 - @sys-env activates automatically on installation requests in plans/builds.
 
+#### Interactive Prompts for Security
+For secure installations, scripts prompt for sudo password:
+```bash
+# Example in script
+Enter your sudo password: [hidden input]
+```
+- Uses getpass for hidden input; no password stored.
+- Fallback if NOPASSWD not configured.
+
 #### Integration with Other Skills
-When a skill/script requires a package (e.g., @dev-workflow for diagrams), @sys-env provides installation guidance and executes if NOPASSWD is configured.
+When a skill/script requires a package (e.g., @dev-workflow for diagrams), @sys-env provides installation with prompts or NOPASSWD.
 
 ## Best Practices and Version History
 ### Best Practices
@@ -64,5 +73,6 @@ When a skill/script requires a package (e.g., @dev-workflow for diagrams), @sys-
 ### Version History
 | Version | Date       | Updates |
 |---------|------------|---------|
+| 1.2.0   | 2026-02-11 | Added interactive prompts for secure package installation.|
 | 1.1.0   | 2026-02-11 | Added automatic package installation with NOPASSWD config.|
 | 1.0.0   | 2026-02-09 | Initial skill for Arch Linux + Hyprland management.|
