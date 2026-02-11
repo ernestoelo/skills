@@ -25,49 +25,9 @@ env:
   PYTHON_VERSION: '3.12'
 
 jobs:
-  validate-changes:
-    name: Validate Changes
+  integration:
+    name: OpenCode Integration
     runs-on: ubuntu-latest
-    outputs:
-      changes_valid: ${{ steps.validate.outputs.valid }}
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
-
-    - name: Install system dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y git curl
-
-    - name: Install GitHub CLI
-      run: |
-        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-        sudo apt update
-        sudo apt install gh
-
-    - name: Prepare integration environment
-      id: prepare
-      run: |
-        # Determine target repository
-        TARGET_REPO="${{ github.event.inputs.target_repo || 'https://github.com/opencode-ai/opencode' }}"
-
-        echo "Target repository: $TARGET_REPO"
-        echo "target_repo=$TARGET_REPO" >> $GITHUB_OUTPUT
-        echo "ready=true" >> $GITHUB_OUTPUT
-
-  run-integration:
-    name: Run OpenCode Integration
-    runs-on: ubuntu-latest
-    needs: prepare-integration
-    if: needs.prepare-integration.outputs.integration_ready == 'true'
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -82,127 +42,18 @@ jobs:
         python -m pip install --upgrade pip
         pip install pydantic requests pyyaml
 
-    - name: Setup Git
+    - name: Validate files
       run: |
-        git config --global user.name "OpenCode Integration"
-        git config --global user.email "integration@opencode.ai"
-
-    - name: Run integration script
-      id: integration
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        TARGET_REPO: ${{ needs.prepare-integration.outputs.target_repo }}
-        SKIP_CI: ${{ github.event.inputs.skip_ci || 'false' }}
-      run: |
-        # Create integration manager instance
-        cd opencode-integration-manager
-
-        # Run the integration
-        python scripts/run_integration.py \
-          --config ../config/opencode_config.json \
-          --target-repo "$TARGET_REPO" \
-          --changes-dir ../types \
-          --auto-commit \
-          --create-pr
-
-        # Check if integration succeeded
-        if [ $? -eq 0 ]; then
-          echo "integration_success=true" >> $GITHUB_OUTPUT
-        else
-          echo "integration_success=false" >> $GITHUB_OUTPUT
-        fi
-
-  validate-integration:
-    name: Validate Integration
-    runs-on: ubuntu-latest
-    needs: run-integration
-    if: needs.run-integration.result == 'success'
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
-
-    - name: Check integration results
-      run: |
-        # Check if PR was created successfully
-        if gh pr list --state open --json number,title | grep -q "proactive-skill-loader"; then
-          echo "✅ PR created successfully"
-        else
-          echo "⚠️ PR creation status unclear"
-        fi
-
-    - name: Run validation tests
-      run: |
-        # Run the proactive loader tests to ensure everything still works
-        if [ -f "test_proactive_loader.py" ]; then
-          python test_proactive_loader.py
-        else
-          echo "No test file found, skipping validation tests"
-        fi
-
-  auto-merge:
-    name: Auto-merge PR (if enabled)
-    runs-on: ubuntu-latest
-    needs: [run-integration, validate-integration]
-    if: |
-      needs.run-integration.result == 'success' &&
-      needs.validate-integration.result == 'success' &&
-      github.event.inputs.auto_merge == true
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Wait for CI checks
-      run: |
-        # Wait for CI to complete on the created PR
-        sleep 60
-
-        # Find the PR we just created
-        PR_NUMBER=$(gh pr list --state open --json number,title --jq '.[] | select(.title | contains("proactive-skill-loader")) | .number' | head -1)
-
-        if [ -n "$PR_NUMBER" ]; then
-          echo "Found PR #$PR_NUMBER"
-
-          # Wait for required approvals (configured in branch protection)
-          echo "Waiting for approvals..."
-          sleep 300  # Wait 5 minutes for manual approval
-
-          # Check if PR can be merged
-          MERGEABLE=$(gh pr view $PR_NUMBER --json mergeStateStatus -q .mergeStateStatus)
-
-          if [ "$MERGEABLE" = "CLEAN" ]; then
-            echo "✅ PR is ready for merge"
-            gh pr merge $PR_NUMBER --squash --delete-branch false
-            echo "✅ PR merged successfully"
-          else
-            echo "⚠️ PR not ready for merge: $MERGEABLE"
+        required_files=("types/proactive-loader.ts" "types/skill-modified.ts" "types/config-modified.ts" "types/session-modified.ts" "OPENCODE_PR_README.md")
+        for file in "${required_files[@]}"; do
+          if [ ! -f "$file" ]; then
+            echo "❌ Missing $file"
+            exit 1
           fi
-        else
-          echo "❌ Could not find the created PR"
-        fi
+        done
+        echo "✅ All files present"
 
-  cleanup:
-    name: Cleanup
-    runs-on: ubuntu-latest
-    needs: [run-integration]
-    if: always()
-    steps:
-    - name: Cleanup workspace
+    - name: Run integration
       run: |
-        echo "Cleaning up integration artifacts..."
-
-    - name: Send notification
-      if: needs.run-integration.result == 'success'
-      run: |
-        echo "🎉 OpenCode integration completed successfully!"
-        echo "Check the created PR for details."
-
-    - name: Send failure notification
-      if: needs.run-integration.result == 'failure'
-      run: |
-        echo "❌ OpenCode integration failed"
-        echo "Check the logs for details and fix any issues."
+        cd opencode-integration-manager
+        python scripts/run_integration.py --target-repo https://github.com/opencode-ai/opencode --changes-dir ../types --auto-commit --create-pr
