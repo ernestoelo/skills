@@ -6,11 +6,14 @@ description: Provides transparent workflows for unlimited context processing usi
 # Recursive Context Skill Guide
 
 ## Description
-The `recursive-context` skill unifies RLM logic with transparent workflows for handling infinite inputs. It treats large contexts as external environments, divides them into blocks, extracts key topics, provides evidence of full coverage, recommends focus based on problem context, mentions model context windows, and processes iteratively to prevent AI hallucinations.
+The `recursive-context` skill unifies RLM logic with transparent workflows for handling infinite inputs. It treats large contexts as external environments, divides them into blocks, extracts key topics, provides evidence of full coverage, recommends focus based on problem context, mentions model context windows, and processes iteratively to prevent AI hallucinations. Applicable to any textual or structured data, including codes, repositories, .md files, logs, datasets, and more.
 
 ## When to Use the Skill
 - **Large inputs:** Documents, logs, or codebases beyond context limits.
 - **Transparency needs:** Requiring evidence, recommendations, and iteration breakdowns.
+- **Code and repositories:** Analysis of large codebases for refactoring, debugging, or incremental processing by commits/branches.
+- **Documentation and .md files:** Processing of READMEs, changelogs, wikis, or technical docs.
+- **Data and information variety:** Logs, datasets, or any textual context exceeding model limits.
 
 ## Usage Guide
 ### Environment Setup and Compatibility
@@ -52,7 +55,7 @@ done
 
 ## Inputs and Outputs
 ### Inputs
-- **File path:** Input file (PDF, text, log).
+- **File path:** Input file (PDF, text, code, .md, log, dataset).
 - **Type/Problem:** e.g., "robotics-log" or "odometry-analysis".
 - **Context details:** Window size, iterations.
 
@@ -68,6 +71,7 @@ done
 - **Transparency:** Always show evidence and limits.
 - **Robotics:** Validate on ZedBox for logs/odometry.
 - **CI/CD:** Commit changes trigger GitHub Actions validation; use auto-correct for linting issues; monitor workflows via dev-workflow scripts.
+- **Code Analysis:** Process repositories incrementally by commits or branches for contextual focus; handle .md files for documentation insights.
 
 ### Version History
 | Version | Date       | Updates |
