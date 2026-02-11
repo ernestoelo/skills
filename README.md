@@ -56,7 +56,7 @@ uv run pytest tests/ -v
 ### Development Environment (optional, for running tests)
 
 ```bash
-cd ~/.copilot/skills
+cd ~/.copilot/workflows
 uv sync --group dev
 uv run pytest tests/ -v
 ```
@@ -455,4 +455,4 @@ If you fork this repository or create your own skills collection:
 
 3. **Customize skills**: Modify SKILL.md files as needed for your use cases
 
-4. **Test portability**: Ensure scripts work when repo is cloned to `~/.copilot/skills/` or synced to platform directories
+4. **Test portability**: Ensure scripts work when repo is cloned to `~/.copilot/workflows/` or synced to platform directories

@@ -10,7 +10,7 @@ When skills are stored in a git repository (recommended for version control and 
 
 ### GitHub Copilot (VSCode/Visual Studio)
 
-**Location:** `~/.copilot/skills/`
+**Location:** `~/.copilot/workflows/`
 
 **Setup:**
 - Clone repository directly to this location, OR
@@ -53,7 +53,7 @@ When skills are stored in a git repository (recommended for version control and 
 The best practice is to maintain skills in a **single git repository** and use the multi-platform sync script:
 
 ```
-~/skills-repo/              # Your git repository (e.g., ~/.copilot/skills)
+~/skills-repo/              # Your git repository (e.g., ~/.copilot/workflows)
 ├── .git/
 ├── scripts/
 │   └── sync-skills.sh      # Multi-platform sync script
@@ -62,20 +62,20 @@ The best practice is to maintain skills in a **single git repository** and use t
 └── skill-2/
 
 # GitHub Copilot (uses repository directly):
-~/.copilot/skills/  → This IS the repository
+~/.copilot/workflows/  → This IS the repository
 
 # Other platforms (symlinks to individual skills):
 ~/.config/opencode/skills/
-├── skill-1 → ~/.copilot/skills/skill-1
-├── skill-2 → ~/.copilot/skills/skill-2
+├── skill-1 → ~/.copilot/workflows/skill-1
+├── skill-2 → ~/.copilot/workflows/skill-2
 
 ~/.config/claude/skills/  (or ~/Library/Application Support/Claude/skills/ on macOS)
-├── skill-1 → ~/.copilot/skills/skill-1
-├── skill-2 → ~/.copilot/skills/skill-2
+├── skill-1 → ~/.copilot/workflows/skill-1
+├── skill-2 → ~/.copilot/workflows/skill-2
 
 ~/.config/cursor/skills/  (or ~/Library/Application Support/Cursor/skills/ on macOS)
-├── skill-1 → ~/.copilot/skills/skill-1
-├── skill-2 → ~/.copilot/skills/skill-2
+├── skill-1 → ~/.copilot/workflows/skill-1
+├── skill-2 → ~/.copilot/workflows/skill-2
 ```
 
 **Benefits:**
@@ -124,7 +124,7 @@ The `sync-skills.sh` script automates synchronization across all AI platforms:
 ║           SKILL SYNCHRONIZATION: Multi-Platform              ║
 ╚══════════════════════════════════════════════════════════════╝
 
-🔍 Searching for skills in: ~/.copilot/skills/
+🔍 Searching for skills in: ~/.copilot/workflows/
 
 📍 Platform Detection:
   ✅ OpenCode       → ~/.config/opencode/skills/
@@ -279,7 +279,7 @@ git pull  # Get latest changes + auto-syncs to all platforms (if git hook config
 
 1. Verify repository location:
    ```bash
-   ls -la ~/.copilot/skills/
+   ls -la ~/.copilot/workflows/
    ```
 
 2. GitHub Copilot reads directly from the repository (no sync needed)
@@ -308,7 +308,7 @@ git pull  # Get latest changes + auto-syncs to all platforms (if git hook config
 
 ### GitHub Copilot
 
-- Uses repository directly at `~/.copilot/skills/`
+- Uses repository directly at `~/.copilot/workflows/`
 - No sync needed (source directory)
 - Works in VSCode and Visual Studio
 
@@ -355,8 +355,8 @@ Starting from scratch:
 
 ```bash
 # 1. Clone repository to standard GitHub Copilot location
-git clone https://github.com/user/skills.git ~/.copilot/skills
-cd ~/.copilot/skills
+git clone https://github.com/user/skills.git ~/.copilot/workflows
+cd ~/.copilot/workflows
 
 # 2. GitHub Copilot is already set up (uses this directory directly)
 
@@ -373,9 +373,9 @@ git pull  # Should auto-sync to all platforms
 
 | Platform | Location (Linux) | Location (macOS) | Sync Method | Auto-Sync |
 |----------|-----------------|------------------|-------------|-----------|
-| GitHub Copilot | `~/.copilot/skills/` | `~/.copilot/skills/` | Direct (repository) | N/A |
+| GitHub Copilot | `~/.copilot/workflows/` | `~/.copilot/workflows/` | Direct (repository) | N/A |
 | OpenCode | `~/.config/opencode/skills/` | `~/.config/opencode/skills/` | Script + skill symlinks | Git hook |
 | Claude Desktop | `~/.config/claude/skills/` | `~/Library/Application Support/Claude/skills/` | Script + skill symlinks | Git hook |
 | Cursor | `~/.config/cursor/skills/` | `~/Library/Application Support/Cursor/skills/` | Script + skill symlinks | Git hook |
 
-**Recommendation:** Use the central repository approach at `~/.copilot/skills/` with `scripts/sync-skills.sh` and git hooks for the best multi-platform developer experience.
+**Recommendation:** Use the central repository approach at `~/.copilot/workflows/` with `scripts/sync-skills.sh` and git hooks for the best multi-platform developer experience.

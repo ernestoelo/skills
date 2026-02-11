@@ -91,7 +91,7 @@ For fully autonomous skill activation without @ mentions, use the `auto_skill_lo
 
 1. **Run the MCP Server:**
    ```bash
-   cd ~/.copilot/skills
+   cd ~/.copilot/workflows
    ./start_auto_skill_loader.sh
    # Or manually: ~/.local/bin/fastmcp run auto_skill_loader.py
    ```
