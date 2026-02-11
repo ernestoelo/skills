@@ -1,39 +1,24 @@
 @startuml Skills Architecture
 skinparam backgroundColor #FEFEFE
-skinparam sequenceParticipant underline
+skinparam componentStyle uml2
 
 title Skills Architecture and Activation Flow
 
-rectangle "Skills Repository\n(~/.copilot/skills/)" as Repo #LightBlue
+package "Skills Repository\n(~/.copilot/skills/)" as Repo #LightBlue {
+  component [architect] as Architect #LightGreen
+  component [dev-workflow] as DevWorkflow #LightGreen
+  component [mcp-builder] as McpBuilder #LightGreen
+  component [pdf] as Pdf #LightGreen
+  component [recursive-context] as RecursiveContext #LightGreen
+  component [sys-env] as SysEnv #LightGreen
+  component [web-scraper] as WebScraper #LightGreen
+}
 
-rectangle "architect" as Architect #LightGreen
-rectangle "dev-workflow" as DevWorkflow #LightGreen
-rectangle "mcp-builder" as McpBuilder #LightGreen
-rectangle "pdf" as Pdf #LightGreen
-rectangle "recursive-context" as RecursiveContext #LightGreen
-rectangle "sys-env" as SysEnv #LightGreen
-rectangle "web-scraper" as WebScraper #LightGreen
+package "OpenCode Platform\n(~/.config/opencode/skills/)" as OpenCode #LightYellow
 
-rectangle "OpenCode Platform\n(~/.config/opencode/skills/)" as OpenCode #LightYellow
+actor "Conversation Start" as Conversation #LightCoral
 
-rectangle "Conversation Start" as Conversation #LightCoral
-
-Repo --> Architect : contains
-Repo --> DevWorkflow : contains
-Repo --> McpBuilder : contains
-Repo --> Pdf : contains
-Repo --> RecursiveContext : contains
-Repo --> SysEnv : contains
-Repo --> WebScraper : contains
-
-Architect --> OpenCode : sync-skills.sh
-DevWorkflow --> OpenCode : sync-skills.sh
-McpBuilder --> OpenCode : sync-skills.sh
-Pdf --> OpenCode : sync-skills.sh
-RecursiveContext --> OpenCode : sync-skills.sh
-SysEnv --> OpenCode : sync-skills.sh
-WebScraper --> OpenCode : sync-skills.sh
-
+Repo --> OpenCode : sync-skills.sh
 OpenCode --> Conversation : activate_all.py\n(validates & loads)
 
 note right of OpenCode
@@ -42,7 +27,7 @@ note right of OpenCode
   AI uses skills autonomously.
 end note
 
-note over Repo
+note right of Repo
   Central hub for all skills.
   Managed with Git & CI/CD.
 end note
