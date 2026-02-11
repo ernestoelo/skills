@@ -4,6 +4,10 @@ skinparam sequenceParticipant underline
 
 title [Project/Architecture Name] Diagram
 
+' Reference imgs/ for simple flows (e.g., gitflow.png for linear processes)
+' Reference examples/ for complex architectures (e.g., biomass-web-architecture.png for production systems)
+' Always use colored blocks (#LightBlue, etc.), arrows, and brief notes for consistency
+
 ' Replace with your components
 rectangle "[Component 1]\n(e.g., Repository)" as Comp1 #LightBlue
 note right of Comp1 #LightBlue

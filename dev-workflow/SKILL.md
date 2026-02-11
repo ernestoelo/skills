@@ -94,6 +94,22 @@ python3 scripts/generate_diagrams.py --diagram <diagram_name>
 - Verifies PNG (existence, size >0) and auto-corrects by retrying up to 5 times if fails.
 - Example: `python3 scripts/generate_diagrams.py --diagram skills-architecture` creates `skills-architecture.png`.
 
+#### Visual References for Diagram Styles
+Always reference `imgs/` and `examples/` for consistent styles in any repository:
+- **imgs/ (Simple Flows):** Gitflow diagrams (gitflow.png, gitflow-feature-branch.png, gitflow-release-branch.png) – Use for linear process flows, standard colors, minimal annotations.
+- **examples/ (Complex Architectures):** Biomass diagrams (biomass-web-architecture.png, biomass-web-overview.png, biomass-web-prod-env.png) – Use for system architectures, production templates with blocks, colored arrows, and detailed notes.
+- When creating .puml, mimic layouts/colors from these to ensure visual appeal and uniformity across repos.
+
+#### Porting Diagram Generation to Other Repositories
+To use this diagram generation kit in any repository:
+1. Copy `scripts/generate_diagrams.py` to `<target-repo>/scripts/`.
+2. Copy templates from `assets/diagrams/templates/` to `<target-repo>/assets/diagrams/`.
+3. Copy `@sys-env/scripts/install_package.py` for dependency installation (or configure NOPASSWD manually).
+4. **Copy `assets/diagrams/imgs/` and `assets/diagrams/examples/` as visual reference libraries.**
+5. Create/edit `.puml` files in `<target-repo>/assets/diagrams/` following the style (colored blocks, arrows, notes).
+6. Run `python3 scripts/generate_diagrams.py --diagram <name>`; auto-installs PlantUML/graphviz if needed.
+- Ensures consistency: Visual appeal, colored arrows, brief notes, verification, and auto-correction. Always reference imgs/examples for styles.
+
 ## Inputs and Outputs
 ### Inputs
 - **Repository context:** Current Git state (branches, changes).
@@ -112,6 +128,8 @@ python3 scripts/generate_diagrams.py --diagram <diagram_name>
 ### Version History
 | Version | Date       | Updates                                                  |
 |---------|------------|---------------------------------------------------------|
+| 1.7.0   | 2026-02-11 | Integrated imgs/ and examples/ as permanent visual references for diagrams in any repo.|
+| 1.6.0   | 2026-02-11 | Added portable diagram generation kit for any repository.|
 | 1.5.0   | 2026-02-11 | Added automatic diagram generation with sys-env integration.|
 | 1.4.0   | 2026-02-11 | Added skills architecture diagrams in PlantUML style.   |
 | 1.3.0   | 2026-02-10 | Added automated CI/CD with GitHub Actions integration, email notifications, and all corrections.|
