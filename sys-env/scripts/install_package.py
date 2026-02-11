@@ -16,7 +16,7 @@ import sys
 def is_package_installed(package):
     """Check if package is installed."""
     try:
-        result = subprocess.run(
+        subprocess.run(
             ["pacman", "-Q", package], capture_output=True, text=True, check=True
         )
         print(f"Package '{package}' is already installed.")
@@ -28,7 +28,7 @@ def is_package_installed(package):
 def install_via_nopasswd(package):
     """Attempt installation using NOPASSWD sudo."""
     try:
-        result = subprocess.run(
+        subprocess.run(
             ["sudo", "-n", "pacman", "-S", "--noconfirm", package],
             capture_output=True,
             text=True,
