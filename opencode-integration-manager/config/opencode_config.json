@@ -1,0 +1,46 @@
+{
+  "repository": {
+    "fork": true,
+    "branch_prefix": "integration/opencode"
+  },
+  "branch": {
+    "prefix": "integration/opencode"
+  },
+  "merge": {
+    "conflict_resolution": "auto"
+  },
+  "commit": {
+    "message": "feat: integrate proactive skill loader\n\nAutomated integration of proactive skill loading functionality for automatic skill activation based on conversation context.\n\n- Pattern matching for English and Spanish keywords\n- Configurable auto-activation\n- TypeScript implementation\n\nResolves: Automatic skill activation without manual @ mentions",
+    "sign": false
+  },
+  "ci": {
+    "workflow": "ci",
+    "timeout": 1800,
+    "wait_for_completion": true
+  },
+  "pr": {
+    "title": "feat: Add proactive skill loader for automatic activation",
+    "reviewers": [],
+    "labels": ["enhancement", "integration", "automation"],
+    "draft": false
+  },
+  "git": {
+    "user": {
+      "name": "OpenCode Integration",
+      "email": "integration@opencode.ai"
+    }
+  },
+  "approvals": {
+    "required": 1,
+    "auto_merge": false,
+    "timeout_hours": 24
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "integration.log"
+  },
+  "notifications": {
+    "slack_webhook": null,
+    "email_on_failure": false
+  }
+}
