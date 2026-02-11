@@ -97,11 +97,29 @@ def apply_safe_fix(error_type):
     return False
 
 
-def re_commit():
-    """Stage, commit, and push changes."""
-    subprocess.run(["git", "add", "."], check=True)
-    subprocess.run(["git", "commit", "-m", "fix: auto-correct CI issues"], check=True)
-    subprocess.run(["git", "push"], check=True)
+def verify_ci_after_push(workflow_name, timeout=300):
+    """Verify CI status after push, wait up to timeout seconds."""
+    import time
+
+    print(f"Verifying CI status for '{workflow_name}' after push...")
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        status, conclusion = get_last_run_status(workflow_name)
+        if status == "completed":
+            if conclusion == "success":
+                print("CI verification: SUCCESS")
+                return True
+            else:
+                print(f"CI verification: FAILED (conclusion: {conclusion})")
+                return False
+        elif status in ["in_progress", "queued"]:
+            print("CI in progress, waiting...")
+            time.sleep(10)  # Poll every 10s
+        else:
+            print(f"CI status unknown: {status}")
+            time.sleep(10)
+    print("CI verification timeout.")
+    return False
 
 
 def main():
@@ -124,6 +142,8 @@ def main():
             print(f"CI failed (attempt {attempt}). Applying fix for {error_type}...")
             if apply_safe_fix(error_type):
                 re_commit()
+                if not verify_ci_after_push(workflow_name):
+                    print("Post-push CI verification failed. Manual check recommended.")
             else:
                 print(f"No fix available for {error_type}.")
         else:

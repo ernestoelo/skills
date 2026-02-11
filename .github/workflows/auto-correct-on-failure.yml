@@ -24,3 +24,10 @@ jobs:
         run: python3 dev-workflow/scripts/auto_correct_portable.py --workflow "${{ github.event.workflow_run.name }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Verify CI Status Post-Auto-Correct
+        if: success()
+        run: |
+          echo "Verifying CI status after auto-correct..."
+          python3 dev-workflow/scripts/verify_ci.py --workflow "${{ github.event.workflow_run.name }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
