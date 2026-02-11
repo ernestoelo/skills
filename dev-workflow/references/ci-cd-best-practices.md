@@ -15,3 +15,9 @@
 - Iterates up to 3 times, applying all fixes (linting, tests, builds, etc.).
 - Creates GitHub issue with notification if fails after 3 attempts.
 - No manual intervention needed for common errors.
+
+## Troubleshooting
+- "File too large": Remove assets >10MB.
+- "YAML failed": Check frontmatter in SKILL.md.
+- "Test failure": Run `uv run pytest` locally.
+- "Workflow Skipped": Check if previous CI passed; use `gh run view` for logs. For testing, push to main triggers auto-correct.
