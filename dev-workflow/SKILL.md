@@ -82,7 +82,16 @@ Visual representation of the skills ecosystem and activation flow:
 
 ![Skills Architecture](assets/diagrams/skills-architecture.png)
 
-*(Diagram generated from `assets/diagrams/skills-architecture.puml` using PlantUML. Run `plantuml skills-architecture.puml` to regenerate PNG.)*
+*(Diagram generated from `assets/diagrams/skills-architecture.puml` using PlantUML. Run `python3 scripts/generate_diagrams.py --diagram skills-architecture` to regenerate PNG automatically. If PlantUML is missing, uses @sys-env for installation.)*
+
+#### Diagram Generation
+Automatically generate PNG diagrams from PlantUML sources:
+```bash
+python3 scripts/generate_diagrams.py --diagram <diagram_name>
+```
+- Checks for PlantUML installation; if missing, integrates with @sys-env for safe installation on Arch Linux.
+- Generates PNG in the same directory as the .puml file.
+- Example: `python3 scripts/generate_diagrams.py --diagram skills-architecture` creates `skills-architecture.png`.
 
 ## Inputs and Outputs
 ### Inputs
@@ -102,6 +111,7 @@ Visual representation of the skills ecosystem and activation flow:
 ### Version History
 | Version | Date       | Updates                                                  |
 |---------|------------|---------------------------------------------------------|
+| 1.5.0   | 2026-02-11 | Added automatic diagram generation with sys-env integration.|
 | 1.4.0   | 2026-02-11 | Added skills architecture diagrams in PlantUML style.   |
 | 1.3.0   | 2026-02-10 | Added automated CI/CD with GitHub Actions integration, email notifications, and all corrections.|
 | 1.2.0   | 2026-02-10 | Added CI/CD workflow for log sharing and auto-correction.|
