@@ -42,22 +42,17 @@ def install_plantuml_via_sys_env():
         return False
 
 
-def generate_diagram(diagram_name):
-    """Generate PNG from .puml file."""
-    puml_file = (
-        Path(__file__).parent.parent / "assets" / "diagrams" / f"{diagram_name}.puml"
-    )
-    if not puml_file.exists():
-        print(f"Error: {puml_file} not found.")
-        sys.exit(1)
-
-    try:
-        subprocess.run(["plantuml", str(puml_file)], check=True)
-        png_file = puml_file.with_suffix(".png")
-        print(f"Diagram generated: {png_file}")
-    except subprocess.CalledProcessError as e:
-        print(f"Error generating diagram: {e}")
-        sys.exit(1)
+def verify_diagram(png_file):
+    """Verify the generated PNG diagram."""
+    if not png_file.exists():
+        print(f"PNG file not found: {png_file}")
+        return False
+    size = png_file.stat().st_size
+    if size == 0:
+        print(f"PNG file is empty: {png_file}")
+        return False
+    print(f"PNG verified: {png_file} ({size} bytes)")
+    return True
 
 
 def main():
@@ -67,12 +62,33 @@ def main():
         sys.exit(1)
 
     diagram_name = sys.argv[2]
+    puml_file = (
+        Path(__file__).parent.parent / "assets" / "diagrams" / f"{diagram_name}.puml"
+    )
+    if not puml_file.exists():
+        print(f"Error: {puml_file} not found.")
+        sys.exit(1)
+    png_file = puml_file.with_suffix(".png")
 
-    if not check_plantuml():
-        if not install_plantuml_via_sys_env():
+    max_attempts = 5
+    for attempt in range(1, max_attempts + 1):
+        if not check_plantuml():
+            if not install_plantuml_via_sys_env():
+                print(f"Installation failed on attempt {attempt}.")
+                continue
+        try:
+            subprocess.run(
+                ["plantuml", str(puml_file)], check=True, capture_output=True
+            )
+            print(f"Diagram generated on attempt {attempt}: {png_file}")
+            if verify_diagram(png_file):
+                print(f"Diagram verified successfully on attempt {attempt}.")
+                break
+        except subprocess.CalledProcessError as e:
+            print(f"Generation failed on attempt {attempt}: {e}")
+        if attempt == max_attempts:
+            print("Max attempts reached. Diagram generation failed.")
             sys.exit(1)
-
-    generate_diagram(diagram_name)
 
 
 if __name__ == "__main__":

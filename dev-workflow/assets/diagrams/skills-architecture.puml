@@ -30,13 +30,14 @@ end note
 
 Repo -[#Gray]-> Skills : contains
 Skills -[#Blue]-> OpenCode : sync-skills.sh\n(deployment)
-OpenCode -[#Green]-> Conversation : activate_all.py\n(execution)
+OpenCode -[#Red]-> Conversation : activate_all.py\n(execution)
 
 note as Legend
   **Legend:**
   - Gray: Static relationships
   - Blue: Deployment/sync flow
-  - Green: Activation/execution flow
+  - Green: Reserved for future use
+  - Red: AI conversation flow
 end note
 
 @enduml

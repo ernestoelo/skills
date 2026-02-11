@@ -91,6 +91,7 @@ python3 scripts/generate_diagrams.py --diagram <diagram_name>
 ```
 - Checks for PlantUML installation; if missing, integrates with @sys-env for safe installation on Arch Linux.
 - Generates PNG in the same directory as the .puml file.
+- Verifies PNG (existence, size >0) and auto-corrects by retrying up to 5 times if fails.
 - Example: `python3 scripts/generate_diagrams.py --diagram skills-architecture` creates `skills-architecture.png`.
 
 ## Inputs and Outputs
