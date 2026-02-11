@@ -22,17 +22,32 @@ class ContextManager:
         """Load file and extract metadata."""
         try:
             if self.file_path.endswith(".pdf"):
-                # Placeholder for PDF loading (requires pypdf)
-                print("PDF support: Install pypdf and integrate OCR if needed.")
-                self.content = "PDF content placeholder"  # Simulate
+                # Integrate pdf skill: Use pdftotext for text extraction (handles scanned PDFs too)
+                import subprocess
+
+                result = subprocess.run(
+                    ["pdftotext", self.file_path, "-"], capture_output=True, text=True
+                )
+                if result.returncode == 0:
+                    self.content = result.stdout
+                    print("PDF text extracted successfully using pdftotext.")
+                else:
+                    print(
+                        f"PDF extraction failed: {result.stderr}. Ensure pdftotext is installed (from pdf skill)."
+                    )
+                    self.content = ""
             else:
                 with open(self.file_path, "r", encoding="utf-8") as f:
                     self.content = f.read()
             self.metadata = {
                 "length": len(self.content),
                 "structure": "pdf" if self.file_path.endswith(".pdf") else "text",
-                "first_lines": self.content[:200].split("\n")[:5],
-                "last_lines": self.content[-200:].split("\n")[-5:],
+                "first_lines": self.content[:200].split("\n")[:5]
+                if self.content
+                else [],
+                "last_lines": self.content[-200:].split("\n")[-5:]
+                if self.content
+                else [],
             }
             print(
                 f"[RLM Environment] Loaded {self.metadata['length']} chars from {self.file_path}"

@@ -25,7 +25,7 @@ Receive file and divide into blocks:
 ```bash
 python3 scripts/context_loader.py --input /path/to/log.pdf --type robotics-log
 ```
-- Outputs chunks with metadata (length, structure).
+- Supports PDF (via pdftotext from pdf skill) and text files; outputs chunks with metadata.
 
 ### Topic Extraction and Transparency
 Extract topics with context info:
@@ -44,6 +44,12 @@ done
 ```
 - Accumulates results; recommends focus (e.g., "Focus on timestamps with variance >3m").
 
+### CI/CD Integration and Hooks
+- **Validation:** Scripts are linted and tested via "Validate Skills" GitHub Actions workflow on commits.
+- **Auto-Correction:** If linting fails, "Auto-Correct CI" triggers up to 5 iterations to fix issues (e.g., unused imports) and re-commits.
+- **Hooks:** Pre-commit hooks (via dev-workflow) ensure code quality before pushes; post-commit, CI monitors for failures and notifies via issues if unresolved.
+- Follows dev-workflow standards: Semantic commits, branch management, and CI/CD best practices.
+
 ## Inputs and Outputs
 ### Inputs
 - **File path:** Input file (PDF, text, log).
@@ -61,6 +67,7 @@ done
 - **Chunking:** Limit to context size; use symbolic access.
 - **Transparency:** Always show evidence and limits.
 - **Robotics:** Validate on ZedBox for logs/odometry.
+- **CI/CD:** Commit changes trigger GitHub Actions validation; use auto-correct for linting issues; monitor workflows via dev-workflow scripts.
 
 ### Version History
 | Version | Date       | Updates |
@@ -72,3 +79,4 @@ done
 - `references/context-limits.md`: Model windows.
 - `references/robotics-examples.md`: ZedBox applications.
 - `docs/assets/recursive_language_models_paper.pdf`: Full RLM paper for technical details.
+- **CI/CD Integration:** See dev-workflow/SKILL.md and references/ci-cd-best-practices.md for automated validation and hooks.
