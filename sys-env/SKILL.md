@@ -34,16 +34,35 @@ Processing item: mesa
   Conflicts detected: libva-mesa-driver.
 ```
 
-### Environment Variable Setup
-#### Display and Toolkit Variables
-```bash
-export WAYLAND_DISPLAY=wayland-0
-export XDG_SESSION_TYPE=wayland
-```
-- For longevity, update within `~/dotfiles/zsh/.zshrc`.
+### Automatic Package Installation
+For seamless automation in plans/builds, configure sudo NOPASSWD for safe package installation. This activates @sys-env when scripts detect missing packages.
 
-#### GPU Optimizations
+#### Configure NOPASSWD for Pacman
+Edit /etc/sudoers (use visudo):
+```
+your_username ALL=(ALL) NOPASSWD: /usr/bin/pacman
+```
+- Allows passwordless pacman commands for your user.
+- Run `sudo visudo` to edit safely.
+
+#### Automatic Installation Command
 ```bash
-export AMD_VULKAN_ICD=‘RADV’ 
-``` 
- Full Visualization primitives are GPU-level!
+pacman -S --noconfirm <package>
+```
+- Use in scripts when packages are missing (e.g., plantuml).
+- @sys-env activates automatically on installation requests in plans/builds.
+
+#### Integration with Other Skills
+When a skill/script requires a package (e.g., @dev-workflow for diagrams), @sys-env provides installation guidance and executes if NOPASSWD is configured.
+
+## Best Practices and Version History
+### Best Practices
+- Always run pre-install checks before package changes.
+- Use NOPASSWD judiciously for automation; limit to trusted commands.
+- Backup configurations before modifying environment variables or services.
+
+### Version History
+| Version | Date       | Updates |
+|---------|------------|---------|
+| 1.1.0   | 2026-02-11 | Added automatic package installation with NOPASSWD config.|
+| 1.0.0   | 2026-02-09 | Initial skill for Arch Linux + Hyprland management.|

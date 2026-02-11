@@ -27,19 +27,19 @@ def check_plantuml():
 
 
 def install_plantuml_via_sys_env():
-    """Provide sys-env style installation instructions."""
-    print("Using @sys-env/SKILL.md for installation:")
-    print("Run the following command to install PlantUML on Arch Linux:")
-    print("  sudo pacman -S plantuml")
-    print("(Refer to @sys-env/SKILL.md for package safety checks.)")
-    # Optionally, try to install if running with privileges
+    """Provide sys-env style installation instructions and attempt automatic install."""
+    print("Activating @sys-env/SKILL.md for installation:")
+    print("If NOPASSWD is configured for pacman, attempting automatic install...")
     try:
-        print("Attempting automatic installation...")
-        subprocess.run(["sudo", "pacman", "-S", "--noconfirm", "plantuml"], check=True)
-        print("PlantUML installed successfully.")
+        subprocess.run(["pacman", "-S", "--noconfirm", "plantuml"], check=True)
+        print("PlantUML installed successfully via @sys-env.")
         return True
     except subprocess.CalledProcessError:
-        print("Installation failed. Please run manually or check @sys-env/SKILL.md.")
+        print(
+            "Automatic install failed. Configure NOPASSWD in /etc/sudoers as per @sys-env/SKILL.md:"
+        )
+        print("  your_username ALL=(ALL) NOPASSWD: /usr/bin/pacman")
+        print("Then run: pacman -S --noconfirm plantuml")
         return False
 
 
