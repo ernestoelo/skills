@@ -118,5 +118,3 @@ Responsibilities, approaches, and task guidelines for the agent.
 - **Design Patterns:** `references/workflows.md`, `references/output-patterns.md`
 - **Platform Sync:** `references/platform-sync.md`
 - **Tooling Scripts:** `../scripts/init_skill.py`, `../scripts/package_skill.py`, `../scripts/quick_validate.py`
-
-<!-- Test change for CI validation -->
