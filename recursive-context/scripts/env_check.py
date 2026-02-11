@@ -1,7 +1,6 @@
 import sys
 import subprocess
 import importlib
-import os
 
 
 def check_libs(libs: list) -> bool:

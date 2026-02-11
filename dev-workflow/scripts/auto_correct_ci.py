@@ -57,7 +57,7 @@ def check_error_in_logs(error, workflow, commit):
         result = subprocess.run(
             ["uv", "run", "ruff", "check", "."], capture_output=True, text=True
         )
-        if result.returncode != 0 and "F401" in result.stdout:  # Unused import
+        if result.returncode != 0 and "F401" in result.stderr:  # Unused import
             return True
     # Add more checks as needed
     return False
