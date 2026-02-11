@@ -68,7 +68,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: prepare-integration
     if: needs.prepare-integration.outputs.integration_ready == 'true'
-    environment: integration
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -153,7 +152,6 @@ jobs:
       needs.run-integration.result == 'success' &&
       needs.validate-integration.result == 'success' &&
       github.event.inputs.auto_merge == true
-    environment: production
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
