@@ -49,8 +49,8 @@ def check_dependencies():
         sys.exit(1)
 
 
-def get_last_run_status(workflow_name):
-    """Get status of the last CI run."""
+def get_last_run_status(workflow_name, commit_sha=None):
+    """Get status of the last CI run, optionally filtered by commit SHA."""
     try:
         result = subprocess.run(
             [
@@ -60,17 +60,27 @@ def get_last_run_status(workflow_name):
                 "--workflow",
                 workflow_name,
                 "--json",
-                "status,conclusion",
+                "status,conclusion,headSha",
                 "--limit",
-                "1",
+                "10",  # Increased limit to find relevant run
             ],
             capture_output=True,
             text=True,
             check=True,
         )
         runs = json.loads(result.stdout)
-        if runs:
-            return runs[0]["status"], runs[0]["conclusion"]
+        if commit_sha:
+            # Filter runs for the specific commit SHA
+            relevant_runs = [run for run in runs if run.get("headSha") == commit_sha]
+            if relevant_runs:
+                run = relevant_runs[0]  # Take the latest matching
+                return run["status"], run["conclusion"]
+            else:
+                return None, None  # No run for this commit yet
+        else:
+            # Fallback to latest if no SHA provided
+            if runs:
+                return runs[0]["status"], runs[0]["conclusion"]
         return None, None
     except subprocess.CalledProcessError:
         return None, None
@@ -98,14 +108,19 @@ def apply_safe_fix(error_type):
 
 
 def re_commit():
-    """Stage, commit, and push changes."""
+    """Stage, commit, and push changes. Returns commit SHA."""
     subprocess.run(["git", "add", "."], check=True)
     subprocess.run(["git", "commit", "-m", "fix: auto-correct CI issues"], check=True)
+    # Get SHA before push
+    commit_sha = subprocess.run(
+        ["git", "rev-parse", "HEAD"], capture_output=True, text=True, check=True
+    ).stdout.strip()
     subprocess.run(["git", "push"], check=True)
+    return commit_sha
 
 
-def verify_ci_after_push(workflow_name, timeout=300):
-    """Verify CI status after push, wait up to timeout seconds."""
+def verify_ci_after_push(workflow_name, commit_sha=None, timeout=300):
+    """Verify CI status after push, wait up to timeout seconds. Filters by commit_sha if provided."""
     import time
 
     print(f"Verifying CI status for '{workflow_name}' after push...")
@@ -114,9 +129,9 @@ def verify_ci_after_push(workflow_name, timeout=300):
 
     start_time = time.time()
     while time.time() - start_time < timeout:
-        status, conclusion = get_last_run_status(workflow_name)
+        status, conclusion = get_last_run_status(workflow_name, commit_sha)
         if status is None:
-            print("No CI run found yet, waiting...")
+            print("No CI run found for this commit yet, waiting...")
             time.sleep(10)
             continue
         if status == "completed":
@@ -155,8 +170,8 @@ def main():
             error_type = detect_error_type()
             print(f"CI failed (attempt {attempt}). Applying fix for {error_type}...")
             if apply_safe_fix(error_type):
-                re_commit()
-                if not verify_ci_after_push(workflow_name):
+                commit_sha = re_commit()
+                if not verify_ci_after_push(workflow_name, commit_sha=commit_sha):
                     print("Post-push CI verification failed. Manual check recommended.")
             else:
                 print(f"No fix available for {error_type}.")

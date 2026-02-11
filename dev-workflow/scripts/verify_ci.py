@@ -30,8 +30,8 @@ def check_dependencies():
         sys.exit(1)
 
 
-def get_last_run_status(workflow_name):
-    """Get status of the last CI run."""
+def get_last_run_status(workflow_name, commit_sha=None):
+    """Get status of the last CI run, optionally filtered by commit SHA."""
     try:
         result = subprocess.run(
             [
@@ -41,33 +41,41 @@ def get_last_run_status(workflow_name):
                 "--workflow",
                 workflow_name,
                 "--json",
-                "status,conclusion",
+                "status,conclusion,headSha",
                 "--limit",
-                "1",
+                "10",
             ],
             capture_output=True,
             text=True,
             check=True,
         )
         runs = json.loads(result.stdout)
-        if runs:
-            return runs[0]["status"], runs[0]["conclusion"]
+        if commit_sha:
+            relevant_runs = [run for run in runs if run.get("headSha") == commit_sha]
+            if relevant_runs:
+                run = relevant_runs[0]
+                return run["status"], run["conclusion"]
+            else:
+                return None, None
+        else:
+            if runs:
+                return runs[0]["status"], runs[0]["conclusion"]
         return None, None
     except subprocess.CalledProcessError:
         return None, None
 
 
-def verify_ci(workflow_name, timeout=300):
-    """Verify CI status, wait up to timeout seconds."""
+def verify_ci(workflow_name, commit_sha=None, timeout=300):
+    """Verify CI status, wait up to timeout seconds. Filters by commit_sha if provided."""
     print(f"Verifying CI for '{workflow_name}'...")
     print("Waiting for CI to process...")
     time.sleep(30)  # Initial wait
 
     start_time = time.time()
     while time.time() - start_time < timeout:
-        status, conclusion = get_last_run_status(workflow_name)
+        status, conclusion = get_last_run_status(workflow_name, commit_sha)
         if status is None:
-            print("No CI run found yet, waiting...")
+            print("No CI run found for this commit yet, waiting...")
             time.sleep(10)
             continue
         if status == "completed":
@@ -89,14 +97,18 @@ def verify_ci(workflow_name, timeout=300):
 
 
 def main():
-    if len(sys.argv) != 3 or sys.argv[1] != "--workflow":
-        print("Usage: python3 verify_ci.py --workflow <workflow_name>")
-        sys.exit(1)
+    import argparse
 
-    workflow_name = sys.argv[2]
+    parser = argparse.ArgumentParser(description="Verify CI status for a workflow.")
+    parser.add_argument("--workflow", required=True, help="Workflow name")
+    parser.add_argument("--commit-sha", help="Commit SHA to filter runs")
+    args = parser.parse_args()
+
+    workflow_name = args.workflow
+    commit_sha = args.commit_sha
 
     check_dependencies()
-    success = verify_ci(workflow_name)
+    success = verify_ci(workflow_name, commit_sha)
     sys.exit(0 if success else 1)
 
 

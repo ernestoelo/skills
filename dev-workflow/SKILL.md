@@ -79,7 +79,7 @@ Automatically detect CI failures and apply safe fixes iteratively in any reposit
 - Supported fixes: Linting (ruff --fix), tests (pytest), builds (python -m build) – limited to safe, non-destructive changes.
 - Triggered by GitHub Actions webhooks on workflow failure.
 - Checks for missing dependencies (gh CLI, GITHUB_TOKEN) and installs/configures if needed.
-- Includes post-push CI verification with initial wait for CI processing to avoid premature checks.
+- Includes post-push CI verification with initial wait for CI processing and filtering by commit SHA to avoid confusion with auto-correct runs.
 - Command: `python3 scripts/auto_correct_portable.py --workflow <workflow_name>`.
 - For porting: Copy `scripts/auto_correct_portable.py`, `scripts/verify_ci.py`, `scripts/post-commit-hook.sh`, and `.github/workflows/auto-correct-on-failure.yml` to `<target-repo>`. Run `chmod +x scripts/post-commit-hook.sh && cp scripts/post-commit-hook.sh .git/hooks/post-commit` for automatic verification after commits.
 
@@ -137,7 +137,7 @@ To use this diagram generation kit in any repository:
 ### Version History
 | Version | Date       | Updates                                                  |
 |---------|------------|---------------------------------------------------------|
-| 1.9.1   | 2026-02-11 | Added wait for CI processing before verification to prevent premature checks; fixed re_commit undefined error.|
+| 1.9.2   | 2026-02-11 | Improved CI verification by filtering runs by commit SHA to avoid confusion with auto-correct workflows.|
 | 1.7.0   | 2026-02-11 | Integrated imgs/ and examples/ as permanent visual references for diagrams in any repo.|
 | 1.6.0   | 2026-02-11 | Added portable diagram generation kit for any repository.|
 | 1.5.0   | 2026-02-11 | Added automatic diagram generation with sys-env integration.|

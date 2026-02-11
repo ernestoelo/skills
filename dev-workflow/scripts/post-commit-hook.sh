@@ -14,8 +14,9 @@ if [ -f "$REPO_ROOT/scripts/verify_ci.py" ]; then
 
     echo "Waiting for CI processing after commit..."
     sleep 30
-    echo "Running post-commit CI verification..."
-    python3 "$REPO_ROOT/scripts/verify_ci.py" --workflow "$WORKFLOW_NAME"
+    COMMIT_SHA=$(git rev-parse HEAD)
+    echo "Running post-commit CI verification for commit $COMMIT_SHA..."
+    python3 "$REPO_ROOT/scripts/verify_ci.py" --workflow "$WORKFLOW_NAME" --commit-sha "$COMMIT_SHA"
 else
     echo "verify_ci.py not found. Skipping CI verification."
 fi

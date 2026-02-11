@@ -29,7 +29,8 @@ jobs:
         run: |
           echo "Waiting for CI to process auto-correct push..."
           sleep 30
+          echo "COMMIT_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
           echo "Verifying CI status after auto-correct..."
-          python3 dev-workflow/scripts/verify_ci.py --workflow "${{ github.event.workflow_run.name }}"
+          python3 dev-workflow/scripts/verify_ci.py --workflow "${{ github.event.workflow_run.name }}" --commit-sha "$COMMIT_SHA"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
