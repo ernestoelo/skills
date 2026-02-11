@@ -38,11 +38,19 @@ This repository contains modular skills and agents that extend AI assistants wit
 
 ```bash
 # Clone to standard location
-git clone https://github.com/<your-username>/<your-repo>.git ~/.copilot/skills
+git clone https://github.com/<your-username>/<your-repo>.git ~/.copilot/workflows
 
 # Set up git hooks and environment
-cd ~/.copilot/skills
+cd ~/.copilot/workflows
 bash scripts/post-clone-setup.sh
+```
+
+### Development Environment (optional, for running tests)
+
+```bash
+cd ~/.copilot/workflows
+uv sync --group dev
+uv run pytest tests/ -v
 ```
 
 ### Development Environment (optional, for running tests)
@@ -58,12 +66,12 @@ uv run pytest tests/ -v
 <details>
 <summary><b>GitHub Copilot (VSCode/Visual Studio)</b></summary>
 
-Skills should be located at `~/.copilot/skills/`
+Skills should be located at `~/.copilot/workflows/skills/`
 
 ```bash
 # If you cloned to the standard location, you're done!
 # Otherwise, create a symlink:
-ln -s ~/path/to/your/skills ~/.copilot/skills
+ln -s ~/path/to/your/workflows ~/.copilot/workflows
 ```
 
 </details>
@@ -74,7 +82,7 @@ ln -s ~/path/to/your/skills ~/.copilot/skills
 OpenCode reads skills from `~/.config/opencode/skills/`. Use the sync script:
 
 ```bash
-cd ~/.copilot/skills
+cd ~/.copilot/workflows
 ./scripts/sync-skills.sh
 ```
 
@@ -83,7 +91,7 @@ cd ~/.copilot/skills
 This repository includes a git hook that automatically syncs after `git pull`:
 
 ```bash
-cd ~/.copilot/skills
+cd ~/.copilot/workflows
 git pull  # Skills automatically sync to installed platforms
 ```
 
@@ -99,7 +107,7 @@ Claude Desktop reads skills from platform-specific locations:
 Use the sync script:
 
 ```bash
-cd ~/.copilot/skills
+cd ~/.copilot/workflows
 ./scripts/sync-skills.sh
 # or sync only to Claude:
 ./scripts/sync-skills.sh --platform claude
@@ -117,7 +125,7 @@ Cursor reads skills from platform-specific locations:
 Use the sync script:
 
 ```bash
-cd ~/.copilot/skills
+cd ~/.copilot/workflows
 ./scripts/sync-skills.sh
 # or sync only to Cursor:
 ./scripts/sync-skills.sh --platform cursor
@@ -151,7 +159,7 @@ See `architect/SKILL.md` for the complete skill creation process.
 ### Adding a New Skill Manually
 
 ```bash
-cd ~/.copilot/skills
+cd ~/.copilot/workflows
 mkdir my-new-skill && cd my-new-skill
 
 # Create SKILL.md with frontmatter
@@ -252,7 +260,7 @@ GitHub Actions automatically validates all skills and runs tests on push/PR to `
 ## Repository Structure
 
 ```
-~/.copilot/skills/
+~/.copilot/workflows/
 ├── README.md                         # This file
 ├── pyproject.toml                    # Project metadata, dev dependencies, tool config
 ├── uv.lock                           # Deterministic lockfile for dependencies
@@ -268,55 +276,74 @@ GitHub Actions automatically validates all skills and runs tests on push/PR to `
 │   ├── validate-skill-on-change.sh
 │   └── post-clone-setup.sh
 │
-├── tests/                            # Test suite
+├── core/                             # Core automation and MCP servers
+│   ├── auto_skill_loader.py
+│   └── start_auto_skill_loader.sh
+│
+├── configs/                          # Configuration files
+├── test/                             # Test suite
 │   └── validator/
 │       ├── test_validator.py
 │       ├── passing-skills/
 │       └── failing-skills/
 │
-├── architect/                        # Skill: scaffolding tool
-│   ├── SKILL.md
-│   ├── references/
-│   └── scripts/
-│       └── update-docs.sh
+├── docs/                             # Documentation
+├── references/                       # Shared references
 │
-├── dev-workflow/                     # Skill: development standards
-│   ├── SKILL.md
-│   ├── references/
-│   └── assets/
-│       └── diagrams/
-│
-├── mcp-builder/                     # Skill: MCP server creation
-│   ├── SKILL.md
-│   ├── references/
-│   └── scripts/
-│
-├── pdf/                             # Skill: PDF processing
-│   ├── SKILL.md
-│   ├── references/
-│   └── scripts/
-│
-├── sys-env/                         # Skill: system environment
-│   ├── SKILL.md
-│   ├── references/
-│   └── scripts/
-│
-└── web-scraper/                     # Skill: web content extraction
-    ├── SKILL.md
-    └── scripts/
+└── skills/                           # Individual skill directories
+    ├── architect/                    # Skill: scaffolding tool
+    │   ├── SKILL.md
+    │   ├── references/
+    │   └── scripts/
+    │       └── update-docs.sh
+    │
+    ├── dev-workflow/                 # Skill: development standards
+    │   ├── SKILL.md
+    │   ├── references/
+    │   └── assets/
+    │       └── diagrams/
+    │
+    ├── mcp-builder/                  # Skill: MCP server creation
+    │   ├── SKILL.md
+    │   ├── references/
+    │   └── scripts/
+    │
+    ├── pdf/                          # Skill: PDF processing
+    │   ├── SKILL.md
+    │   ├── references/
+    │   └── scripts/
+    │
+    ├── sys-env/                      # Skill: system environment
+    │   ├── SKILL.md
+    │   ├── references/
+    │   └── scripts/
+    │
+    ├── web-scraper/                  # Skill: web content extraction
+    │   ├── SKILL.md
+    │   └── scripts/
+    │
+    ├── recursive-context/            # Skill: context processing
+    │   ├── SKILL.md
+    │   └── scripts/
+    │
+    ├── code-review/                  # Skill: code quality
+    │   ├── SKILL.md
+    │   └── scripts/
+    │
+    └── ...                           # Additional skills
 ```
 
 ## Platform-Specific Notes
 
 ### OpenCode
 
-- Skills loaded from `~/.config/opencode/skills/` (symlinks to this repo)
+- Skills loaded from `~/.config/opencode/skills/` (symlinks to this repo's skills/ directory)
 - Use `scripts/sync-skills.sh` to sync new skills
 - Git hook provides automatic sync after `git pull`
 
 ### GitHub Copilot
 
-- Skills loaded directly from `~/.copilot/skills/`
+- Skills loaded directly from `~/.copilot/workflows/skills/`
 - No sync needed (this is the source directory)
 
 ### Anthropic Claude

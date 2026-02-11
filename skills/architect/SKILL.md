@@ -85,6 +85,29 @@ Available for activation: architect, dev-workflow, mcp-builder, pdf, recursive-c
 
 #### Automatic Activation via Sync
 Skills are automatically activated for OpenCode after synchronization via `scripts/sync-skills.sh`. This ensures skills are validated and ready for conversation starts without manual intervention. The sync script runs `activate_all.py` post-sync to OpenCode, providing context for autonomous AI behavior.
+
+#### Autonomous Skill Loading
+For fully autonomous skill activation without @ mentions, use the `auto_skill_loader` MCP server:
+
+1. **Run the MCP Server:**
+   ```bash
+   cd ~/.copilot/skills
+   ./start_auto_skill_loader.sh
+   # Or manually: ~/.local/bin/fastmcp run auto_skill_loader.py
+   ```
+
+2. **Integration with OpenCode:**
+   - The MCP server provides tools for automatic skill loading based on conversation context
+   - Tools analyze messages and load relevant skills autonomously
+   - Supports pattern matching for keywords like "pdf", "git", "web-scraper", etc.
+
+3. **Available Tools:**
+   - `analyze_message_for_skills`: Analyzes messages for relevant skills
+   - `load_skill`: Loads specific skill content
+   - `load_relevant_skills`: Automatically loads all relevant skills for a message
+   - `list_available_skills`: Lists all available skills
+
+**Note:** While OpenCode doesn't currently support direct MCP integration, the server can run independently and be used programmatically for skill management.
 #### Create a New Agent
 For Type B workflows, create an `.agent.md` file:
 ```markdown
@@ -116,6 +139,7 @@ Responsibilities, approaches, and task guidelines for the agent.
 ### Version History
 | Version | Date       | Updates                                                |
 |---------|------------|-------------------------------------------------------|
+| 1.5.0   | 2026-02-11 | Added autonomous skill loading via MCP server for automatic activation without @ mentions|
 | 1.4.0   | 2026-02-11 | Added post-scaffold @dev-workflow application for consistent skill creation|
 | 1.3.0   | 2026-02-11 | Added automatic skill activation for OpenCode via sync script|
 | 1.2.0   | 2026-02-10 | Added global skill activation script for OpenCode support|
@@ -125,4 +149,5 @@ Responsibilities, approaches, and task guidelines for the agent.
 ## Resources
 - **Design Patterns:** `references/workflows.md`, `references/output-patterns.md`
 - **Platform Sync:** `references/platform-sync.md`
+- **Auto Skill Loading:** `../core/auto_skill_loader.py` (MCP server), `../core/start_auto_skill_loader.sh` (startup script)
 - **Tooling Scripts:** `../scripts/init_skill.py`, `../scripts/package_skill.py`, `../scripts/quick_validate.py`
