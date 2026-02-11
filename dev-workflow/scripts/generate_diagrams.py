@@ -3,10 +3,9 @@
 Diagram generation script for dev-workflow.
 
 Generates PNG diagrams from PlantUML files. If PlantUML is not installed,
-provides instructions using sys-env for installation on Arch Linux.
+uses @sys-env generic installer for installation on Arch Linux.
 """
 
-import getpass
 import sys
 import subprocess
 from pathlib import Path
@@ -28,26 +27,18 @@ def check_plantuml():
 
 
 def install_plantuml_via_sys_env():
-    """Provide interactive prompt for password and install via @sys-env."""
-    print("Activating @sys-env/SKILL.md for installation:")
-    print(
-        "Enter your sudo password to install PlantUML (interactive prompt for security):"
-    )
-    password = getpass.getpass("Password: ")
+    """Install PlantUML via generic @sys-env installer."""
     try:
-        # Use echo to pipe password to sudo -S
-        proc = subprocess.run(
-            ["sudo", "-S", "pacman", "-S", "--noconfirm", "plantuml"],
-            input=password + "\n",
-            text=True,
-            capture_output=True,
+        subprocess.run(
+            [
+                "python3",
+                "/home/p3g4sus/.copilot/skills/sys-env/scripts/install_package.py",
+                "plantuml",
+            ],
             check=True,
         )
-        print("PlantUML installed successfully via @sys-env.")
         return True
-    except subprocess.CalledProcessError as e:
-        print(f"Installation failed: {e.stderr}")
-        print("Check @sys-env/SKILL.md for manual installation or NOPASSWD config.")
+    except subprocess.CalledProcessError:
         return False
 
 

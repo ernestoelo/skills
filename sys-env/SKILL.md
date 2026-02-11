@@ -47,10 +47,10 @@ your_username ALL=(ALL) NOPASSWD: /usr/bin/pacman
 
 #### Automatic Installation Command
 ```bash
-pacman -S --noconfirm <package>
+python3 sys-env/scripts/install_package.py <package>
 ```
-- Use in scripts when packages are missing (e.g., plantuml).
-- @sys-env activates automatically on installation requests in plans/builds.
+- Installs any Arch Linux package with NOPASSWD priority; provides manual steps if not configured.
+- Use for any missing dependency across skills (e.g., @dev-workflow, @architect).
 
 #### Interactive Prompts for Security
 For secure installations, scripts prompt for sudo password:
@@ -62,7 +62,7 @@ Enter your sudo password: [hidden input]
 - Fallback if NOPASSWD not configured.
 
 #### Integration with Other Skills
-When a skill/script requires a package (e.g., @dev-workflow for diagrams), @sys-env provides installation with prompts or NOPASSWD.
+When a skill/script requires a package (e.g., @dev-workflow for diagrams), call `python3 sys-env/scripts/install_package.py <package>` for universal, automated installation.
 
 ## Best Practices and Version History
 ### Best Practices
@@ -73,6 +73,7 @@ When a skill/script requires a package (e.g., @dev-workflow for diagrams), @sys-
 ### Version History
 | Version | Date       | Updates |
 |---------|------------|---------|
+| 1.3.0   | 2026-02-11 | Added generic install_package.py script for any Arch package with NOPASSWD automation.|
 | 1.2.0   | 2026-02-11 | Added interactive prompts for secure package installation.|
 | 1.1.0   | 2026-02-11 | Added automatic package installation with NOPASSWD config.|
 | 1.0.0   | 2026-02-09 | Initial skill for Arch Linux + Hyprland management.|
