@@ -7,6 +7,9 @@ provides instructions using sys-env for installation on Arch Linux.
 """
 
 import getpass
+import sys
+import subprocess
+from pathlib import Path
 
 
 def check_plantuml():
