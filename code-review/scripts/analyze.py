@@ -272,7 +272,7 @@ class CodeAnalyzer:
 
 def main():
     parser = argparse.ArgumentParser(description="Code Review Analysis Tool")
-    parser.add_argument("path", help="File or directory to analyze")
+    parser.add_argument("paths", nargs="+", help="Files or directories to analyze")
     parser.add_argument("--language", help="Programming language")
     parser.add_argument(
         "--check",
@@ -302,10 +302,11 @@ def main():
         output_format=args.output,
     )
 
-    if args.dir or os.path.isdir(args.path):
-        analyzer.analyze_directory(args.path)
-    else:
-        analyzer.analyze_file(args.path)
+    for path in args.paths:
+        if args.dir or os.path.isdir(path):
+            analyzer.analyze_directory(path)
+        else:
+            analyzer.analyze_file(path)
 
     print(analyzer.generate_output())
     sys.exit(analyzer.get_exit_code())
