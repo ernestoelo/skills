@@ -75,6 +75,9 @@ Available for activation: architect, dev-workflow, mcp-builder, pdf, recursive-c
 ```
 
 **Integration Notes:** Use in OpenCode conversations requiring multiple skills. No platform restart needed if declarative. Run after adding new skills or updates.
+
+#### Automatic Activation via Sync
+Skills are automatically activated for OpenCode after synchronization via `scripts/sync-skills.sh`. This ensures skills are validated and ready for conversation starts without manual intervention. The sync script runs `activate_all.py` post-sync to OpenCode, providing context for autonomous AI behavior.
 #### Create a New Agent
 For Type B workflows, create an `.agent.md` file:
 ```markdown
@@ -106,6 +109,7 @@ Responsibilities, approaches, and task guidelines for the agent.
 ### Version History
 | Version | Date       | Updates                                                |
 |---------|------------|-------------------------------------------------------|
+| 1.3.0   | 2026-02-11 | Added automatic skill activation for OpenCode via sync script|
 | 1.2.0   | 2026-02-10 | Added global skill activation script for OpenCode support|
 | 1.1.0   | 2026-02-09 | Applied standardized SKILL.md template for consistency|
 | 1.0.0   | 2025-05-16 | Initial documentation for skills and agents scaffolding|

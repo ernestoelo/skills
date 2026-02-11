@@ -355,6 +355,7 @@ synced_platforms=""
 
 # Sync to each detected platform
 idx=0
+opencode_synced=false
 while [ $idx -lt $installed_count ]; do
     platform_name="${PLATFORM_NAMES[$idx]}"
     platform_path="${PLATFORM_PATHS_ARR[$idx]}"
@@ -369,6 +370,11 @@ while [ $idx -lt $installed_count ]; do
     esac
 
     sync_to_platform "$platform_display" "$platform_path"
+
+    # Track if OpenCode was synced for activation
+    if [[ "$platform_name" == "opencode" ]]; then
+        opencode_synced=true
+    fi
 
     # Accumulate results
     if [ $LAST_TOTAL -gt $grand_total_skills ]; then
@@ -388,6 +394,17 @@ while [ $idx -lt $installed_count ]; do
 
     idx=$((idx + 1))
 done
+
+# Auto-activate skills for OpenCode if synced
+if [[ "$opencode_synced" == true && "$DRY_RUN" == false ]]; then
+    echo -e "${BLUE}🔧 Auto-activating skills for OpenCode...${NC}"
+    if python3 "$COPILOT_SKILLS/architect/scripts/activate_all.py"; then
+        echo -e "${GREEN}✅ Skills activated for OpenCode conversations.${NC}"
+    else
+        echo -e "${RED}⚠️  Skill activation failed. Check logs above.${NC}"
+    fi
+    echo ""
+fi
 
 # Summary
 echo -e "${BLUE}╔══════════════════════════════════════════════════════════════╗${NC}"

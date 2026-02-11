@@ -24,7 +24,9 @@ When skills are stored in a git repository (recommended for version control and 
 
 **Setup:** Requires symbolic links from repository
 
-**Sync:** Use `scripts/sync-skills.sh` script (see below)
+**Sync:** Use `scripts/sync-skills.sh` script
+
+**Auto-Activation:** Skills are automatically validated and activated after sync via `architect/scripts/activate_all.py`, ensuring all skills are ready for conversation starts. (see below)
 
 ### Claude Desktop
 
