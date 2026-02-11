@@ -5,8 +5,6 @@ on:
     workflows: ["Skill Validation CI", "Validate Skills"]
     types:
       - completed
-  push:
-    branches: [main]  # For testing purposes
 
 jobs:
   auto-correct:

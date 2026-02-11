@@ -12,8 +12,8 @@
 
 ## Automated CI/CD
 - GitHub Actions workflow `auto-correct-ci.yml` handles failures automatically.
-- Iterates up to 3 times, applying all fixes (linting, tests, builds, etc.).
-- Creates GitHub issue with notification if fails after 3 attempts.
+- Iterates up to 5 times, applying all fixes (linting, tests, builds, etc.).
+- Creates GitHub issue with notification if fails after 5 attempts.
 - No manual intervention needed for common errors.
 
 ## Troubleshooting
