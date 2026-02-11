@@ -26,8 +26,8 @@ def check_jetson():
         else:
             print("⚠️ Not on Jetson, but compatible")
             return True
-    except:
-        print("⚠️ Cannot detect hardware")
+    except Exception as e:
+        print(f"⚠️ Cannot detect hardware: {e}")
         return True
 
 

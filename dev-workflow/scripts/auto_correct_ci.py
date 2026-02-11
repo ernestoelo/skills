@@ -1,6 +1,5 @@
 import subprocess
-import sys
-import os
+import json
 
 
 def auto_correct_ci(workflow_name, commit_sha):
@@ -65,6 +64,11 @@ def fix_yaml_syntax():
 def install_missing_deps():
     """Install missing Python deps."""
     subprocess.run(["uv", "sync"], check=True)
+
+
+def run_tests_locally():
+    """Run tests to fix failures."""
+    subprocess.run(["uv", "run", "pytest"], check=True)
 
 
 def notify_validation(workflow_name, commit_sha):

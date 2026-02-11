@@ -18,8 +18,8 @@ class TopicExtractor:
         self._load_chunks()
         try:
             self.nlp = spacy.load("en_core_web_sm")
-        except:
-            print("Warning: spaCy model not loaded. Using RegEx only.")
+        except Exception as e:
+            print(f"Warning: spaCy model not loaded: {e}. Using RegEx only.")
             self.nlp = None
 
     def _load_chunks(self):
