@@ -8,21 +8,29 @@ class ContextManager:
     Divides into chunks for iterative processing.
     """
 
-    def __init__(self, file_path: str, chunk_size: int = 5000):
+    def __init__(
+        self, file_path: str, chunk_size: int = 5000, problem_type: str = None
+    ):
         self.file_path = file_path
         self.chunk_size = chunk_size
         self.content = ""
         self.metadata = {}
+        self.problem_type = problem_type  # e.g., "robotics-log"
         self._load_and_chunk()
 
     def _load_and_chunk(self):
         """Load file and extract metadata."""
         try:
-            with open(self.file_path, "r", encoding="utf-8") as f:
-                self.content = f.read()
+            if self.file_path.endswith(".pdf"):
+                # Placeholder for PDF loading (requires pypdf)
+                print("PDF support: Install pypdf and integrate OCR if needed.")
+                self.content = "PDF content placeholder"  # Simulate
+            else:
+                with open(self.file_path, "r", encoding="utf-8") as f:
+                    self.content = f.read()
             self.metadata = {
                 "length": len(self.content),
-                "structure": "text" if self.file_path.endswith(".txt") else "other",
+                "structure": "pdf" if self.file_path.endswith(".pdf") else "text",
                 "first_lines": self.content[:200].split("\n")[:5],
                 "last_lines": self.content[-200:].split("\n")[-5:],
             }
@@ -60,7 +68,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--chunk-size", type=int, default=5000, help="Chunk size in characters"
     )
+    parser.add_argument("--type", help="Problem type (e.g., robotics-log)")
     args = parser.parse_args()
 
-    cm = ContextManager(args.input, args.chunk_size)
+    cm = ContextManager(args.input, args.chunk_size, args.type)
     cm.to_json(args.output)

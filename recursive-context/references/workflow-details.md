@@ -14,10 +14,10 @@
    - Extract metadata: length, structure, first/last lines.
    - Output: JSON with chunks for iterative access.
 
-4. **Extracción de Tópicos**:
-   - Use `scripts/topic_extractor.py` to analyze chunks for valuable topics.
-   - Employ NLP (spaCy) and RegEx for keywords/entities.
-   - Provide evidence: fragments with locations.
+4. **Topic Extraction**:
+    - Use `scripts/topic_extractor.py` to analyze chunks for valuable topics.
+    - Employ NLP (spaCy) and RegEx for keywords/entities.
+    - Provide evidence: fragments with locations.
 
 5. **Transparencia de Contexto**:
    - Display model context window (e.g., "4096 tokens").
