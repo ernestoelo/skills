@@ -16,6 +16,7 @@ def auto_correct_ci(workflow_name, commit_sha):
             "build failure": lambda: fix_build_errors(),
         },
         "Validate Skills": {
+            "linting error": lambda: fix_linting(),
             "test failure": lambda: run_tests_locally(),
         },
     }
