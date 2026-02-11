@@ -1,0 +1,47 @@
+@startuml generic-architecture
+skinparam backgroundColor #FEFEFE
+skinparam sequenceParticipant underline
+
+title [Project/Architecture Name] Diagram
+
+' Replace with your components
+rectangle "[Component 1]\n(e.g., Repository)" as Comp1 #LightBlue
+note right of Comp1 #LightBlue
+  Brief description of Component 1.
+  Purpose and key features.
+end note
+
+rectangle "[Component 2]\n(e.g., Service Layer)" as Comp2 #LightGreen
+note right of Comp2 #LightGreen
+  Brief description of Component 2.
+  Interactions and responsibilities.
+end note
+
+rectangle "[Component 3]\n(e.g., Platform)" as Comp3 #LightYellow
+note right of Comp3 #LightYellow
+  Brief description of Component 3.
+  Role in the system.
+end note
+
+rectangle "[Component 4]\n(e.g., User Interface)" as Comp4 #LightCoral
+note right of Comp4 #LightCoral
+  Brief description of Component 4.
+  End-user interaction point.
+end note
+
+' Customize arrows and labels
+Comp1 -[#Gray]-> Comp2 : [static relation]\n(e.g., contains)
+Comp2 -[#Blue]-> Comp3 : [deployment/sync]\n(e.g., build script)
+Comp3 -[#Red]-> Comp4 : [execution/flow]\n(e.g., runtime call)
+
+note as Legend
+  **Legend:**
+  - Gray: Static relationships
+  - Blue: Deployment/sync flow
+  - Green: Reserved
+  - Red: Execution/user flow
+end note
+
+' Add more components/arrows as needed
+
+@enduml
