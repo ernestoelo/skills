@@ -40,10 +40,6 @@ jobs:
           sudo apt update
           sudo apt install gh
 
-      - name: Authenticate GitHub CLI
-        run: |
-          gh auth login --with-token <<< ${{ github.token }}
-
       - name: Run Auto-Correct (Attempt 1)
         id: attempt1
         run: |
