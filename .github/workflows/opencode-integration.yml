@@ -56,4 +56,4 @@ jobs:
     - name: Run integration
       run: |
         cd opencode-integration-manager
-        python scripts/run_integration.py --target-repo https://github.com/opencode-ai/opencode --changes-dir ../types --auto-commit --create-pr
+        python scripts/run_integration.py --config ../config/opencode_config.json --target-repo https://github.com/opencode-ai/opencode --changes-dir ../types --auto-commit --create-pr
