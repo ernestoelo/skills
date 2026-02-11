@@ -1,7 +1,7 @@
 # Skills & Agents Repository
 
-[![Validate Skills](https://github.com/ernestoelo/skills/actions/workflows/validate-skills.yml/badge.svg)](https://github.com/ernestoelo/skills/actions/workflows/validate-skills.yml)
-[![Skill Validation CI](https://github.com/ernestoelo/skills/actions/workflows/skill-validation.yml/badge.svg)](https://github.com/ernestoelo/skills/actions/workflows/skill-validation.yml)
+[![Validate Skills](https://github.com/<your-username>/<your-repo>/actions/workflows/validate-skills.yml/badge.svg)](https://github.com/<your-username>/<your-repo>/actions/workflows/validate-skills.yml)
+[![Skill Validation CI](https://github.com/<your-username>/<your-repo>/actions/workflows/skill-validation.yml/badge.svg)](https://github.com/<your-username>/<your-repo>/actions/workflows/skill-validation.yml)
 
 Personal collection of reusable skills and agents for AI coding assistants across multiple platforms.
 
@@ -38,7 +38,7 @@ This repository contains modular skills and agents that extend AI assistants wit
 
 ```bash
 # Clone to standard location
-git clone https://github.com/ernestoelo/skills.git ~/.copilot/skills
+git clone https://github.com/<your-username>/<your-repo>.git ~/.copilot/skills
 
 # Set up git hooks and environment
 cd ~/.copilot/skills
@@ -415,8 +415,17 @@ writer.write("output.pdf")
 ### Maintaining SKILL.md Files
 Contributors are expected to format all `SKILL.md` files according to this template when creating or updating skills. This ensures clarity, consistency, and ease of collaboration across all platforms.
 
-## License
+## Adapting for Your Repository
 
-This repository is licensed under the [MIT License](LICENSE) by default.
+If you fork this repository or create your own skills collection:
 
-Individual skills may override this with their own license. If a skill contains a `LICENSE.txt` file or a `license` field in its `SKILL.md` frontmatter, that license takes precedence over the root MIT license for that skill.
+1. **Replace placeholders in README.md**:
+   - `<your-username>` → your GitHub username
+   - `<your-repo>` → your repository name
+
+2. **Update pyproject.toml**:
+   - Change author and repository fields to match your project
+
+3. **Customize skills**: Modify SKILL.md files as needed for your use cases
+
+4. **Test portability**: Ensure scripts work when repo is cloned to `~/.copilot/skills/` or synced to platform directories

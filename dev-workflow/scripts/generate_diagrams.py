@@ -28,11 +28,20 @@ def check_plantuml():
 
 def install_plantuml_via_sys_env():
     """Install PlantUML via generic @sys-env installer."""
+    # Find sys-env installer relative to this script
+    script_dir = Path(__file__).parent.resolve()
+    skills_root = script_dir.parent.parent  # dev-workflow/ -> skills/
+    sys_env_installer = skills_root / "sys-env" / "scripts" / "install_package.py"
+
+    if not sys_env_installer.exists():
+        print(f"Warning: sys-env installer not found at {sys_env_installer}")
+        return False
+
     try:
         subprocess.run(
             [
                 "python3",
-                "/home/p3g4sus/.copilot/skills/sys-env/scripts/install_package.py",
+                str(sys_env_installer),
                 "plantuml",
             ],
             check=True,
