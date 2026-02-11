@@ -29,28 +29,37 @@ def auto_correct_ci(workflow_name, commit_sha):
 
     # Apply fixes (example logic)
     for error, fix_func in common_fixes[workflow_name].items():
-        if check_error_in_logs(error, workflow_name, commit_sha):  # Placeholder
+        if check_error_in_logs(error, workflow_name, commit_sha):
             print(f"Detected error: {error}. Applying fix...")
-            fix_func()
-            print("Fix applied. Re-committing...")
-            subprocess.run(["git", "add", "."], check=True)
-            subprocess.run(
-                ["git", "commit", "-m", f"fix: auto-correct {error} from CI"],
-                check=True,
-            )
-            subprocess.run(["git", "push"], check=True)
-            break
-    else:
-        print("No common errors detected. Manual intervention needed.")
+            if fix_func():
+                print("Fix applied. Re-committing...")
+                subprocess.run(["git", "add", "."], check=True)
+                subprocess.run(
+                    ["git", "commit", "-m", f"fix: auto-correct {error} from CI"],
+                    check=True,
+                )
+                subprocess.run(["git", "push"], check=True)
+                break
+            else:
+                print("Fix function returned no changes.")
+        else:
+            print(f"Error '{error}' not detected.")
 
     # Notify user with GitHub validation link
     notify_validation(workflow_name, commit_sha)
 
 
 def check_error_in_logs(error, workflow, commit):
-    """Placeholder: Check if error is in logs (integrate with fetch_ci_logs)."""
-    # In real, parse logs from fetch_ci_logs output
-    return False  # For demo, assume no errors
+    """Check if error is present by running relevant checks."""
+    if error == "linting error":
+        # Run ruff check to see if there are errors
+        result = subprocess.run(
+            ["uv", "run", "ruff", "check", "."], capture_output=True, text=True
+        )
+        if result.returncode != 0 and "F401" in result.stdout:  # Unused import
+            return True
+    # Add more checks as needed
+    return False
 
 
 def remove_large_files():
@@ -75,7 +84,18 @@ def run_tests_locally():
 
 def fix_linting():
     """Fix common linting errors."""
+    print("Running ruff check --fix...")
     subprocess.run(["uv", "run", "ruff", "check", ".", "--fix"], check=True)
+    # Check if there are changes
+    result = subprocess.run(
+        ["git", "status", "--porcelain"], capture_output=True, text=True
+    )
+    if result.stdout.strip():
+        print("Changes detected after linting fix.")
+        return True
+    else:
+        print("No changes after linting fix.")
+        return False
 
 
 def fix_build_errors():
