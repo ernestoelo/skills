@@ -1,0 +1,103 @@
+\documentclass[letterpaper, 11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish, es-tabla]{babel}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{amsmath}
+
+% Configuración de márgenes
+\geometry{top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm}
+
+% --- CONFIGURACIÓN DE CÓDIGO ---
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    language=C++,
+    inputencoding=utf8,
+    extendedchars=true,
+    literate={ñ}{{\~n}}1
+             {á}{{\'a}}1
+             {é}{{\'e}}1
+             {í}{{\'i}}1
+             {ó}{{\'o}}1
+             {ú}{{\'u}}1
+}
+
+\lstset{style=mystyle}
+
+\title{\textbf{Informe Técnico: [Título]}}
+\author{[Autor]}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+[Resumen del informe]
+\end{abstract}
+
+\section{Introducción}
+
+[Contenido de introducción]
+
+\section{Fase 1: [Descripción]}
+
+[Contenido de fase 1]
+
+\begin{table}[H]
+\centering
+\caption{Ejemplo de tabla}
+\label{tab:ejemplo}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Métrica} & \textbf{Valor 1} & \textbf{Valor 2} \\
+\midrule
+FPS & 10.5 & 12.3 \\
+Precisión & 85\% & 90\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Fase 2: [Descripción]}
+
+[Contenido de fase 2]
+
+\begin{lstlisting}[caption=Código C++]
+#include <iostream>
+
+int main() {
+    std::cout << "Hello World" << std::endl;
+    return 0;
+}
+\end{lstlisting}
+
+\section{Conclusión}
+
+[Conclusión]
+
+\end{document}

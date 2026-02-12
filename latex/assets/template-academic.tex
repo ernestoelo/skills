@@ -1,0 +1,90 @@
+\documentclass[12pt, a4paper]{article}
+
+% PAQUETES NECESARIOS
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+
+% CONFIGURACIÓN DE LISTINGS PARA PYTHON
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize\ttfamily,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+\lstset{style=mystyle, language=Python}
+
+% PORTADA
+\title{Informe Académico: [Título]}
+\author{[Autor]}
+\date{\today}
+
+\begin{document}
+\sloppy
+
+\maketitle
+
+\begin{abstract}
+[Resumen del documento]
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Introducción}
+
+[Contenido de la introducción]
+
+\section{Sección Principal}
+
+[Contenido principal]
+
+\begin{lstlisting}[caption=Código Python]
+def hello_world():
+    print("Hello World")
+\end{lstlisting}
+
+\begin{table}[h!]
+\centering
+\caption{Ejemplo de tabla}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Columna 1} & \textbf{Columna 2} & \textbf{Columna 3} \\ \midrule
+Dato 1 & Dato 2 & Dato 3 \\
+Dato 4 & Dato 5 & Dato 6 \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\section{Conclusión}
+
+[Conclusión]
+
+\begin{thebibliography}{9}
+\bibitem{ejemplo}
+Ejemplo de referencia.
+\end{thebibliography}
+
+\end{document}
