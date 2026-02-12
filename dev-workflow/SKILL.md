@@ -1,161 +1,69 @@
 ---
 name: dev-workflow
-description: Provides official development standards and workflows for structuring projects, handling version control, and ensuring best practices for development processes.
+description: Development standards and validation for AI/ML projects. Use to scaffold, validate, and maintain reproducible, high-quality repositories with Gitflow, uv, and best practices. Triggers for new project setup, structure validation, or workflow enforcement.
+license: Apache-2.0
 ---
 
-# Development Workflow Skill Guide
+# Development Workflow Skill
 
-## Description
-The `dev-workflow` skill ensures consistent project setup, version control, and adherence to organizational standards. Covering everything from Git branching to AI project scaffolding, these workflows are mandatory for all new projects and collaboration tasks.
+This skill provides canonical standards, validation scripts, and best practices for AI/ML project development. It ensures reproducibility, code quality, and team alignment, following the anthropic skill structure and progressive disclosure principles.
 
-## When to Use the Skill
-- **Setting up a repository or project:** Ensure correct structures, environments, and configurations.
-- **Version control workflows:** Commit, branch management, and Gitflow adherence.
-- **AI/ML-specific needs:** Proper Python package management, environments, and coding standards.
-- **Synchronizing or updating project artifacts:** Ensure clean execution of project syncs.
+## Core Principles
+
+- **Reproducibility**: All environments and dependencies are pinned and documented.
+- **Modularity**: Projects follow a clear, modular structure for code, data, and models.
+- **Validation**: Automated scripts check for required files, structure, and compliance.
+- **Progressive Disclosure**: Only essential context is loaded; detailed guides live in references/.
+
+## Anatomy
+
+Every project should have:
+
+```
+project-root/
+├── src/           # Core code
+├── data/          # Data files (with .gitkeep)
+├── models/        # Model files (with .gitkeep)
+├── notebooks/     # Jupyter or other notebooks
+├── pyproject.toml # Project metadata
+├── uv.lock        # Dependency lockfile
+├── README.md      # Project overview
+├── Makefile, run.sh, .gitignore
+```
 
 ## Usage Guide
-### Setting Up AI/ML Projects
-#### Scaffold a New Project
-```bash
-uv init --lib <project_name>
-uv python pin 3.12
-```
-- Creates the project structure and pins the Python version.
-- Populate `pyproject.toml` and configure `uv.lock` for dependencies.
 
-#### Example Gitignore
-```plaintext
-# Python artifacts
-__pycache__/
-.venv
-*.pyc
+1. **Project Setup**: Initialize with `uv init --lib <project-name>`, pin Python with `uv python pin 3.12`, and add dependencies using `uv add`.
+2. **Structure**: Organize code, data, and models as above. Use `.gitignore` to exclude `.venv/`, `data/*`, `models/*`, and `conf.env`.
+3. **Git Workflow**: Use Gitflow (see references/git-workflow.md):
+   - Branch from `develop` for features: `git checkout -b feat/your-feature`
+   - Use Conventional Commits for messages: `feat(scope): subject`
+   - Merge to `develop` via PR, then to `main` for releases
+4. **Validation**: Run `scripts/validate_project.sh` to check structure and required files.
+5. **Self-Validation**: Complete the checklist in references/checklist.md before handover or deployment.
 
-# Data directories
-data/
-```
+## Bundled Resources
 
-### Git Workflow
-#### Branch Creation
-Keep branch names descriptive of the feature or fix:
-```bash
-git checkout -b feat/user-auth
-git checkout -b fix/login-timeout
-```
-- Feature/fix branches merge to `develop`.
-- Ensure all commits follow the Conventional Commits format.
+- **scripts/validate_project.sh**: Checks for required files and structure.
+- **assets/gitflow.png, structure.png**: Visual guides for workflow and structure.
+- **references/**: Detailed guides for AI development, Gitflow, and validation.
 
-#### Commit Workflow
-1. Use `git status` and `git diff` to identify changes.
-2. Avoid staging sensitive files (e.g., `.env`, credentials).
-3. Write a semantic commit message (example):
-   ```bash
-   git commit -m "fix(login): handle timeout edge cases"
-   ```
+## Best Practices
 
-### CI/CD Workflow
-#### Fetch CI Logs
-Fetch specific logs from GitHub Actions workflows for debugging:
-```bash
-gh run list --workflow "Skill Validation CI" --json status,conclusion,headSha | jq '.[] | select(.conclusion == "failure") | .headSha' | xargs -I {} gh run view {} --log
-```
-- Requires GitHub CLI (`gh`); outputs logs for failed runs.
+- Work on feature branches; never commit directly to `main`.
+- Use `uv` for dependency management; always pin Python versions.
+- Validate structure and checklist before every release.
+- Prefer clarity and reproducibility over cleverness.
 
-#### Auto-Correct Common CI Issues
-Run auto-correction for known errors (e.g., file size, validation):
-```bash
-python3 scripts/auto_correct_ci.py --workflow "Skill Validation CI" --commit <commit-sha>
-```
-- Detects and fixes issues like oversized assets; re-commits if needed.
+## References
 
-#### Automated CI/CD with GitHub Actions
-The repository includes automated CI/CD monitoring via `.github/workflows/auto-correct-ci.yml`:
-- Triggers on CI failures (e.g., "Skill Validation CI").
-- Iterates auto-corrections up to 5 times for all common issues (linting, tests, builds, deps, YAML, file size).
-- Notifies via GitHub issue if fails after 5 attempts.
+- [references/overview.md](references/overview.md): Project overview and standards
+- [references/git-workflow.md](references/git-workflow.md): Gitflow and commit conventions
+- [references/ai-development.md](references/ai-development.md): AI/ML best practices
+- [references/checklist.md](references/checklist.md): Self-validation checklist
 
-#### Portable CI Auto-Correction
-Automatically detect CI failures and apply safe fixes iteratively in any repository:
-- Supported fixes: Linting (ruff --fix), tests (pytest), builds (python -m build) – limited to safe, non-destructive changes.
-- Triggered by GitHub Actions webhooks on workflow failure.
-- Checks for missing dependencies (gh CLI, GITHUB_TOKEN) and installs/configures if needed.
-- Includes post-push CI verification with initial wait for CI processing and filtering by commit SHA to avoid confusion with auto-correct runs.
-- Command: `python3 scripts/auto_correct_portable.py --workflow <workflow_name>`.
-- For porting: Copy `scripts/auto_correct_portable.py`, `scripts/verify_ci.py`, `scripts/post-commit-hook.sh`, and `.github/workflows/auto-correct-on-failure.yml` to `<target-repo>`. Run `chmod +x scripts/post-commit-hook.sh && cp scripts/post-commit-hook.sh .git/hooks/post-commit` for automatic verification after commits.
+## Validation and CI/CD
 
-#### Local Development Automation (Experimental)
-For local development workflows, automate linting, staging, and committing (optional, non-mandatory):
-```bash
-python3 scripts/auto_commit_local.py --message "feat: add new feature"
-```
-- Runs linting (ruff check), stages all changes, commits with provided message if no issues.
-- Use for quick local commits; review changes manually for complex updates.
-- Disabled by default; enable via `--force` for CI-like local automation.
-
-### Skills Architecture Diagrams
-Visual representation of the skills ecosystem and activation flow:
-- Central repository connects to individual skills.
-- Sync process links skills to platforms like OpenCode.
-- Automatic validation and loading at conversation start enables autonomous AI behavior.
-
-![Skills Architecture](assets/diagrams/skills-architecture.png)
-
-*(Diagram generated from `assets/diagrams/skills-architecture.puml` using PlantUML. Run `python3 scripts/generate_diagrams.py --diagram skills-architecture` to regenerate PNG automatically. If PlantUML is missing, uses @sys-env for installation.)*
-
-#### Diagram Generation
-Automatically generate PNG diagrams from PlantUML sources:
-```bash
-python3 scripts/generate_diagrams.py --diagram <diagram_name>
-```
-- Checks for PlantUML installation; if missing, integrates with @sys-env for safe installation on Arch Linux.
-- Generates PNG in the same directory as the .puml file.
-- Verifies PNG (existence, size >0) and auto-corrects by retrying up to 5 times if fails.
-- Example: `python3 scripts/generate_diagrams.py --diagram skills-architecture` creates `skills-architecture.png`.
-
-#### Visual References for Diagram Styles
-Always reference `imgs/` and `examples/` for consistent styles in any repository:
-- **imgs/ (Simple Flows):** Gitflow diagrams (gitflow.png, gitflow-feature-branch.png, gitflow-release-branch.png) – Use for linear process flows, standard colors, minimal annotations.
-- **examples/ (Complex Architectures):** Biomass diagrams (biomass-web-architecture.png, biomass-web-overview.png, biomass-web-prod-env.png) – Use for system architectures, production templates with blocks, colored arrows, and detailed notes.
-- When creating .puml, mimic layouts/colors from these to ensure visual appeal and uniformity across repos.
-
-#### Porting Diagram Generation to Other Repositories
-To use this diagram generation kit in any repository:
-1. Copy `scripts/generate_diagrams.py` to `<target-repo>/scripts/`.
-2. Copy templates from `assets/diagrams/templates/` to `<target-repo>/assets/diagrams/`.
-3. Copy `@sys-env/scripts/install_package.py` for dependency installation (or configure NOPASSWD manually).
-4. **Copy `assets/diagrams/imgs/` and `assets/diagrams/examples/` as visual reference libraries.**
-5. Create/edit `.puml` files in `<target-repo>/assets/diagrams/` following the style (colored blocks, arrows, notes).
-6. Run `python3 scripts/generate_diagrams.py --diagram <name>`; auto-installs PlantUML/graphviz if needed.
-- Ensures consistency: Visual appeal, colored arrows, brief notes, verification, and auto-correction. Always reference imgs/examples for styles.
-
-## Inputs and Outputs
-### Inputs
-- **Repository context:** Current Git state (branches, changes).
-- **Project environment:** Python version, package manager configurations, or AI frameworks required.
-
-### Outputs
-- **Git changes:** Staged/stable commits reflecting best practices.
-- **Project files:** Well-organized structure based on `uv` or repo templates.
-
-## Best Practices and Version History
-### Best Practices
-- **Git:** Always work on feature branches; avoid direct `main` commits. Use `auto_commit_local.py` for quick local commits, but review manually for complex changes.
-- **AI Projects:** Use `uv` for reproducible environments; pin Python versions.
-- **CI/CD:** Monitor workflows after commits; use auto-correct for common issues. Always verify CI status post-push with `verify_ci.py` or hooks for generic repos.
-
-### Version History
-| Version | Date       | Updates                                                  |
-|---------|------------|---------------------------------------------------------|
-| 2.0.0   | 2026-02-11 | Added experimental local auto-commit script for development automation.|
-| 1.9.2   | 2026-02-11 | Improved CI verification by filtering runs by commit SHA to avoid confusion with auto-correct workflows.|
-| 1.7.0   | 2026-02-11 | Integrated imgs/ and examples/ as permanent visual references for diagrams in any repo.|
-| 1.6.0   | 2026-02-11 | Added portable diagram generation kit for any repository.|
-| 1.5.0   | 2026-02-11 | Added automatic diagram generation with sys-env integration.|
-| 1.4.0   | 2026-02-11 | Added skills architecture diagrams in PlantUML style.   |
-| 1.3.0   | 2026-02-10 | Added automated CI/CD with GitHub Actions integration, email notifications, and all corrections.|
-| 1.2.0   | 2026-02-10 | Added CI/CD workflow for log sharing and auto-correction.|
-| 1.1.0   | 2026-02-09 | Reorganized content into SKILL.md standard template.    |
-| 1.0.0   | 2024-11-03 | Initial workflow for AI/ML projects and Git workflows.  |
-
-## Resources
-- `references/ci-cd-best-practices.md`: CI/CD monitoring and troubleshooting guides.
+- Integrate with @architect for skill/project scaffolding.
+- Use pre-commit hooks and CI for structure and code validation.
+- Check environment and dependencies with @sys-env before running scripts.

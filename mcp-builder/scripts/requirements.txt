@@ -1,0 +1,2 @@
+# Copiado de anthropic-examples/mcp-builder/scripts/requirements.txt
+# Requerimientos de ejemplo para la skill MCP-Builder.

@@ -2,9 +2,9 @@
 
 ## Sequential Workflows
 
-For complex tasks, break operations into clear, sequential steps. It is often helpful to give Claude an overview of the process towards the beginning of SKILL.md:
+For complex tasks, break operations into clear, sequential steps. It is often helpful to give an overview of the process at the beginning of SKILL.md:
 
-```markdown
+```
 Filling a PDF form involves these steps:
 
 1. Analyze the form (run analyze_form.py)
@@ -16,9 +16,9 @@ Filling a PDF form involves these steps:
 
 ## Conditional Workflows
 
-For tasks with branching logic, guide Claude through decision points:
+For tasks with branching logic, guide through decision points:
 
-```markdown
+```
 1. Determine the modification type:
    **Creating new content?** → Follow "Creation workflow" below
    **Editing existing content?** → Follow "Editing workflow" below

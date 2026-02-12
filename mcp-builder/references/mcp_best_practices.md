@@ -1,0 +1,1 @@
+Copiado de anthropic-examples/mcp-builder/reference/mcp_best_practices.md para referencia interna de la skill MCP-Builder.

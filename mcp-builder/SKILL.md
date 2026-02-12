@@ -18,7 +18,7 @@ The `mcp-builder` skill provides comprehensive guidelines for creating high-qual
 ### MCP Server Development
 #### Analyze and Plan
 1. **Research Protocol:** Familiarize with the MCP specification and its core architecture.
-   - Use [📋 MCP Best Practices](./references/mcp-best-practices.md) for guidelines.
+   - Use [📋 MCP Best Practices](./references/mcp_best_practices.md) for guidelines.
 2. **Select Framework:** Choose between:
    - **TypeScript**: For high compatibility and extensive SDK support.
    - **Python**: For FastAPI-based rapid development.
@@ -61,24 +61,50 @@ Set authentication, pagination, and tool input/output schemas as per the MCP req
 - **Validation Results:** Passes standard validation criteria.
 - **Evaluations:** XML files for server testing and refinement.
 
-## Best Practices and Version History
-### Best Practices
-- Use **TypeScript SDK** for better tooling, or Python for rapid prototyping.
-- Plan tool schemas carefully with descriptive names (action-oriented, e.g., `github_create_issue`).
-- Implement error messages that clearly guide users.
+---
+name: mcp-builder
+description: Develop and scaffold MCP servers (Model Context Protocol) to integrate LLMs with external services, ensuring high-quality, extensible designs.
+---
 
-### Version History
-| Version | Date       | Updates                                                       |
-|---------|------------|--------------------------------------------------------------|
-| 1.1.0   | 2026-02-09 | Refined SKILL.md structure and added examples for evaluations.|
-| 1.0.0   | 2025-09-18 | Initial creation based on MCP protocol standards.            |
+# MCP Builder Skill Guide
 
-## Resources
-- [📋 MCP Best Practices](./references/mcp-best-practices.md): Core guidelines for server design.
-- [✅ Evaluation Guide](./references/evaluation.md): Steps to create comprehensive evaluations.
-- SDK Documentation:
-  - TypeScript: `https://raw.githubusercontent.com/modelcontextprotocol/typescript-sdk/main/README.md`
-  - Python: `https://raw.githubusercontent.com/modelcontextprotocol/python-sdk/main/README.md`.
-- Language Implementation Guides:
-  - [⚡ Node/TypeScript MCP Server](./references/node-mcp-server.md).
-  - [🐍 Python MCP Server](./references/python-mcp-server.md).
+## Description
+The `mcp-builder` skill provides comprehensive guidelines for creating high-quality MCP servers. These servers enable LLMs to interact seamlessly with external services via Model Context Protocol (MCP). By implementing rigorous standards, tools can support real-world use cases effectively.
+
+## When to Use the Skill
+- **Building new MCP servers for APIs/services:** Ensure scalability and robust operations.
+- **Designing workflows:** Optimize tool usability and discoverability for LLMs.
+- **Creating server evaluations:** Develop reliable question-answer pairs to validate server performance.
+- **Integrating tools with the MCP protocol:** Adopt best practices for schema design and error handling.
+
+## Usage Guide
+### MCP Server Development
+#### Analyze and Plan
+Research MCP specification.
+
+Select Framework: TypeScript or Python.
+
+#### Scaffold and Implement
+Use npx or fastmcp init commands.
+
+Set authentication, pagination, schemas.
+
+### Validation and Packaging
+Validate with inspectors.
+
+Create evaluations with XML structures.
+
+## Inputs and Outputs
+### Inputs
+- **Framework Preference:** TypeScript or Python.
+- **API Specifications:** Endpoints, authentication, data models.
+
+### Outputs
+- **MCP Server:** Optimized for integration.
+- **Validation Results:** Passes criteria.
+- **Evaluations:** XML files for testing.
+
+## Best Practices
+- Use TypeScript SDK or Python for prototyping.
+- Plan tool schemas with descriptive names.
+- Implement clear error messages.

@@ -1,0 +1,1 @@
+Copiado de anthropic-examples/pdf/reference.md para referencia interna de la skill PDF.

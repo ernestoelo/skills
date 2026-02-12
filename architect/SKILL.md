@@ -6,143 +6,54 @@ description: Scaffolds skills and agents for AI platforms, ensuring proper struc
 # Architect Skill Guide
 
 ## Description
-The `architect` skill provides tools and workflows for creating scalable, reusable skills and agents across AI platforms. Whether creating new skills or refining existing ones, `architect` ensures structures adhere to best practices, enabling maintainability and compatibility.
+The `architect` skill provides tools and workflows to scaffold, organize, and maintain skills and agents for AI platforms. It enforces the canonical structure and best practices from anthropic-examples, the skill-creator example, and the official https://github.com/anthropics/skills.git repository.
 
-## When to Use the Skill
-- **Setting up new skills or agents:** Quickly scaffold project directories with essential components.
-- **Reorganizing resources:** Structure SKILL.md, bundled assets, and references for clarity.
-- **Ensuring cross-platform compatibility:** Validate that skills work across environments.
-- **Packaging skills for distribution:** Prepare skills for deployment.
+## When to Use
+- To create new skills or agents: generates the recommended folder and file structure.
+- To reorganize resources: enforces SKILL.md, scripts/, references/, and assets/ according to the skill's domain.
+- To ensure cross-platform compatibility and maintainability.
+- To package skills for distribution or deployment.
 
 ## Usage Guide
-Note: The following commands should be run from the repository root directory to access the shared tooling scripts.
+When a new skill is requested, architect automatically runs the `scripts/skill_scaffold.py` script with the skill name and description. This generates the standard structure (SKILL.md, scripts/, references/, assets/, README.md) following the skill-creator and anthropic-examples pattern.
 
-### Skill Scaffolding
-```bash
-python3 shared/scripts/init_skill.py <skill-name> --path <output-dir>
-```
-- Genera una carpeta de skill con `SKILL.md` y recursos.
-- Nombres en kebab-case (ej: `pdf-processor`).
-- **Post-Scaffold:** Ejecuta `python3 shared/scripts/sync-skills.sh` para sincronizar la skill. Reinicia el asistente si es necesario.
-- **Desarrollo:** Siempre ejecuta @dev-workflow tras crear una skill:
-   ```bash
-   python3 shared/scripts/quick_validate.py <skill-name>
-   python3 dev-workflow/scripts/auto_correct_portable.py --workflow "Skill Validation CI"
-   git add . && git commit -m "feat: add <skill-name> skill"
-   git push
-   ```
-
-#### Validate and Package
-```bash
-python3 shared/scripts/quick_validate.py <skill-path>
-python3 shared/scripts/package_skill.py <skill-path> [output-dir]
-```
-- Genera y valida la skill.
-
-#### Validate and Package
-```bash
-python3 shared/scripts/quick_validate.py <skill-path>
-python3 shared/scripts/package_skill.py <skill-path> [output-dir]
-```
-- Valida y empaqueta la skill.
-
-### Global Skill Activation
-Para plataformas como OpenCode, activa todas las skills al inicio de la conversación:
+### Example
+To create a new skill called "my-skill":
 
 ```bash
-python3 shared/architect/scripts/activate_all.py
-```
-- Descubre y valida skills usando `shared/scripts/quick_validate.py`.
-
-**Example Output:**
-```
-🔍 Discovering skills...
-Found 7 skill(s): architect, dev-workflow, mcp-builder, pdf, recursive-context, sys-env, web-scraper
-
-🔧 Validating skills...
-✅ architect: Skill is valid!
-✅ dev-workflow: Skill is valid!
-✅ mcp-builder: Skill is valid!
-✅ pdf: Skill is valid!
-✅ recursive-context: Skill is valid!
-✅ sys-env: Skill is valid!
-✅ web-scraper: Skill is valid!
-
-📋 Summary:
-Total skills: 7
-Valid skills: 7
-Available for activation: architect, dev-workflow, mcp-builder, pdf, recursive-context, sys-env, web-scraper
-
-✨ All skills validated! Ready for OpenCode activation.
+python scripts/skill_scaffold.py my-skill "Description of the new skill."
 ```
 
-**Integration Notes:** Use in OpenCode conversations requiring multiple skills. No platform restart needed if declarative. Run after adding new skills or updates.
-
-#### Automatic Activation via Sync
-Skills are automatically activated for OpenCode after synchronization via `scripts/sync-skills.sh`. This ensures skills are validated and ready for conversation starts without manual intervention. The sync script runs `activate_all.py` post-sync to OpenCode, providing context for autonomous AI behavior.
-
-#### Autonomous Skill Loading
-For fully autonomous skill activation without @ mentions, use the `auto_skill_loader` MCP server:
-
-1. **Run the MCP Server:**
-   ```bash
-   cd ~/.copilot/skills
-   ./start_auto_skill_loader.sh
-   # Or manually: ~/.local/bin/fastmcp run auto_skill_loader.py
-   ```
-
-2. **Integration with OpenCode:**
-   - The MCP server provides tools for automatic skill loading based on conversation context
-   - Tools analyze messages and load relevant skills autonomously
-   - Supports pattern matching for keywords like "pdf", "git", "web-scraper", etc.
-
-3. **Available Tools:**
-   - `analyze_message_for_skills`: Analyzes messages for relevant skills
-   - `load_skill`: Loads specific skill content
-   - `load_relevant_skills`: Automatically loads all relevant skills for a message
-   - `list_available_skills`: Lists all available skills
-
-**Note:** While OpenCode doesn't currently support direct MCP integration, the server can run independently and be used programmatically for skill management.
-#### Create a New Agent
-For Type B workflows, create an `.agent.md` file:
-```markdown
----
-name: agent-name
-role: Specialized role description
----
-
-# [Agent Name]
-
-Responsibilities, approaches, and task guidelines for the agent.
+This will create the structure:
+```
+my-skill/
+├── SKILL.md
+├── scripts/
+├── references/
+├── assets/
+├── README.md
 ```
 
-## Inputs and Outputs
-### Inputs
-- **Skill name and scope:** Name for the skill/agent and its intended functionality.
-- **Resources:** Scripts, references, assets defining the skill’s output.
+You can customize SKILL.md and add resources as needed for your domain.
 
-### Outputs
-- **Skill directory:** Properly structured directories ready for deployment.
-- **Packaged skill:** A distributable `.skill` file with all required resources.
+## Integration with dev-workflow and sys-env
+- **Validation:** Use pre-commit hooks and validation flows from @dev-workflow to ensure quality and reproducibility.
+- **Compatibility:** Before running scripts, check dependencies and environment using @sys-env guidelines.
+- **CI/CD:** Skills can be integrated into pipelines following dev-workflow standards (semantic commits, branch management, hooks, etc.).
 
-## Best Practices and Version History
-### Best Practices
-- Follow kebab-case naming conventions for skills.
-- Ensure SKILL.md does not exceed 500 lines (split long sections into references).
-- Always validate skills before committing them.
+## Anatomy of the Skill
+- SKILL.md (guide and metadata)
+- scripts/ (automation and utilities)
+- references/ (additional documentation, examples)
+- assets/ (visual resources, templates)
+- README.md
 
-### Version History
-| Version | Date       | Updates                                                |
-|---------|------------|-------------------------------------------------------|
-| 1.5.0   | 2026-02-11 | Added autonomous skill loading via MCP server for automatic activation without @ mentions|
-| 1.4.0   | 2026-02-11 | Added post-scaffold @dev-workflow application for consistent skill creation|
-| 1.3.0   | 2026-02-11 | Added automatic skill activation for OpenCode via sync script|
-| 1.2.0   | 2026-02-10 | Added global skill activation script for OpenCode support|
-| 1.1.0   | 2026-02-09 | Applied standardized SKILL.md template for consistency|
-| 1.0.0   | 2025-05-16 | Initial documentation for skills and agents scaffolding|
+## Best Practices
+- Follow the canonical structure for all new skills.
+- Use scripts/ for automation and reproducibility.
+- Document usage and integration in SKILL.md and README.md.
+- Reference @dev-workflow and @sys-env for validation and environment management.
 
-## Resources
-- **Design Patterns:** `shared/references/workflows.md`, `shared/references/output-patterns.md`
-- **Platform Sync:** `shared/references/platform-sync.md`
-- **Auto Skill Loading:** `shared/core/auto_skill_loader.py` (MCP server), `shared/core/start_auto_skill_loader.sh` (startup script)
-- **Tooling Scripts:** `shared/scripts/init_skill.py`, `shared/scripts/package_skill.py`, `shared/scripts/quick_validate.py`
+## References
+- [examples/skill-creator](examples/skill-creator): Canonical skill template and best practices from anthropic
+- Follow the conventions of https://github.com/anthropics/skills.git for maximum compatibility.

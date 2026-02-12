@@ -1,0 +1,1 @@
+Este bundle contiene los ejemplos y scripts de referencia de anthropic-examples/xlsx para uso interno de la skill XLSX.

@@ -3,6 +3,99 @@ name: pdf
 description: The PDF skill enables advanced operations on PDF files, including merging, splitting, extracting, creating, and modifying PDFs. It also supports OCR for scanned PDFs and detailed table/text extraction.
 ---
 
+# PDF Skill
+
+Skill for advanced PDF operations: merging, splitting, extracting, OCR, and format conversion. Based on best practices from anthropic-examples/pdf and following architect, dev-workflow, and sys-env standards.
+
+## When to Use
+- Extracting or analyzing content from PDFs
+- Merging, splitting, or securing PDF files
+- Converting PDFs to/from other formats (Excel, Word)
+- Automating PDF workflows in data pipelines
+
+## Usage Example
+```python
+from pypdf import PdfWriter, PdfReader
+writer = PdfWriter()
+for pdf_file in ["doc1.pdf", "doc2.pdf"]:
+    reader = PdfReader(pdf_file)
+    for page in reader.pages:
+        writer.add_page(page)
+with open("merged.pdf", "wb") as output:
+    writer.write(output)
+```
+
+## OCR Example
+```python
+import pytesseract
+from pdf2image import convert_from_path
+images = convert_from_path('scanned.pdf')
+text = "".join([pytesseract.image_to_string(img) for img in images])
+```
+
+## Command-Line Example
+```bash
+pdftotext input.pdf output.txt
+```
+
+## Best Practices
+- Usa los scripts y flujos de anthropic-examples/pdf como bundle de referencia
+- Valida siempre los archivos de salida
+- Sigue las guías de architect, dev-workflow y sys-env
+
+## Referencias
+- Incluye como bundle los ejemplos y scripts de anthropic-examples/pdf
+qpdf --empty --pages file1.pdf file2.pdf -- merged.pdf
+```
+
+## Inputs and Outputs
+
+### Inputs
+- **File path:** Path to the input PDF file(s) (e.g., `input.pdf`).
+- **Operation:** The specific processing task (e.g., merge, split, extract).
+- **Additional arguments:** Optional arguments such as passwords, metadata, or specific pages.
+
+### Outputs
+- **Result file:** Path to the output PDF file (e.g., `output.pdf`).
+- **Extracted data:** Text, tables, or other extracted formats depending on the task.
+
+## Best Practices and Known Limitations
+- Always ensure that Python libraries (`pypdf`, `pdfplumber`) and external tools (`pdftotext`, `qpdf`) are correctly installed in your environment.
+- OCR processes (e.g., `pytesseract`) rely on high-resolution scanned documents for optimal accuracy.
+- Avoid using Unicode subscripts/superscripts with ReportLab due to font limitations.
+
+## Example Workflows
+### Creating PDFs from Scratch
+```python
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+
+c = canvas.Canvas("hello_world.pdf", pagesize=letter)
+c.drawString(100, 750, "Hello, World!")
+c.save()
+```
+
+### Adding Watermarks to Pages
+```python
+from pypdf import PdfReader, PdfWriter
+
+watermark = PdfReader("watermark.pdf").pages[0]
+reader = PdfReader("document.pdf")
+writer = PdfWriter()
+
+for page in reader.pages:
+    page.merge_page(watermark)
+    writer.add_page(page)
+
+with open("watermarked.pdf", "wb") as output:
+    writer.write(output)
+```
+
+---
+name: pdf
+description: The PDF skill enables advanced operations on PDF files, including merging, splitting, extracting, creating, and modifying PDFs. It also supports OCR for scanned PDFs and detailed table/text extraction.
+---
+
 # PDF Processing Skill Guide
 
 ## Description
@@ -103,9 +196,3 @@ for page in reader.pages:
 with open("watermarked.pdf", "wb") as output:
     writer.write(output)
 ```
-
-## Version History and Changelog
-| Version | Date       | Description                                                                 |
-|---------|------------|-----------------------------------------------------------------------------|
-| 1.0.0   | 2022-02-09 | Initial release with examples, usage guides, and best practices             |
-

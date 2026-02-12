@@ -1,0 +1,1 @@
+Copiado de anthropic-examples/mcp-builder/reference/node_mcp_server.md para referencia interna de la skill MCP-Builder.

@@ -1,79 +1,62 @@
 ---
 name: sys-env
-description: System environment manager for Arch Linux with Hyprland + Wayland. This skill ensures safe and optimal configuration for package management, drivers, services, and hardware compatibility.
+description: System environment management for Arch Linux + Hyprland. Use to validate, configure, and troubleshoot packages, drivers, and services. Triggers for package operations, compatibility checks, and environment validation.
+license: Apache-2.0
 ---
 
-# System Environment Manager Skill Guide
+# System Environment Manager Skill
 
-## Description
-The `sys-env` skill is designed for managing a Wayland-based Arch Linux workstation with Hyprland as the compositor. It ensures compatibility with hardware (AMD Radeon), services (PipeWire, systemd), and package managers (pacman, yay). Always consult this skill for best practices and safety checks when modifying system configurations.
+This skill provides scripts, references, and best practices for managing Arch Linux + Hyprland environments. It ensures safe package management, hardware compatibility, and reproducible setups, following the anthropic skill structure and progressive disclosure principles.
 
-## When to Use the Skill
-- **Installing or upgrading packages:** Safety checks for conflicts using pre-install scripts.
-- **Modifying environment variables:** Guidance on scope and compatibility.
-- **Managing dotfiles:** Best practices for GNU Stow and version control.
-- **Editing system services:** Safely restarting critical services.
-- **Working remotely:** Special considerations for Jetson/ZedBox with SSH or local setups.
+## Core Principles
+
+- **Safety**: Always check compatibility and backup configs before changes.
+- **Transparency**: Scripts and references document every step and decision.
+- **Validation**: Automated scripts check for required packages, drivers, and services.
+- **Progressive Disclosure**: Only essential context is loaded; detailed guides live in references/.
+
+## Anatomy
+
+Every environment should be managed with:
+
+```
+sys-env/
+├── scripts/         # Automation and validation scripts
+├── references/      # Detailed guides and compatibility docs
+├── assets/          # Logos, diagrams, or templates
+└── SKILL.md         # Main guide
+```
 
 ## Usage Guide
-### Package Safety Verification
-#### Check Package Compatibility
-```bash
-bash shared/scripts/pre-install-check.sh mesa pipewire hyprland
-```
-- Validates the presence of tools and evaluates risk levels (e.g., GPU or audio stack).
 
-#### Example Output
-```
-=== Pre-Install Safety Check ===
-System: Arch Linux + Hyprland (Wayland)
+1. **Check Compatibility**: Run `scripts/env_check.sh` to verify required packages, drivers, and session type.
+2. **Install/Update**: Use `sudo pacman -S <package>` or `yay -S <package>` (see references/arch-package-management.md).
+3. **Modify/Reconfigure**: Edit configs with care; backup first. Restart services as needed.
+4. **Remove/Replace**: Use `sudo pacman -R <package>` and check dependencies.
+5. **Remote Setup**: Use SSH for Jetson/ZedBox; see references/remote-setup.md.
 
-Processing item: mesa
-  Tool already installed.
-  Matches critical: mesa.
-  Conflicts detected: libva-mesa-driver.
-```
+## Bundled Resources
 
-### Automatic Package Installation
-For seamless automation in plans/builds, configure sudo NOPASSWD for safe package installation. This activates @sys-env when scripts detect missing packages.
+- **scripts/env_check.sh**: Checks for required packages, drivers, and session type.
+- **assets/arch-logo.png, hyprland-logo.png**: Visual guides for environment.
+- **references/**: Detailed guides for package management, compatibilities, safety, and remote setup.
 
-#### Configure NOPASSWD for Pacman
-Edit /etc/sudoers (use visudo):
-```
-your_username ALL=(ALL) NOPASSWD: /usr/bin/pacman
-```
-- Allows passwordless pacman commands for your user.
-- Run `sudo visudo` to edit safely.
+## Best Practices
 
-#### Automatic Installation Command
-```bash
-python3 shared/sys-env/scripts/install_package.py <package>
-```
-- Installs any Arch Linux package with NOPASSWD priority; provides manual steps if not configured.
-- Use for any missing dependency across skills (e.g., @dev-workflow, @architect).
+- Always check for conflicts before making changes.
+- Backup configs and services before modification.
+- Use NOPASSWD in /etc/sudoers for automation (with caution).
+- Test on non-critical setups first.
 
-#### Interactive Prompts for Security
-For secure installations, scripts prompt for sudo password:
-```bash
-# Example in script
-Enter your sudo password: [hidden input]
-```
-- Uses getpass for hidden input; no password stored.
-- Fallback if NOPASSWD not configured.
+## References
 
-#### Integration with Other Skills
-When a skill/script requires a package (e.g., @dev-workflow for diagrams), call `python3 sys-env/scripts/install_package.py <package>` for universal, automated installation.
+- [references/arch-package-management.md](references/arch-package-management.md): Package management
+- [references/hyprland-compatibilities.md](references/hyprland-compatibilities.md): Hyprland compatibility
+- [references/system-safety-checklist.md](references/system-safety-checklist.md): Safety checklist
+- [references/remote-setup.md](references/remote-setup.md): Remote setup for Jetson/ZedBox
 
-## Best Practices and Version History
-### Best Practices
-- Always run pre-install checks before package changes.
-- Use NOPASSWD judiciously for automation; limit to trusted commands.
-- Backup configurations before modifying environment variables or services.
+## Validation and CI/CD
 
-### Version History
-| Version | Date       | Updates |
-|---------|------------|---------|
-| 1.3.0   | 2026-02-11 | Added generic install_package.py script for any Arch package with NOPASSWD automation.|
-| 1.2.0   | 2026-02-11 | Added interactive prompts for secure package installation.|
-| 1.1.0   | 2026-02-11 | Added automatic package installation with NOPASSWD config.|
-| 1.0.0   | 2026-02-09 | Initial skill for Arch Linux + Hyprland management.|
+- Integrate with @architect for environment scaffolding and validation.
+- Use pre-commit hooks and CI for environment scripts.
+- Validate system state before running critical operations.
