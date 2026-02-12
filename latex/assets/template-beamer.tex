@@ -1,0 +1,105 @@
+\documentclass[aspectratio=169]{beamer}
+
+% --- Configuración Estética ---
+\usetheme{Madrid}
+\usecolortheme{whale}
+\usefonttheme{professionalfonts}
+\setbeamerfont{subtitle}{size=\small}
+
+% --- Paquetes ---
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings} % Para código
+\usepackage{tikz}
+
+% --- Configuración de Bloques de Código ---
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\tiny, % Letra muy pequeña para que quepa
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+% --- Metadatos ---
+\title{Your Presentation Title}
+\subtitle{Your Subtitle}
+\author{Your Name}
+\institute{Your Institution}
+\date{\today}
+
+\begin{document}
+
+% --- Title Page ---
+\begin{frame}
+    \titlepage
+\end{frame}
+
+% --- Content Frame with Bullets ---
+\begin{frame}{Section 1: Overview}
+    \begin{itemize}
+        \item Key point 1
+        \item Key point 2
+        \item Key point 3
+    \end{itemize}
+\end{frame}
+
+% --- Frame with Columns ---
+\begin{frame}{Section 2: Comparison}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{Left Column:}
+        \begin{itemize}
+            \item Item A
+            \item Item B
+        \end{itemize}
+        
+        \column{0.5\textwidth}
+        \textbf{Right Column:}
+        \begin{itemize}
+            \item Item C
+            \item Item D
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+% --- Frame with Code Listing ---
+\begin{frame}[fragile]{Section 3: Code Example}
+    \begin{lstlisting}[language=Python, caption=Sample Code]
+def example_function():
+    print("Hello, World!")
+    return True
+    \end{lstlisting}
+\end{frame}
+
+% --- Additional Content Frame ---
+\begin{frame}{Section 4: Conclusions}
+    \begin{enumerate}
+        \item Conclusion 1
+        \item Conclusion 2
+        \item Conclusion 3
+    \end{enumerate}
+\end{frame}
+
+\end{document}
