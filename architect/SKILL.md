@@ -55,5 +55,5 @@ You can customize SKILL.md and add resources as needed for your domain.
 - Reference @dev-workflow and @sys-env for validation and environment management.
 
 ## References
-- [examples/skill-creator](examples/skill-creator): Canonical skill template and best practices from anthropic
+- [references/skill-creator.md](references/skill-creator.md): Canonical skill template and best practices from anthropic
 - Follow the conventions of https://github.com/anthropics/skills.git for maximum compatibility.
