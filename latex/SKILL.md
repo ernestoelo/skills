@@ -27,6 +27,10 @@ This skill provides tools and workflows for compiling LaTeX documents in VS Code
 - Follow VS Code integration guidelines in references/
 - Validate LaTeX syntax before compilation
 
+### Important Warnings
+- **Never use straight double quotes (`"`) in LaTeX or Beamer documents.** They can break the text rendering. Use `` (two backticks) for opening quotes and '' (two single quotes) for closing quotes, or use the appropriate LaTeX quote commands.
+- **Always check the size of created tables.** Tables that are too wide may overflow the page in both standard LaTeX and Beamer presentations. Adjust table width or use packages like `tabularx` or `resizebox` to ensure tables fit within the page or slide boundaries.
+
 ## References
 - [references/latex-formats.md](references/latex-formats.md): Formatting guidelines
 - [references/vscode-integration.md](references/vscode-integration.md): VS Code setup
