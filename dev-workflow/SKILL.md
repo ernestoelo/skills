@@ -80,5 +80,5 @@ This rule applies to all scripts, notebooks, and source files in the repository.
 ## Validation and CI/CD
 
 - Integrate with @architect for skill/project scaffolding.
-- Use pre-commit hooks and CI for structure and code validation.
+- Use pre-commit hooks for structure and code validation.
 - Check environment and dependencies with @sys-env before running scripts.

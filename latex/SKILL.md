@@ -27,9 +27,29 @@ This skill provides tools and workflows for compiling LaTeX documents in VS Code
 - Follow VS Code integration guidelines in references/
 - Validate LaTeX syntax before compilation
 
+
 ### Important Warnings
 - **Never use straight double quotes (`"`) in LaTeX or Beamer documents.** They can break the text rendering. Use `` (two backticks) for opening quotes and '' (two single quotes) for closing quotes, or use the appropriate LaTeX quote commands.
 - **Always check the size of created tables.** Tables that are too wide may overflow the page in both standard LaTeX and Beamer presentations. Adjust table width or use packages like `tabularx` or `resizebox` to ensure tables fit within the page or slide boundaries.
+- **When using `tabularx`, always load the package in the preamble (`\usepackage{tabularx}`) and use only `X` columns for text.** Do not use `booktabs` commands (`\toprule`, `\midrule`, `\bottomrule`) inside `tabularx` unless you know they are supported by your LaTeX distribution. Prefer standard `\hline` for compatibility.
+
+#### Example: Safe `tabularx` Table
+```latex
+\usepackage{tabularx}
+...
+\begin{table}[h!]
+\centering
+\begin{tabularx}{\textwidth}{|X|X|X|}
+\hline
+Header 1 & Header 2 & Header 3 \\
+\hline
+Text 1 & Text 2 & Text 3 \\
+\hline
+\end{tabularx}
+\end{table}
+```
+
+See [@architect](../architect/SKILL.md) and [@dev-workflow](../dev-workflow/SKILL.md) for structure, validation, and reproducibility standards.
 
 ## References
 - [references/latex-formats.md](references/latex-formats.md): Formatting guidelines
