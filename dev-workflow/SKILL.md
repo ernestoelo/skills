@@ -55,6 +55,21 @@ project-root/
 - Validate structure and checklist before every release.
 - Prefer clarity and reproducibility over cleverness.
 
+## Code Language and Comments
+
+All code in project files **must be written in English** and include clear, descriptive comments in English. This ensures:
+
+- Consistency and accessibility for international teams
+- Easier onboarding and code review
+- Alignment with open-source and industry standards
+
+> **Guideline:**
+> - All variable names, function names, and code comments must be in English.
+> - Avoid non-English words in code, except where required by external APIs or data.
+> - Documentation and code comments should explain intent, logic, and usage.
+
+This rule applies to all scripts, notebooks, and source files in the repository.
+
 ## References
 
 - [references/overview.md](references/overview.md): Project overview and standards
