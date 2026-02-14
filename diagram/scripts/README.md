@@ -1,10 +1,11 @@
-# Scripts para generación de diagramas
 
-Incluye utilidades para automatizar la generación de diagramas a partir de archivos .puml usando PlantUML.
+# Diagram Generation Scripts
 
-- `generate_diagrams.sh`: Busca y convierte todos los archivos .puml a PNG usando PlantUML.
+Includes utilities to automate diagram generation from .puml and .dot files using PlantUML and Graphviz.
 
-## Uso rápido
+- `generate_diagrams.sh`: Finds and converts all .puml files to PNG/SVG using PlantUML, and all .dot files to PNG/SVG using Graphviz.
+
+## Quick Usage
 
 ```bash
 cd scripts
@@ -12,4 +13,4 @@ chmod +x generate_diagrams.sh
 ./generate_diagrams.sh ../assets
 ```
 
-Asegúrate de tener PlantUML instalado (ver instrucciones en SKILL.md y @sys-env).
+Make sure PlantUML and Graphviz are installed (see instructions in SKILL.md and @sys-env).
