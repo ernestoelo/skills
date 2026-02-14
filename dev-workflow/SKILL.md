@@ -57,7 +57,10 @@ project-root/
 
 ## Code Language and Comments
 
-All code in project files **must be written in English** and include clear, descriptive comments in English. This ensures:
+> - All variable names, function names, and code comments must be in English.
+> - Avoid non-English words in code, except where required by external APIs or data.
+> - Documentation and code comments should explain intent, logic, and usage.
+All code in project files **must be written in English** and include clear, descriptive comments in English. Additionally, **all GitHub workflow actions**—including commit messages, branch names, pull request titles/descriptions, and merge messages—**must be in English**. This ensures:
 
 - Consistency and accessibility for international teams
 - Easier onboarding and code review
@@ -65,10 +68,11 @@ All code in project files **must be written in English** and include clear, desc
 
 > **Guideline:**
 > - All variable names, function names, and code comments must be in English.
-> - Avoid non-English words in code, except where required by external APIs or data.
+> - All commit messages, branch names, PR titles/descriptions, and merge messages must be in English.
+> - Avoid non-English words in code or workflow, except where required by external APIs or data.
 > - Documentation and code comments should explain intent, logic, and usage.
 
-This rule applies to all scripts, notebooks, and source files in the repository.
+This rule applies to all scripts, notebooks, source files, and all GitHub workflow actions in the repository.
 
 ## References
 
