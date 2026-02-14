@@ -81,7 +81,8 @@ This rule applies to all scripts, notebooks, source files, and all GitHub workfl
 - [references/ai-development.md](references/ai-development.md): AI/ML best practices
 - [references/checklist.md](references/checklist.md): Self-validation checklist
 
-## Validation and CI/CD
+
+## Validation
 
 - Integrate with @architect for skill/project scaffolding.
 - Use pre-commit hooks for structure and code validation.
