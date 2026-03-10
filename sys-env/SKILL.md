@@ -30,12 +30,31 @@ sys-env/
 ## Usage Guide
 
 1. **Check Compatibility**: Run `scripts/env_check.sh` to verify required packages, drivers, and session type.
-2. **Check Python Environment**: Before `yay -S`, verify conda is deactivated (see references/python-environments.md).
+2. **Check Python Environment**: Before `yay -S`, use `conda-off` to disable miniforge OR verify with `echo $CONDA_DEFAULT_ENV` (should be empty). See references/python-environments.md for details.
 3. **Install/Update**: Use `sudo pacman -S <package>` or `yay -S <package>` (see references/arch-package-management.md).
 4. **Modify/Reconfigure**: Edit configs with care; backup first. Restart services as needed.
 5. **Remove/Replace**: Use `sudo pacman -R <package>` and check dependencies.
 6. **Python Project Setup**: For new development projects, use @architect with isolated environments (not miniforge base).
 7. **Remote Setup**: Use SSH for Jetson/ZedBox; see references/remote-setup.md.
+
+## Manual Conda Control
+
+Since miniforge is **disabled by default** in ~/.zshrc (to avoid pacman/yay conflicts):
+
+```bash
+# Enable miniforge in PATH for current session:
+conda-on
+
+# Verify it's active:
+which conda
+python --version
+
+# When done with conda work:
+conda-off
+
+# Verify it's disabled:
+which conda  # Should show "not found" or /usr/bin/python
+```
 
 ## Bundled Resources
 
@@ -49,6 +68,7 @@ sys-env/
 - **Python Environments**: Always deactivate conda/miniforge BEFORE running `yay -S` or `pacman -S` to avoid mixed dependency sources.
 - **Project Isolation**: Create project-specific venv or conda environments instead of using miniforge base for development (see @architect).
 - **Check Before Operating**: Run `echo $CONDA_DEFAULT_ENV` before system package operations. Should be empty or (base).
+- **Miniforge Activation**: Keep miniforge DISABLED by default in ~/.zshrc. Use `conda-on` alias only when needed to avoid PATH conflicts. See references/python-environments.md for details.
 - **Always check for conflicts** before making changes.
 - **Backup configs and services** before modification.
 - **Use NOPASSWD in /etc/sudoers** for automation (with caution).

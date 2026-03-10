@@ -5,22 +5,25 @@ This guide addresses the complexity of managing multiple Python environments in 
 
 ## Your Current Environment
 
-### Detected Setup (as of March 2026)
+### Detected Setup (as of March 2026 — UPDATED)
 ```yaml
 System Python: 3.14.3
-Miniforge Python: 3.12.11 (PRIMARY - active by default)
+Miniforge Python: 3.12.11 (DEACTIVATED by default)
 Miniforge Path: /home/p3g4sus/miniforge3
-Conda Environments: base, ocv, viz
+Conda Environments: base only (ocv, viz removed - not needed)
 Development Tools: uv 0.10.9, pipx 1.8.0
-Auto-activation: YES (in ~/.zshrc line 48)
+Auto-activation: NO (manual control via aliases)
 ```
 
 ### Environment Configuration
 ```bash
-# In ~/.zshrc (PERMANENT):
-export PATH="$HOME/miniforge3/bin:$PATH"  # Line 48 - ALWAYS ACTIVE
-source "$HOME/miniforge3/etc/profile.d/conda.sh"
-conda activate ocv  # Optional, context-dependent
+# In ~/.zshrc (UPDATED):
+# Miniforge is DISABLED by default to avoid pacman/yay conflicts
+# No automatic PATH modification on shell startup
+
+# Manual control via aliases:
+alias conda-on='export PATH="$HOME/miniforge3/bin:$PATH"'
+alias conda-off='export PATH="${PATH#$HOME/miniforge3/bin:}"'
 ```
 
 ## The Core Problem: Pacman ↔ Conda Conflict
@@ -157,31 +160,39 @@ Start: Need to install something?
    └─> Yes: Use uv (faster than conda for package resolution)
 ```
 
-## Conda Environment Management
+## Conda Environment Management (UPDATED)
 
-### List Environments (You have 3)
+### List Environments (You have 1: base)
 ```bash
 conda env list
-# base (currently active when miniforge starts)
-# ocv (specialized for computer vision)
-# viz (specialized for visualization)
+# base (general-purpose, minimal dependencies)
+# REMOVED: ocv, viz (unused environments deleted to reduce PATH complexity)
 ```
 
-### Switch Between Environments
+### Activate Miniforge When Needed
 ```bash
-# View current
-echo $CONDA_DEFAULT_ENV
+# Check if miniforge is in PATH
+echo $PATH | grep miniforge
 
-# Switch to ocv project
-conda activate ocv
-python -c "import cv2; print(cv2.__version__)"
-
-# Switch to viz project
-conda activate viz
-python -c "import matplotlib; print(matplotlib.__version__)"
-
-# Back to base
+# If not present, activate manually:
+conda-on
 conda activate base
+
+# Verify:
+python --version  # Should show 3.12.11 (miniforge)
+which python
+
+# When done with conda work, deactivate:
+conda-off
+```
+
+### For Project-Specific Python Environments
+```bash
+# Create isolated environments as needed (NOT in miniforge base):
+python3 -m venv ./project-venv
+# OR for conda-based projects:
+conda create -n project-name python=3.12
+conda activate project-name
 ```
 
 ### When Installing in Conda Environments
