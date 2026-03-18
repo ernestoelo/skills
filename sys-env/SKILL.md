@@ -80,6 +80,7 @@ which conda  # Should show "not found" or /usr/bin/python
 - [references/arch-package-management.md](references/arch-package-management.md): Package management
 - [references/python-environments.md](references/python-environments.md): **NEW** - Python/conda/miniforge environment management, conda↔pacman conflicts, best practices, troubleshooting
 - [references/ARCHITECTURE-INTEGRATION.md](references/ARCHITECTURE-INTEGRATION.md): **NEW** - Integration with @architect skill for development projects, best practices, CI/CD setup
+- [references/systemd-ordering-cycles.md](references/systemd-ordering-cycles.md): **NEW** - Systemd boot delays, ordering cycles, network manager conflicts, kernel module loading (RTW88, GPU drivers). Diagnosis and fixes.
 - [references/hyprland-compatibilities.md](references/hyprland-compatibilities.md): Hyprland compatibility
 - [references/system-safety-checklist.md](references/system-safety-checklist.md): Safety checklist
 - [references/remote-setup.md](references/remote-setup.md): Remote setup for Jetson/ZedBox
