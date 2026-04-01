@@ -6,6 +6,8 @@ set -euo pipefail
 
 WILDSENSE_REMOTE="${WILDSENSE_REMOTE:-200.1.17.171}"
 ENVIRONBIO_REMOTE="${ENVIRONBIO_REMOTE:-200.1.17.2}"
+HAS_OPENVPN=0
+HAS_TUN=0
 
 ok() { printf '[OK] %s\n' "$*"; }
 warn() { printf '[WARN] %s\n' "$*"; }
@@ -14,7 +16,7 @@ info() { printf '[INFO] %s\n' "$*"; }
 echo "=== OpenVPN Process Check ==="
 OPENVPN_LINES="$(ps -eo pid,ppid,user,cmd | grep -E 'openvpn( |$)' | grep -v grep || true)"
 if [[ -z "$OPENVPN_LINES" ]]; then
-    warn "No OpenVPN process found."
+    ok "No OpenVPN process found (expected when disconnected)."
 else
     echo "$OPENVPN_LINES"
     COUNT="$(echo "$OPENVPN_LINES" | wc -l | tr -d ' ')"
@@ -23,6 +25,17 @@ else
     else
         ok "OpenVPN process count looks normal ($COUNT)."
     fi
+    HAS_OPENVPN=1
+fi
+
+echo
+echo "=== Tunnel Interface Check ==="
+TUN_LINES="$(ip -br link show type tun | sed '/^$/d' || true)"
+if [[ -z "$TUN_LINES" ]]; then
+    ok "No active tun interfaces detected."
+else
+    echo "$TUN_LINES"
+    HAS_TUN=1
 fi
 
 echo
@@ -46,7 +59,11 @@ if command -v resolvectl >/dev/null 2>&1; then
     resolvectl statistics 2>/dev/null | sed -n '1,80p'
     TIMEOUTS="$(resolvectl statistics 2>/dev/null | awk '/Total Timeouts:/ {print $3; exit}' || echo 0)"
     if [[ -n "$TIMEOUTS" && "$TIMEOUTS" != "0" ]]; then
-        warn "Resolver has timeout history ($TIMEOUTS). Correlate with VPN flapping windows."
+        if (( HAS_OPENVPN == 0 && HAS_TUN == 0 )); then
+            info "Resolver timeouts are historical since boot ($TIMEOUTS); no active VPN/tun currently."
+        else
+            warn "Resolver has timeout history ($TIMEOUTS). Correlate with VPN flapping windows."
+        fi
     else
         ok "No resolver timeouts reported."
     fi
