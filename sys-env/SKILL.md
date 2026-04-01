@@ -36,7 +36,7 @@ sys-env/
 5. **Remove/Replace**: Use `sudo pacman -R <package>` and check dependencies.
 6. **Python Project Setup**: For new development projects, use @architect with isolated environments (not miniforge base).
 7. **Remote Setup**: Use SSH for Jetson/ZedBox; see references/remote-setup.md.
-8. **Dual VPN Validation**: Before/after using multiple OpenVPN profiles, run `scripts/openvpn-dual-check.sh` and verify server remotes are not routed through `tunX`.
+8. **VPN Management**: Use `vpnctl up <profile>`, `vpnctl down <profile>`, `vpnctl status` for safe dual-VPN operation. See references/openvpn-dual-vpn-routing.md for full workflow.
 
 ## Manual Conda Control
 
@@ -76,7 +76,7 @@ which conda  # Should show "not found" or /usr/bin/python
 - **Use NOPASSWD in /etc/sudoers** for automation (with caution).
 - **Test on non-critical setups** first.
 - **Documentation**: Include environment instructions in project README when integrating with @architect.
-- **OpenVPN Multi-Profile Safety**: Pin VPN server remotes (`/32`) to `net_gateway` when using multiple profiles to prevent recursive routing loops and DNS flapping.
+- **OpenVPN Multi-Profile**: Use `vpnctl` for managed dual-VPN. Manually pinning server IPs as `/32` routes to `net_gateway` prevents recursive routing. See references/openvpn-dual-vpn-routing.md for complete workflow.
 
 ## References
 
