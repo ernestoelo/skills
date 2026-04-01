@@ -36,6 +36,7 @@ sys-env/
 5. **Remove/Replace**: Use `sudo pacman -R <package>` and check dependencies.
 6. **Python Project Setup**: For new development projects, use @architect with isolated environments (not miniforge base).
 7. **Remote Setup**: Use SSH for Jetson/ZedBox; see references/remote-setup.md.
+8. **Dual VPN Validation**: Before/after using multiple OpenVPN profiles, run `scripts/openvpn-dual-check.sh` and verify server remotes are not routed through `tunX`.
 
 ## Manual Conda Control
 
@@ -60,6 +61,7 @@ which conda  # Should show "not found" or /usr/bin/python
 
 - **scripts/env_check.sh**: Checks for required packages, drivers, and session type.
 - **scripts/check-python-env.sh**: **NEW** - Validates Python environment before system operations (checks for conda, miniforge, venv conflicts). Usage: `./scripts/check-python-env.sh` or `./scripts/check-python-env.sh --auto-fix`
+- **scripts/openvpn-dual-check.sh**: **NEW** - Read-only diagnostics for multi-profile OpenVPN sessions (duplicate process detection, recursive route detection, resolver health).
 - **assets/arch-logo.png, hyprland-logo.png**: Visual guides for environment.
 - **references/**: Detailed guides for package management, compatibilities, safety, remote setup, and Python environment management.
 
@@ -74,6 +76,7 @@ which conda  # Should show "not found" or /usr/bin/python
 - **Use NOPASSWD in /etc/sudoers** for automation (with caution).
 - **Test on non-critical setups** first.
 - **Documentation**: Include environment instructions in project README when integrating with @architect.
+- **OpenVPN Multi-Profile Safety**: Pin VPN server remotes (`/32`) to `net_gateway` when using multiple profiles to prevent recursive routing loops and DNS flapping.
 
 ## References
 
@@ -81,6 +84,7 @@ which conda  # Should show "not found" or /usr/bin/python
 - [references/python-environments.md](references/python-environments.md): **NEW** - Python/conda/miniforge environment management, conda↔pacman conflicts, best practices, troubleshooting
 - [references/ARCHITECTURE-INTEGRATION.md](references/ARCHITECTURE-INTEGRATION.md): **NEW** - Integration with @architect skill for development projects, best practices, CI/CD setup
 - [references/systemd-ordering-cycles.md](references/systemd-ordering-cycles.md): **NEW** - Systemd boot delays, ordering cycles, network manager conflicts, kernel module loading (RTW88, GPU drivers). Diagnosis and fixes.
+- [references/openvpn-dual-vpn-routing.md](references/openvpn-dual-vpn-routing.md): **NEW** - Running EnvironBio/WildSense concurrently without recursive routing and DNS instability.
 - [references/hyprland-compatibilities.md](references/hyprland-compatibilities.md): Hyprland compatibility
 - [references/system-safety-checklist.md](references/system-safety-checklist.md): Safety checklist
 - [references/remote-setup.md](references/remote-setup.md): Remote setup for Jetson/ZedBox

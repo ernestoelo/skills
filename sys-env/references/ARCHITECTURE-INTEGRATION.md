@@ -2,6 +2,8 @@
 
 This document explains how to use the python-environments.md reference guide when working with @architect skill for development projects.
 
+It also defines a network baseline check for projects that require concurrent VPN access (for example, EnvironBio + WildSense).
+
 ## When to Use This Guide with @architect
 
 ### Scenario 1: Creating New Development Project
@@ -26,18 +28,33 @@ pip install -r requirements.txt
 ```
 
 ### Scenario 2: Installing vs. Developing
-```
+```text
 Decision:
 ├─ Is this a CLI TOOL being DEPLOYED? (e.g., GNS3, Docker wrapper)
 │  └─> Use: pipx install tool-name (managed by pipx, isolated)
 │
-├─ Is this a LIBRARY for my PROJECT? 
+├─ Is this a LIBRARY for my PROJECT?
 │  └─> Use: venv inside project (python3.14 -m venv)
 │  └─> Or: conda create -n project-name (separate from base)
 │
 └─ Is this a SYSTEM-LEVEL DEPENDENCY?
-   └─> Use: yay -S package (after `conda deactivate`)
+  └─> Use: yay -S package (after `conda deactivate`)
 ```
+
+### Scenario 3: Projects Requiring Two VPN Profiles
+```bash
+# Before connecting both profiles, validate route safety
+/home/p3g4sus/.copilot/skills/sys-env/scripts/openvpn-dual-check.sh
+
+# Connect profiles via managed wrapper (from dotfiles)
+vpnctl up environbio
+vpnctl up wildsense
+
+# Re-check recursive routing and resolver health
+/home/p3g4sus/.copilot/skills/sys-env/scripts/openvpn-dual-check.sh
+```
+
+If `ip route get <vpn-remote>` points to `tunX`, fix profile routing before continuing development tasks.
 
 ## Best Practices When Using @architect
 
